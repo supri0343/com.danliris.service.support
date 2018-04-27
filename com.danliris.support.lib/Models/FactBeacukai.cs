@@ -6,7 +6,7 @@ using System.Text;
 
 namespace com.danliris.support.lib.Models
 {
-    public class FactBeacukai :  IValidatableObject
+    public class FactBeacukai : StandardEntity, IValidatableObject
     {
         public string DetailshippingOrderId { get; set; }
         public string BCId { get; set; }
