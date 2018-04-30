@@ -12,7 +12,7 @@ namespace com.danliris.support.lib.ViewModel
         public string BCType { get; set; }
         public DateTime BCDate { get; set; }
         public string BonNo { get; set; }
-        public string BonDate { get; set; }
+        public DateTime BonDate { get; set; }
         public string SupllierCode { get; set; }
         public string SupplierName { get; set; }
         public string ItemCode { get; set; }
