@@ -6,7 +6,7 @@ using System.Text;
 
 namespace com.danliris.support.lib.Models
 {
-    public class FactBeacukai : StandardEntity, IValidatableObject
+    public class FactBeacukai : StandardEntity
     {
         public string DetailshippingOrderId { get; set; }
         public string BCId { get; set; }
@@ -26,9 +26,6 @@ namespace com.danliris.support.lib.Models
         public decimal Nominal { get; set; }
         public string CurrencyCode { get; set; }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
