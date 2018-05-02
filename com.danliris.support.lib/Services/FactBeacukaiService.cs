@@ -35,10 +35,10 @@ namespace com.danliris.support.lib.Services
         {
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
-            var Query = (from a in context.FactBeacukai
-                         where a.BonDate.AddHours(offset).Date >= DateFrom.Date
-                             && a.BonDate.AddHours(offset).Date <= DateTo.Date
-                             && a.BCType== type
+            var Query = (from a in context.ViewFactBeacukai
+                         where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+                             && a.BCDate.AddHours(offset).Date <= DateTo.Date
+                             && a.BCType== (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
                          select new FactBeacukaiViewModel
                          {
                              BCNo = a.BCNo,
