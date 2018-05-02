@@ -7,6 +7,7 @@ namespace com.danliris.support.lib.ViewModel
     public class FactBeacukaiViewModel
     {
 
+        public int count { get; set; }
         public string DetailshippingOrderId { get; set; }
         public string BCId { get; set; }
         public string BCNo { get; set; }
