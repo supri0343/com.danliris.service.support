@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Com.Moonlay.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace com.danliris.support.lib.ViewModel
+namespace com.danliris.support.lib.Models
 {
-    public class FactBeacukaiViewModel
+    public class ViewFactBeacukai : StandardEntity
     {
-
         public string DetailshippingOrderId { get; set; }
         public string BCId { get; set; }
         public string BCNo { get; set; }
@@ -22,5 +23,7 @@ namespace com.danliris.support.lib.ViewModel
         public double Quantity { get; set; }
         public decimal Nominal { get; set; }
         public string CurrencyCode { get; set; }
+
+
     }
 }

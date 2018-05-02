@@ -9,6 +9,9 @@ namespace com.danliris.support.lib
     {
         public virtual DbSet<BEACUKAI_TEMP> BeacukaiTemp { get; set; }
         public virtual DbSet<FactBeacukai> FactBeacukai { get; set; }
+        public virtual DbSet<ViewFactBeacukai> ViewFactBeacukai { get; set; }
+
+        //public virtual DbSet<ViewFactBeacukai> FactBeacukai { get; set; }
         //public virtual DbSet<FactItemMutation> FactItemMutation { get; set; }
 
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
