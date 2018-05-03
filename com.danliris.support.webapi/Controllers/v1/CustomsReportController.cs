@@ -12,16 +12,18 @@ namespace com.danliris.support.webapi.Controllers.v1
 {
 	[Produces("application/json")]
 	[ApiVersion("1.0")]
-	[Route("v{version:apiVersion}/customs-report")]
+	[Route("v{version:apiVersion}/customs-reports")]
 	[Authorize]
 	public class CustomsReportController : Controller
 	{
 		private static readonly string ApiVersion = "1.0";
-		private WIPService wipService { get; }
+	
 		private ScrapService scrapService { get; }
-		public CustomsReportController(ScrapService scrapService)
+		private WIPService wipService { get; }
+		public CustomsReportController(ScrapService scrapService,WIPService wipService)
 		{
 			this.scrapService = scrapService;
+			this.wipService = wipService;
 		}
 
 		[HttpGet("scrap")]
@@ -33,6 +35,30 @@ namespace com.danliris.support.webapi.Controllers.v1
 			try
 			{
 				var data = scrapService.GetScrapReport(dateFrom,dateTo, offset);
+				return Ok(new
+				{
+					apiVersion = ApiVersion,
+					data = data
+				});
+			}
+			catch (Exception e)
+			{
+				Dictionary<string, object> Result =
+					new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+					.Fail();
+				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+			}
+		}
+
+		[HttpGet("wip")]
+		public IActionResult GetWIP(DateTime? date)
+		{
+			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+			string accept = Request.Headers["Accept"];
+
+			try
+			{
+				var data = wipService.GetWIPReport (date, offset);
 				return Ok(new
 				{
 					apiVersion = ApiVersion,
