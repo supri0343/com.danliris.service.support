@@ -8,6 +8,8 @@ namespace com.danliris.support.lib.Helpers
     {
         public static string Core { get; set; }
         public static string Inventory { get; set; }
+
+		public static string ConnectionString { get; set; }
         public static string Production { get; set; }
     }
 }

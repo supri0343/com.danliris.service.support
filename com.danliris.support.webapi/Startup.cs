@@ -37,10 +37,13 @@ namespace com.danliris.support.webapi
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection") ?? Configuration["DefaultConnection"];
+			string DLSQLServerConnectionString = Configuration.GetConnectionString("DLSQLServerConnection") ?? Configuration["DLSQLServerConnection"];
+			APIEndpoint.ConnectionString = Configuration.GetConnectionString("DefaultConnection") ?? Configuration["DefaultConnection"];
 
-            services
-                .AddDbContext<SupportDbContext>(options => options.UseSqlServer(connectionString))
-                .AddApiVersioning(options =>
+			services
+				.AddDbContext<SupportDbContext>(options => options.UseSqlServer(connectionString))
+				.AddDbContext<ProductionDBContext>(options => options.UseSqlServer(DLSQLServerConnectionString))
+				.AddApiVersioning(options =>
                 {
                     options.ReportApiVersions = true;
                     options.AssumeDefaultVersionWhenUnspecified = true;
@@ -48,8 +51,12 @@ namespace com.danliris.support.webapi
                 });
             services
                 .AddTransient<FactBeacukaiService>();
+			services	
+				.AddTransient<WIPService>();
+			services
+				.AddTransient<ScrapService>();
 
-            var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
+			var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -92,8 +99,10 @@ namespace com.danliris.support.webapi
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<SupportDbContext>();
-                context.Database.Migrate();
-            }
+				
+				context.Database.Migrate();
+
+			}
 
             app.UseAuthentication();
             app.UseCors("SupportPolicy");
