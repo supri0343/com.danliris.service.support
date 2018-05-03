@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace com.danliris.support.lib.Models
+namespace com.danliris.support.lib.ViewModel
 {
-    public class ViewScrap
-    {	
+	public class ScrapViewModel
+	{
 		[Key]
 		public string ClassificationId { get; set; }
 		public string ClassificationCode { get; set; }

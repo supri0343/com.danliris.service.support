@@ -1,4 +1,5 @@
 ﻿using com.danliris.support.lib.Models;
+using com.danliris.support.lib.ViewModel;
 using Com.Moonlay.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,10 +10,9 @@ namespace com.danliris.support.lib
     {
         public virtual DbSet<BEACUKAI_TEMP> BeacukaiTemp { get; set; }
         public virtual DbSet<FactBeacukai> FactBeacukai { get; set; }
-		public virtual DbSet<ViewScrap> ViewScrap{ get; set; }
+		public virtual DbSet<ScrapViewModel> ViewScrap{ get; set; }
         public virtual DbSet<ViewFactBeacukai> ViewFactBeacukai { get; set; }
-
-
+		public virtual DbSet<WIPViewModel> ViewWIP { get; set; }
 
 		public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {
@@ -184,7 +184,7 @@ namespace com.danliris.support.lib
                     .IsUnicode(false);
             });
 
-			modelBuilder.Entity<ViewScrap>(entity =>
+			modelBuilder.Entity<ScrapViewModel>(entity =>
 			{
 				 
 				entity.Property(e => e.ClassificationId)
@@ -218,6 +218,16 @@ namespace com.danliris.support.lib
 				entity.Property(e => e.SaldoBuku);
 
 			
+			});
+
+			modelBuilder.Entity<WIPViewModel>(entity =>
+			{
+
+				entity.Property(e => e.Kode);
+				entity.Property(e => e.Comodity);
+				entity.Property(e => e.WIP);
+				entity.Property(e => e.UnitQtyName );
+
 			});
 		}
     }
