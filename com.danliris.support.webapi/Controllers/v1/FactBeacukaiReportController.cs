@@ -33,21 +33,7 @@ namespace com.danliris.support.webapi.Controllers.v1
             {
 
                 var data = factBeacukaiService.GetReportIN(type, dateFrom, dateTo, page, size, Order, offset);
-                var docNo = data.Item1.ToArray();
-                var index = 0;
-                foreach (var a in data.Item1)
-                {
-                    var dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
-                    if (dup != null)
-                    {
-                        if (dup.count == 0)
-                        {
-                            index++;
-                            dup.count = index;
-                        }
-                    }
-                    a.count = dup.count;
-                }
+                
                 return Ok(new
                 {
                     apiVersion = ApiVersion,
