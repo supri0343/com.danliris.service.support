@@ -9,9 +9,9 @@ namespace com.danliris.support.lib
     {
         public virtual DbSet<BEACUKAI_TEMP> BeacukaiTemp { get; set; }
         public virtual DbSet<FactBeacukai> FactBeacukai { get; set; }
-        //public virtual DbSet<FactItemMutation> FactItemMutation { get; set; }
+		public virtual DbSet<ViewScrap> ViewScrap{ get; set; }
 
-        public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
+		public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -181,8 +181,42 @@ namespace com.danliris.support.lib
                     .IsUnicode(false);
             });
 
-            
-        }
+			modelBuilder.Entity<ViewScrap>(entity =>
+			{
+				 
+				entity.Property(e => e.ClassificationId)
+					.HasColumnName("ClassificationId");
+
+				entity.Property(e => e.ClassificationId);
+				 
+
+				entity.Property(e => e.ClassificationCode);
+
+				entity.Property(e => e.ClassificationName);
+
+				entity.Property(e => e.DestinationId);
+
+				entity.Property(e => e.UnitQtyName);
+
+				entity.Property(e => e.SaldoAwal) ;
+
+				entity.Property(e => e.Pemasukan) ;
+
+				entity.Property(e => e.Pengeluaran);
+
+				entity.Property(e => e.Penyesuaian) ;
+
+				entity.Property(e => e.StockOpname);
+
+				entity.Property(e => e.Selisih);
+
+				entity.Property(e => e.StockId);
+
+				entity.Property(e => e.SaldoBuku);
+
+			
+			});
+		}
     }
 }
 
