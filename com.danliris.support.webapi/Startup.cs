@@ -42,7 +42,6 @@ namespace com.danliris.support.webapi
 
 			services
 				.AddDbContext<SupportDbContext>(options => options.UseSqlServer(connectionString))
-				.AddDbContext<ProductionDBContext>(options => options.UseSqlServer(DLSQLServerConnectionString))
 				.AddApiVersioning(options =>
                 {
                     options.ReportApiVersions = true;
@@ -51,12 +50,12 @@ namespace com.danliris.support.webapi
                 });
             services
                 .AddTransient<FactBeacukaiService>();
-			services	
-				.AddTransient<WIPService>();
 			services
 				.AddTransient<ScrapService>();
+            services
+                .AddTransient<FactItemMutationService>();
 
-			var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
+            var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
