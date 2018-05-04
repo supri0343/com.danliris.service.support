@@ -17,16 +17,75 @@ namespace com.danliris.support.webapi.Controllers.v1
 	public class CustomsReportController : Controller
 	{
 		private static readonly string ApiVersion = "1.0";
-	
 		private ScrapService scrapService { get; }
-		private WIPService wipService { get; }
-		public CustomsReportController(ScrapService scrapService,WIPService wipService)
+        private FactBeacukaiService factBeacukaiService { get; }
+        private FactItemMutationService factItemMutationService { get; }
+        private WIPService wipService { get; }
+
+
+        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService)
 		{
 			this.scrapService = scrapService;
+            this.factBeacukaiService = factBeacukaiService;
+            this.factItemMutationService = factItemMutationService;
 			this.wipService = wipService;
 		}
 
-		[HttpGet("scrap")]
+        [HttpGet("in")]
+        public IActionResult GetIN(string type, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+
+                var data = factBeacukaiService.GetReportIN(type, dateFrom, dateTo, page, size, Order, offset);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("out")]
+        public IActionResult GetOUT(string type, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+
+                var data = factBeacukaiService.GetReportOUT(type, dateFrom, dateTo, page, size, Order, offset);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("scrap")]
 		public IActionResult Get(  DateTime? dateFrom, DateTime? dateTo)
 		{
 			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
@@ -49,6 +108,56 @@ namespace com.danliris.support.webapi.Controllers.v1
 				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
 			}
 		}
+
+        [HttpGet("bbUnits")]
+        public IActionResult GetBBUnit(int unit, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+                var data = factItemMutationService.GetReportBBUnit(unit, dateFrom, dateTo, page, size, Order, offset);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("bpUnits")]
+        public IActionResult GetBPUnit(int unit, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+                var data = factItemMutationService.GetReportBPUnit(unit, dateFrom, dateTo, page, size, Order, offset);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
 
 		[HttpGet("wip")]
 		public IActionResult GetWIP(DateTime? date)
