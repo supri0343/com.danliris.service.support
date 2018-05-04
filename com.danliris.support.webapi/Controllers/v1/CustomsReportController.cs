@@ -20,13 +20,15 @@ namespace com.danliris.support.webapi.Controllers.v1
 		private ScrapService scrapService { get; }
         private FactBeacukaiService factBeacukaiService { get; }
         private FactItemMutationService factItemMutationService { get; }
+        private WIPService wipService { get; }
 
 
-        public CustomsReportController(ScrapService scrapService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService)
+        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService)
 		{
 			this.scrapService = scrapService;
             this.factBeacukaiService = factBeacukaiService;
             this.factItemMutationService = factItemMutationService;
+			this.wipService = wipService;
 		}
 
         [HttpGet("in")]
@@ -156,5 +158,29 @@ namespace com.danliris.support.webapi.Controllers.v1
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
-    }
+
+		[HttpGet("wip")]
+		public IActionResult GetWIP(DateTime? date)
+		{
+			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+			string accept = Request.Headers["Accept"];
+
+			try
+			{
+				var data = wipService.GetWIPReport (date, offset);
+				return Ok(new
+				{
+					apiVersion = ApiVersion,
+					data = data
+				});
+			}
+			catch (Exception e)
+			{
+				Dictionary<string, object> Result =
+					new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+					.Fail();
+				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+			}
+		}
+	}
 }

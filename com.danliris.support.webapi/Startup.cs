@@ -54,6 +54,8 @@ namespace com.danliris.support.webapi
 				.AddTransient<ScrapService>();
             services
                 .AddTransient<FactItemMutationService>();
+			services
+				.AddTransient<WIPService>();
 
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
