@@ -56,8 +56,10 @@ namespace com.danliris.support.webapi
                 .AddTransient<FactItemMutationService>();
 			services
 				.AddTransient<WIPService>();
+			services
+				.AddTransient<FinishedGoodService>();
 
-            var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
+			var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
