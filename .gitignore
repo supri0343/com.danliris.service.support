@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+com.danliris.support.webapi/Properties/launchSettings.json
+com.danliris.support.webapi/appsettings.json
