@@ -21,14 +21,16 @@ namespace com.danliris.support.webapi.Controllers.v1
         private FactBeacukaiService factBeacukaiService { get; }
         private FactItemMutationService factItemMutationService { get; }
         private WIPService wipService { get; }
+		private FinishedGoodService finishedGoodService { get; }
 
 
-        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService)
+		public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService)
 		{
 			this.scrapService = scrapService;
             this.factBeacukaiService = factBeacukaiService;
             this.factItemMutationService = factItemMutationService;
 			this.wipService = wipService;
+			this.finishedGoodService = finishedGoodService;
 		}
 
         [HttpGet("in")]
@@ -108,8 +110,30 @@ namespace com.danliris.support.webapi.Controllers.v1
 				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
 			}
 		}
+		[HttpGet("finished-good")]
+		public IActionResult GetFinishedGood(DateTime? dateFrom, DateTime? dateTo)
+		{
+			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+			string accept = Request.Headers["Accept"];
 
-        [HttpGet("bbUnits")]
+			try
+			{
+				var data = finishedGoodService.GetFinishedGoodReport(dateFrom, dateTo, offset);
+				return Ok(new
+				{
+					apiVersion = ApiVersion,
+					data = data
+				});
+			}
+			catch (Exception e)
+			{
+				Dictionary<string, object> Result =
+					new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+					.Fail();
+				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+			}
+		}
+		[HttpGet("bbUnits")]
         public IActionResult GetBBUnit(int unit, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
@@ -182,5 +206,55 @@ namespace com.danliris.support.webapi.Controllers.v1
 				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
 			}
 		}
-	}
+
+        [HttpGet("bpCentrals")]
+        public IActionResult GetBPCentral(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+                var data = factItemMutationService.GetReportBPCentral(dateFrom, dateTo, page, size, Order, offset);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("bbCentrals")]
+        public IActionResult GetBBCentral(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+                var data = factItemMutationService.GetReportBBCentral(dateFrom, dateTo, page, size, Order, offset);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+    }
 }
