@@ -1,5 +1,7 @@
 ﻿using com.danliris.support.lib.Helpers;
 using com.danliris.support.lib.ViewModel;
+using Com.Moonlay.NetCore.Lib;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -72,5 +74,30 @@ namespace com.danliris.support.lib.Services
 
 			return machine.AsQueryable();
 		}
-	}
+        public Tuple<List<FinishedGoodViewModel>, int> GetMachineMutationReportData(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
+        {
+            var Query = GetMachineMutationReport(dateFrom, dateTo, offset);
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
+            if (OrderDictionary.Count.Equals(0))
+            {
+                Query = Query.OrderBy(b => b.KodeBarang);
+            }
+            else
+            {
+                string Key = OrderDictionary.Keys.First();
+                string OrderType = OrderDictionary[Key];
+
+                //Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
+            }
+
+
+            Pageable<FinishedGoodViewModel> pageable = new Pageable<FinishedGoodViewModel>(Query, page - 1, size);
+            List<FinishedGoodViewModel> Data = pageable.Data.ToList<FinishedGoodViewModel>();
+
+            int TotalData = pageable.TotalCount;
+
+            return Tuple.Create(Data, TotalData);
+        }
+    }
 }
