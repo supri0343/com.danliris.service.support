@@ -68,11 +68,13 @@ namespace com.danliris.support.lib.Services
                                 ItemCode = data["ItemCode"].ToString(),
                                 ItemName = data["ItemName"].ToString(),
                                 UnitQtyName = data["UnitQtyName"].ToString(),
-                                BeginQty = (double)data["BeginQty"],
-                                ReceiptQty = (double)data["ReceiptQty"],
-                                ExpenditureQty = (double)data["ExpenditureQty"],
-                                AdjustmentQty = (double)data["AdjustmentQty"],
-                                OpnameQty = (double)data["OpnameQty"]
+                                BeginQty = String.Format("{0:n}", (double)data["BeginQty"]),
+                                ReceiptQty = String.Format("{0:n}", (double)data["ReceiptQty"]),
+                                ExpenditureQty = String.Format("{0:n}", (double)data["ExpenditureQty"]),
+                                AdjustmentQty = String.Format("{0:n}", (double)data["AdjustmentQty"]),
+                                OpnameQty = String.Format("{0:n}", (double)data["OpnameQty"]),
+                                LastQty = String.Format("{0:n}", ((double)data["BeginQty"] + (double)data["ReceiptQty"] - (double)data["ExpenditureQty"] + (double)data["AdjustmentQty"] + (double)data["OpnameQty"])),
+                                Diff= String.Format("{0:n}",0)
                             };
                             reportData.Add(view);
                         }
@@ -165,11 +167,13 @@ namespace com.danliris.support.lib.Services
                                 ItemCode = data["ItemCode"].ToString(),
                                 ItemName = data["ItemName"].ToString(),
                                 UnitQtyName = data["UnitQtyName"].ToString(),
-                                BeginQty = (double)data["BeginQty"],
-                                ReceiptQty = (double)data["ReceiptQty"],
-                                ExpenditureQty = (double)data["ExpenditureQty"],
-                                AdjustmentQty = (double)data["AdjustmentQty"],
-                                OpnameQty = (double)data["OpnameQty"]
+                                BeginQty = String.Format("{0:n}", (double)data["BeginQty"]),
+                                ReceiptQty = String.Format("{0:n}", (double)data["ReceiptQty"]),
+                                ExpenditureQty = String.Format("{0:n}", (double)data["ExpenditureQty"]),
+                                AdjustmentQty = String.Format("{0:n}", (double)data["AdjustmentQty"]),
+                                OpnameQty = String.Format("{0:n}", (double)data["OpnameQty"]),
+                                LastQty = String.Format("{0:n}", ((double)data["BeginQty"] + (double)data["ReceiptQty"] - (double)data["ExpenditureQty"] + (double)data["AdjustmentQty"] + (double)data["OpnameQty"])),
+                                Diff = String.Format("{0:n}", 0)
                             };
                             reportData.Add(view);
                         }
@@ -300,15 +304,16 @@ namespace com.danliris.support.lib.Services
                         {
                             FactMutationItemViewModel view = new FactMutationItemViewModel
                             {
-                                
                                 ItemCode = data["ItemCode"].ToString(),
                                 ItemName = data["ItemName"].ToString(),
                                 UnitQtyName = data["UnitQtyName"].ToString(),
-                                BeginQty = (double)data["BeginQty"],
-                                ReceiptQty = (double)data["ReceiptQty"],
-                                ExpenditureQty = (double)data["ExpenditureQty"],
-                                AdjustmentQty = (double)data["AdjustmentQty"],
-                                OpnameQty = (double)data["OpnameQty"]
+                                BeginQty = String.Format("{0:n}", (double)data["BeginQty"]),
+                                ReceiptQty = String.Format("{0:n}", (double)data["ReceiptQty"]),
+                                ExpenditureQty = String.Format("{0:n}", (double)data["ExpenditureQty"]),
+                                AdjustmentQty = String.Format("{0:n}", (double)data["AdjustmentQty"]),
+                                OpnameQty = String.Format("{0:n}", (double)data["OpnameQty"]),
+                                LastQty = String.Format("{0:n}", ((double)data["BeginQty"] + (double)data["ReceiptQty"] - (double)data["ExpenditureQty"] + (double)data["AdjustmentQty"] + (double)data["OpnameQty"])),
+                                Diff = String.Format("{0:n}", 0)
                             };
                             reportData.Add(view);
                         }
@@ -439,15 +444,16 @@ namespace com.danliris.support.lib.Services
                         {
                             FactMutationItemViewModel view = new FactMutationItemViewModel
                             {
-                                
                                 ItemCode = data["ItemCode"].ToString(),
                                 ItemName = data["ItemName"].ToString(),
                                 UnitQtyName = data["UnitQtyName"].ToString(),
-                                BeginQty = (double)data["BeginQty"],
-                                ReceiptQty = (double)data["ReceiptQty"],
-                                ExpenditureQty = (double)data["ExpenditureQty"],
-                                AdjustmentQty = (double)data["AdjustmentQty"],
-                                OpnameQty = (double)data["OpnameQty"]
+                                BeginQty = String.Format("{0:n}", (double)data["BeginQty"]),
+                                ReceiptQty = String.Format("{0:n}", (double)data["ReceiptQty"]),
+                                ExpenditureQty = String.Format("{0:n}", (double)data["ExpenditureQty"]),
+                                AdjustmentQty = String.Format("{0:n}", (double)data["AdjustmentQty"]),
+                                OpnameQty = String.Format("{0:n}", (double)data["OpnameQty"]),
+                                LastQty = String.Format("{0:n}", ((double)data["BeginQty"] + (double)data["ReceiptQty"] - (double)data["ExpenditureQty"] + (double)data["AdjustmentQty"] + (double)data["OpnameQty"])),
+                                Diff = String.Format("{0:n}", 0)
                             };
                             reportData.Add(view);
                         }

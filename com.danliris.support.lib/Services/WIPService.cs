@@ -45,7 +45,7 @@ namespace com.danliris.support.lib.Services
 								Kode = data["Kode"].ToString(),
 								Comodity = data["komoditi"].ToString(),
 								UnitQtyName=data["Satuan"].ToString(),
-								WIP = (double)data["WIP"]
+								WIP = String.Format("{0:n}", (double)data["WIP"])
 							};
 							wipData.Add(view);
 						}
