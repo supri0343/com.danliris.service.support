@@ -51,8 +51,8 @@ namespace com.danliris.support.lib.Services
                              ItemCode=a.ItemCode,
                              ItemName=a.ItemName,
                              SupplierName=a.SupplierName,
-                             Quantity=a.Quantity,
-                             Nominal=a.Nominal,
+                             Quantity= String.Format("{0:n}", a.Quantity),
+                             Nominal= String.Format("{0:n}", a.Nominal),
                              CurrencyCode=a.CurrencyCode,
                              UnitQtyName=a.UnitQtyName
                          });
@@ -66,7 +66,7 @@ namespace com.danliris.support.lib.Services
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             if (OrderDictionary.Count.Equals(0))
             {
-                Query = Query.OrderBy(b => b.BCType);
+                Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCNo); 
             }
             else
             {
@@ -111,6 +111,7 @@ namespace com.danliris.support.lib.Services
                              && a.BCDate.AddHours(offset).Date <= DateTo.Date
                              && array.Contains(a.BCType)
                              && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
+
                          select new FactBeacukaiViewModel
                          {
                              BCNo = a.BCNo,
@@ -121,8 +122,8 @@ namespace com.danliris.support.lib.Services
                              ItemCode = a.ItemCode,
                              ItemName = a.ItemName,
                              SupplierName = a.SupplierName,
-                             Quantity = a.Quantity,
-                             Nominal = a.Nominal,
+                             Quantity = String.Format("{0:n}", a.Quantity),
+                             Nominal = String.Format("{0:n}", a.Nominal),
                              CurrencyCode = a.CurrencyCode,
                              UnitQtyName = a.UnitQtyName
                          });
@@ -137,7 +138,7 @@ namespace com.danliris.support.lib.Services
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             if (OrderDictionary.Count.Equals(0))
             {
-                Query = Query.OrderBy(b => b.BCType);
+                Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCNo);
             }
             else
             {

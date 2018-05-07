@@ -20,8 +20,8 @@ namespace com.danliris.support.lib.ViewModel
         public string ItemCode { get; set; }
         public string ItemName { get; set; }
         public string UnitQtyName { get; set; }
-        public double Quantity { get; set; }
-        public decimal Nominal { get; set; }
+        public string Quantity { get; set; }
+        public string Nominal { get; set; }
         public string CurrencyCode { get; set; }
     }
 }

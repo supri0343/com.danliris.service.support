@@ -14,12 +14,12 @@ namespace com.danliris.support.lib.ViewModel
 		public string StockId { get; set; }
 		public string DestinationId { get; set; }
 		public string UnitQtyName { get; set; }
-		public double SaldoAwal { get; set; }
-		public double Pemasukan { get; set; }
-		public double Pengeluaran { get; set; }
-		public double Penyesuaian { get; set; }
-		public double StockOpname { get; set; }
-		public double Selisih { get; set; }
-		public double SaldoBuku { get; set; }
+		public string SaldoAwal { get; set; }
+		public string Pemasukan { get; set; }
+		public string Pengeluaran { get; set; }
+		public string Penyesuaian { get; set; }
+		public string StockOpname { get; set; }
+		public string Selisih { get; set; }
+		public string SaldoBuku { get; set; }
 	}
 }

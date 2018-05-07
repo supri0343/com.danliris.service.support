@@ -51,14 +51,14 @@ namespace com.danliris.support.lib.Services
 							{
 								KodeBarang = data["KodeBarang"].ToString(),
 								NamaBarang = data["NamaBarang"].ToString(),
-								Pemasukan = (double)data["Pemasukan"],
-								Pengeluaran = (double)data["Pengeluaran"],
-								SaldoAwal = (double)data["SaldoAwal"],
-								SaldoBuku = (double)data["SaldoBuku"],
+								Pemasukan = String.Format("{0:n}", (double)data["Pemasukan"]),
+								Pengeluaran = String.Format("{0:n}", (double)data["Pengeluaran"]),
+								SaldoAwal = String.Format("{0:n}", (double)data["SaldoAwal"]),
+								SaldoBuku = String.Format("{0:n}", (double)data["SaldoBuku"]),
 								UnitQtyName = data["Sat"].ToString(),
-								Penyesuaian = (double)data["Penyesuaian"],
-								StockOpname = (double)data["StockOpname"],
-								Selisih = (double)data["Selisih"]
+								Penyesuaian = String.Format("{0:n}", (double)data["Penyesuaian"]),
+								StockOpname = String.Format("{0:n}", (double)data["StockOpname"]),
+								Selisih = String.Format("{0:n}", (double)data["Selisih"])
 							};
 							machine.Add(view);
 						}
