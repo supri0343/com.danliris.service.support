@@ -11,6 +11,6 @@ namespace com.danliris.support.lib.ViewModel
 		public string Kode { get; set; }
 		public string Comodity { get; set; }
 		public string UnitQtyName { get; set; }
-		public double WIP { get; set; }
+		public string WIP { get; set; }
 	}
 }

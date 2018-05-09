@@ -22,15 +22,16 @@ namespace com.danliris.support.webapi.Controllers.v1
         private FactItemMutationService factItemMutationService { get; }
         private WIPService wipService { get; }
 		private FinishedGoodService finishedGoodService { get; }
+		private MachineMutationService machineMutationService { get; }
 
-
-		public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService)
+		public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService)
 		{
 			this.scrapService = scrapService;
             this.factBeacukaiService = factBeacukaiService;
             this.factItemMutationService = factItemMutationService;
 			this.wipService = wipService;
 			this.finishedGoodService = finishedGoodService;
+			this.machineMutationService = machineMutationService;
 		}
 
         [HttpGet("in")]
@@ -124,6 +125,30 @@ namespace com.danliris.support.webapi.Controllers.v1
 					apiVersion = ApiVersion,
 					data = data
 				});
+			}
+			catch (Exception e)
+			{
+				Dictionary<string, object> Result =
+					new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+					.Fail();
+				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+			}
+		}
+		[HttpGet("machine-mutation")]
+		public IActionResult GetMachineReport(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+		{
+			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+			string accept = Request.Headers["Accept"];
+
+			try
+			{
+				var data = machineMutationService.GetMachineMutationReportData(dateFrom, dateTo, page, size, Order, offset);
+				return Ok(new
+				{
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 }
+                });
 			}
 			catch (Exception e)
 			{
