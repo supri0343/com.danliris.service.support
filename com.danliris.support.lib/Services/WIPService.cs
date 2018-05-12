@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -63,5 +64,28 @@ namespace com.danliris.support.lib.Services
 			return wipData.AsQueryable();
 		}
 
-	}
+        public MemoryStream GenerateExcel(DateTime? date, int offset)
+        {
+            var Query = GetWIPReport(date, offset);
+            Query = Query.OrderBy(b => b.Kode).ThenBy(b=>b.Comodity);
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(int) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "WIP", DataType = typeof(String) });
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+            else {
+                var index = 1;
+                foreach (var item in Query)
+                {
+                    result.Rows.Add((index), item.Kode, item.Comodity, item.UnitQtyName, item.WIP);
+                    index++;
+                }
+            }
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
+        }
+
+    }
 }

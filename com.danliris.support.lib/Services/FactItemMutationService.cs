@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -118,6 +119,31 @@ namespace com.danliris.support.lib.Services
             return Tuple.Create(Data, TotalData);
         }
 
+        public MemoryStream GenerateExcelBBUnit(int unit, DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            var Query = GetUnitItemBBReport(unit, dateFrom, dateTo, offset);
+            Query = Query.OrderBy(b => b.ItemCode);
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Akhir", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(String) });
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+            else
+                foreach (var item in Query)
+                {
+                    result.Rows.Add((item.ItemCode), item.ItemName, item.UnitQtyName, item.BeginQty, item.ReceiptQty, item.ExpenditureQty, item.AdjustmentQty, item.LastQty, item.OpnameQty, item.Diff);
+                }
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
+        }
+
         public IQueryable<FactMutationItemViewModel> GetUnitItemBPReport(int unit, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
             DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
@@ -215,6 +241,31 @@ namespace com.danliris.support.lib.Services
             int TotalData = pageable.TotalCount;
 
             return Tuple.Create(Data, TotalData);
+        }
+
+        public MemoryStream GenerateExcelBPUnit(int unit, DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            var Query = GetUnitItemBPReport(unit, dateFrom, dateTo, offset);
+            Query = Query.OrderBy(b => b.ItemCode);
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Akhir", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(String) });
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+            else
+                foreach (var item in Query)
+                {
+                    result.Rows.Add((item.ItemCode), item.ItemName, item.UnitQtyName, item.BeginQty, item.ReceiptQty, item.ExpenditureQty, item.AdjustmentQty, item.LastQty, item.OpnameQty, item.Diff);
+                }
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
 
         public IQueryable<FactMutationItemViewModel> GetCentralItemBPReport( DateTime? dateFrom, DateTime? dateTo, int offset)
@@ -357,6 +408,31 @@ namespace com.danliris.support.lib.Services
             return Tuple.Create(Data, TotalData);
         }
 
+        public MemoryStream GenerateExcelBPCentral(DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            var Query = GetCentralItemBPReport(dateFrom, dateTo, offset);
+            Query = Query.OrderBy(b => b.ItemCode);
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Akhir", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(String) });
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+            else
+                foreach (var item in Query)
+                {
+                    result.Rows.Add((item.ItemCode), item.ItemName, item.UnitQtyName, item.BeginQty, item.ReceiptQty, item.ExpenditureQty, item.AdjustmentQty, item.LastQty, item.OpnameQty, item.Diff);
+                }
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
+        }
+
         public IQueryable<FactMutationItemViewModel> GetCentralItemBBReport(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
             DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
@@ -495,6 +571,31 @@ namespace com.danliris.support.lib.Services
             int TotalData = pageable.TotalCount;
 
             return Tuple.Create(Data, TotalData);
+        }
+
+        public MemoryStream GenerateExcelBBCentral(DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            var Query = GetCentralItemBBReport(dateFrom, dateTo, offset);
+            Query = Query.OrderBy(b => b.ItemCode);
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Akhir", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(String) });
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+            else
+                foreach (var item in Query)
+                {
+                    result.Rows.Add((item.ItemCode), item.ItemName, item.UnitQtyName, item.BeginQty, item.ReceiptQty, item.ExpenditureQty, item.AdjustmentQty, item.LastQty, item.OpnameQty, item.Diff);
+                }
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
     }
 }
