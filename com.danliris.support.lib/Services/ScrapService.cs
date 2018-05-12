@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -71,5 +72,29 @@ namespace com.danliris.support.lib.Services
 
 			return scrapData.AsQueryable();
 		}
-	}
+
+        public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            var Query = GetScrapReport(dateFrom, dateTo, offset);
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Sat", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Buku", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(String) });
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+            else
+                foreach (var item in Query)
+                {
+                    result.Rows.Add((item.ClassificationCode), item.ClassificationName, item.UnitQtyName, item.SaldoAwal, item.Pemasukan, item.Pengeluaran, item.Penyesuaian, item.SaldoBuku, item.StockOpname, item.Selisih);
+                }
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
+        }
+    }
 }
