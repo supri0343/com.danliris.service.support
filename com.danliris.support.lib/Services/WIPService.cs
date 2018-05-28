@@ -29,12 +29,7 @@ namespace com.danliris.support.lib.Services
 					new SqlConnection(connectionString))
 				{
 					conn.Open();
-					using (SqlCommand cmd = new SqlCommand("SELECT     Kode, komoditi, Satuan, SUM(JumlahPotong - JumlahFinish) AS WIP FROM "+
-											"(SELECT HO.No, HO.Qty, HO.Kode, KOM.komoditi, CU.SizeNumber, CU.JumlahPotong, ISNULL(FOUT.JumlahFinish, 0) AS JumlahFinish, 'PCS' AS Satuan FROM  HOrder AS HO INNER JOIN  Komoditi AS KOM ON HO.Kode = KOM.kode INNER JOIN "+
-											"(SELECT  a.RO, c.SizeId, c.SizeNumber, SUM(b.Qty) AS JumlahPotong FROM  CuttingOut AS a INNER JOIN CuttingOutDetail AS b ON a.CuttingNo = b.CuttingNo INNER JOIN Sizes AS c ON b.SizeId = c.SizeId "+
-											"WHERE(a.CuttingOutTo = 'SEWING') AND(a.ProcessDate <= '"+ Dates + "') GROUP BY a.RO, c.SizeId, c.SizeNumber) AS CU ON HO.No = CU.RO LEFT OUTER JOIN "+
-											"(SELECT a.RO, c.SizeId, c.SizeNumber, SUM(b.Qty) AS JumlahFinish FROM   FinishingOut AS a INNER JOIN  FinishingOutDetail AS b ON a.FinishingOutId = b.FinishingOutId INNER JOIN Sizes AS c ON b.SizeId = c.SizeId "+
-											"WHERE(a.FinishingOutTo = 'GUDANG JADI') AND(a.ProcessDate <='" + Dates + "') GROUP BY a.RO, c.SizeId, c.SizeNumber) AS FOUT ON CU.RO = FOUT.RO AND CU.SizeId = FOUT.SizeId) AS HASIL GROUP BY Kode, komoditi, Satuan ORDER BY Kode, komoditi", conn))
+					using (SqlCommand cmd = new SqlCommand(" SELECT   Kode, komoditi, Satuan, SUM(JumlahCutting-jumlahFinish) AS WIP FROM    (SELECT HO.No, HO.Qty, HO.Kode, KOM.komoditi, LI.SizeNumber,LI.JumlahCutting, ISNULL(FOUT.JumlahFinish, 0) AS JumlahFinish, 'PCS' AS Satuan  FROM  HOrder AS HO INNER JOIN  Komoditi AS KOM ON HO.Kode = KOM.kode INNER JOIN  (SELECT  l.RO, c.SizeId, c.SizeNumber, SUM(d.Qty) AS JumlahCutting from cuttingout l join cuttingoutdetail d on d.CuttingNo=l.CuttingNo INNER JOIN Sizes AS c ON d.SizeId = c.SizeId   and CuttingOutTo='SEWING'  AND(l.ProcessDate <='" + Dates + "') GROUP BY l.RO, c.SizeId, c.SizeNumber) AS LI ON HO.No = LI.RO LEFT OUTER JOIN  (SELECT a.RO, c.SizeId, c.SizeNumber, SUM(b.Qty) AS JumlahFinish FROM   FinishingIn AS a INNER JOIN  FinishingInDetail AS b ON a.FinishingId = b.FinishingNo INNER JOIN Sizes AS c ON b.Size = c.SizeId   WHERE    (a.ProcessDate <='" + Dates + "') GROUP BY a.RO, c.SizeId, c.SizeNumber) AS FOUT ON LI.RO = FOUT.RO AND LI.SizeId = FOUT.SizeId    ) AS HASIL GROUP BY Kode, komoditi, Satuan ORDER BY Kode, komoditi  ", conn))
 					{
 						SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
 						DataSet dSet = new DataSet();
