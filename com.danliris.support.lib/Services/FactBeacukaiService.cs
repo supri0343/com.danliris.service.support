@@ -216,7 +216,7 @@ namespace com.danliris.support.lib.Services
 
         public IQueryable<FactBeacukaiViewModel> GetReportOUTQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
-            var array = new string[] { "BC 2.6.1", "BC 3.0", "BC 4.0", "BC 4.1", "BC 2.7", "BC 2.5" };
+            var array = new string[] { "BC 2.6.1", "BC 3.0", "BC 4.0", "BC 4.1", "BC 2.7", "BC 2.7 SUBKON", "BC 2.5" };
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             var Query = (from a in context.ViewFactBeacukai
