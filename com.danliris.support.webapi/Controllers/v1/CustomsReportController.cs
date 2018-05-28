@@ -22,7 +22,7 @@ namespace com.danliris.support.webapi.Controllers.v1
         private FactItemMutationService factItemMutationService { get; }
         private WIPService wipService { get; }
 		private FinishedGoodService finishedGoodService { get; }
-		private MachineMutationService machineMutationService { get; }
+		private MachineMutationService machineMutationService { get; } 
 
 		public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService)
 		{
@@ -571,6 +571,6 @@ namespace com.danliris.support.webapi.Controllers.v1
                     .Fail();
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
-        }
-    }
+        }		
+	}
 }
