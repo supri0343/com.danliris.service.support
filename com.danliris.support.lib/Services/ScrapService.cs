@@ -80,13 +80,13 @@ namespace com.danliris.support.lib.Services
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Sat", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Buku", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Buku", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(Double) });
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
             else

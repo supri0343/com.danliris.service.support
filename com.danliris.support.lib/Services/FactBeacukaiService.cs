@@ -116,9 +116,9 @@ namespace com.danliris.support.lib.Services
             result.Columns.Add(new DataColumn() { ColumnName = "Pemasok/Pengirim", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(Double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Sat", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(Decimal) });
             result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
@@ -301,9 +301,9 @@ namespace com.danliris.support.lib.Services
             result.Columns.Add(new DataColumn() { ColumnName = "Pemasok/Pengirim", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(Double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Sat", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(Decimal) });
             result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
