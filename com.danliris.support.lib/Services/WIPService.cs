@@ -68,7 +68,7 @@ namespace com.danliris.support.lib.Services
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "WIP", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "WIP", DataType = typeof(Double) });
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", "", ""); // to allow column name to be generated properly for empty data as template
             else {
