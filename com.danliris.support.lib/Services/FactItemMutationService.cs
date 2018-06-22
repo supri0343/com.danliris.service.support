@@ -300,11 +300,11 @@ namespace com.danliris.support.lib.Services
                     using (SqlCommand cmd = new SqlCommand(
                         "declare @StartDate datetime = '"+ DateFrom + "' "+
                         "declare @EndDate datetime = '"+ DateTo + "' " +
-						"declare @balanceDate1 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BP' and date <@StartDate and d.UnitCode=1  order by d.Date desc)  " +
-						"declare @balanceDate2 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BP' and date <@StartDate and d.UnitCode=2  order by d.Date desc)   " +
-						"declare @balanceDate3 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BP' and date <@StartDate and d.UnitCode=3  order by d.Date desc) " +
-						"declare @balanceDate4 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BP' and date <@StartDate and d.UnitCode=4  order by d.Date desc)  " +
-						"declare @balanceDate5 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BP' and date <@StartDate and d.UnitCode=5  order by d.Date desc)   " +
+						"declare @balanceDate1 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=1  order by d.Date desc)  " +
+						"declare @balanceDate2 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=2  order by d.Date desc)   " +
+						"declare @balanceDate3 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=3  order by d.Date desc) " +
+						"declare @balanceDate4 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=4  order by d.Date desc)  " +
+						"declare @balanceDate5 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=5  order by d.Date desc)   " +
 						"select data.unitCode,data.ItemCode,ItemName, UnitQtyName, Convert(float, SUM(BeginQty)) as BeginQty, Convert(float, SUM(ReceiptQty)) ReceiptQty, Convert(float, SUM(ExpenditureQty)) ExpenditureQty, Convert(float, SUM(AdjustmentQty)) AdjustmentQty, Convert(float, SUM(OpnameQty)) as OpnameQty into #balance from( " +
                         "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'Balance' and[ClassificationCode] = 'BP'and Date = @balanceDate1 "+
                         "union all "+
@@ -465,11 +465,11 @@ namespace com.danliris.support.lib.Services
                     using (SqlCommand cmd = new SqlCommand(
                         "declare @StartDate datetime = '" + DateFrom + "' " +
                         "declare @EndDate datetime = '" + DateTo + "' " +
-						"declare @balanceDate1 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BB' and date <@StartDate and d.UnitCode=1  order by d.Date desc)  " +
-						"declare @balanceDate2 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BB' and date <@StartDate and d.UnitCode=2  order by d.Date desc)   " +
-						"declare @balanceDate3 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BB' and date <@StartDate and d.UnitCode=3  order by d.Date desc) " +
-						"declare @balanceDate4 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BB' and date <@StartDate and d.UnitCode=4  order by d.Date desc)  " +
-						"declare @balanceDate5 datetime=(select top(1) d.Date from FactItemMutation d join ITEM_CATEGORY i on i.ItemCode=d.ItemCode join DimCategory c on c.CategoryId=i.CategoryId where ClassificationId='BB' and date <@StartDate and d.UnitCode=5  order by d.Date desc)   " +
+						"declare @balanceDate1 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=1  order by d.Date desc)  " +
+						"declare @balanceDate2 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=2  order by d.Date desc)   " +
+						"declare @balanceDate3 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=3  order by d.Date desc) " +
+						"declare @balanceDate4 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=4  order by d.Date desc)  " +
+						"declare @balanceDate5 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=5  order by d.Date desc)   " +
                         "select data.unitCode,data.ItemCode,ItemName, UnitQtyName, Convert(float, SUM(BeginQty)) as BeginQty, Convert(float, SUM(ReceiptQty)) ReceiptQty, Convert(float, SUM(ExpenditureQty)) ExpenditureQty, Convert(float, SUM(AdjustmentQty)) AdjustmentQty, Convert(float, SUM(OpnameQty)) as OpnameQty into #balance from( " +
                         "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'Balance' and[ClassificationCode] = 'BB'and Date = @balanceDate1 " +
                         "union all " +
