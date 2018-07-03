@@ -34,8 +34,16 @@ namespace com.danliris.support.lib.Services
 
         public IQueryable<FactBeacukaiViewModel> GetReportINQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
-            var array = new string[] { "BC 262", "BC 23", "BC 40", "BC 27"};
-            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            var array = new string[] { "BC 262", "BC 23", "BC 40", "BC 2.7"};
+			if (type == "BC 2.6.2") 
+			{ type = "BC 262"; }
+			else if (type == "BC 2.3")
+			{ type = "BC 23"; }
+			else if (type == "BC 4.0")
+			{ type = "BC 40"; }
+			else if (type == "BC 2.7")
+			{ type = "BC 27"; }
+			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             var Query = (from a in context.ViewFactBeacukai
                          where a.BCDate.AddHours(offset).Date >= DateFrom.Date
@@ -216,8 +224,16 @@ namespace com.danliris.support.lib.Services
 
         public IQueryable<FactBeacukaiViewModel> GetReportOUTQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
-            var array = new string[] { "BC 2.6.1", "BC 3.0", "BC 4.0", "BC 4.1", "BC 2.7", "BC 2.7 SUBKON", "BC 2.5" };
-            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            var array = new string[] { "BC 261", "BC 30",  "BC 41", "BC 2.7", "BC 2.7 SUBKON", "BC 25" };
+			if (type == "BC 2.6.1")
+			{ type = "BC 261"; }
+			else if (type == "BC 3.0")
+			{ type = "BC 30"; }
+			else if (type == "BC 4.1")
+			{ type = "BC 41"; }
+			else if (type == "BC 2.5")
+			{ type = "BC 25"; }
+			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             var Query = (from a in context.ViewFactBeacukai
                          where a.BCDate.AddHours(offset).Date >= DateFrom.Date
