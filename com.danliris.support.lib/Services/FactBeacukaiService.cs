@@ -224,7 +224,7 @@ namespace com.danliris.support.lib.Services
 
         public IQueryable<FactBeacukaiViewModel> GetReportOUTQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
-            var array = new string[] { "BC 261", "BC 30",  "BC 41", "BC 2.7", "BC 2.7 SUBKON", "BC 25" };
+            var array = new string[] { "BC 261", "BC 3.0",  "BC 41", "BC 2.7", "BC 2.7 SUBKON", "BC 25" };
 			if (type == "BC 2.6.1")
 			{ type = "BC 261"; }
 			else if (type == "BC 3.0")
