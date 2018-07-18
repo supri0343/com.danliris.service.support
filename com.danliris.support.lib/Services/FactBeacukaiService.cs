@@ -228,7 +228,7 @@ namespace com.danliris.support.lib.Services
 			if (type == "BC 2.6.1")
 			{ type = "BC 261"; }
 			else if (type == "BC 3.0")
-			{ type = "BC 30"; }
+			{ type = "BC 3.0"; }
 			else if (type == "BC 4.1")
 			{ type = "BC 41"; }
 			else if (type == "BC 2.5")
