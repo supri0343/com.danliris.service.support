@@ -48,7 +48,7 @@ namespace com.danliris.support.lib.Services
             var Query = (from a in context.ViewFactBeacukai
                          where a.BCDate.AddHours(offset).Date >= DateFrom.Date
                              && a.BCDate.AddHours(offset).Date <= DateTo.Date
-                             && array.Contains(a.BCType)
+                             //&& array.Contains(a.BCType)
                              && a.BCType== (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
                          select new FactBeacukaiViewModel
                          {
