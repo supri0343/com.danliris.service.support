@@ -298,74 +298,41 @@ namespace com.danliris.support.lib.Services
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(
-                        "declare @StartDate datetime = '"+ DateFrom + "' "+
-                        "declare @EndDate datetime = '"+ DateTo + "' " +
-						"declare @balanceDate1 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=1  order by d.Date desc)  " +
-						"declare @balanceDate2 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=2  order by d.Date desc)   " +
-						"declare @balanceDate3 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=3  order by d.Date desc) " +
-						"declare @balanceDate4 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=4  order by d.Date desc)  " +
-						"declare @balanceDate5 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BP' and date <@StartDate and type='balance' and d.UnitCode=5  order by d.Date desc)   " +
-						"select data.unitCode,data.ItemCode,ItemName, UnitQtyName, Convert(float, SUM(BeginQty)) as BeginQty, Convert(float, SUM(ReceiptQty)) ReceiptQty, Convert(float, SUM(ExpenditureQty)) ExpenditureQty, Convert(float, SUM(AdjustmentQty)) AdjustmentQty, Convert(float, SUM(OpnameQty)) as OpnameQty into #balance from( " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'Balance' and[ClassificationCode] = 'BP'and Date = @balanceDate1 "+
-                        "union all "+
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'receipt' and[ClassificationCode] = 'BP' and(DATE > @balanceDate1 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode "+
-                        "union all "+
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'expenditure' and[ClassificationCode] = 'BP' and(DATE > @balanceDate1 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode "+
-                        "union all "+
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'Balance' and[ClassificationCode] = 'BP'and Date = @balanceDate2 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'receipt' and[ClassificationCode] = 'BP' and(DATE > @balanceDate2 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'expenditure' and[ClassificationCode] = 'BP' and(DATE > @balanceDate2 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'Balance' and[ClassificationCode] = 'BP'and Date = @balanceDate3 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'receipt' and[ClassificationCode] = 'BP' and(DATE > @balanceDate3 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'expenditure' and[ClassificationCode] = 'BP' and(DATE > @balanceDate3 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'Balance' and[ClassificationCode] = 'BP'and Date = @balanceDate4 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'receipt' and[ClassificationCode] = 'BP' and(DATE > @balanceDate4 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'expenditure' and[ClassificationCode] = 'BP' and(DATE > @balanceDate4 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'Balance' and[ClassificationCode] = 'BP'and Date = @balanceDate5 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'receipt' and[ClassificationCode] = 'BP' and(DATE > @balanceDate5 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'expenditure' and[ClassificationCode] = 'BP' and(DATE > @balanceDate5 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode "+
+					   "declare @StartDate datetime = '" + DateFrom + "' " +
+						"declare @EndDate datetime = '" + DateTo + "' " +
+						" select data.unitCode,data.ItemCode,ItemName, UnitQtyName, Convert(float, SUM(BeginQty)) as BeginQty, Convert(float, SUM(ReceiptQty)) ReceiptQty, Convert(float, SUM(ExpenditureQty)) ExpenditureQty, Convert(float, SUM(AdjustmentQty)) AdjustmentQty, Convert(float, SUM(OpnameQty)) as OpnameQty into #balance from(  " +
+
+						" select unitCode, ItemCode, ItemName, UnitQtyName, (Quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'Balance' and[ClassificationCode] = 'BP' " +
+
+						" union all " +
+
+						" select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'receipt' and[ClassificationCode] = 'BP' and(date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode " +
+
+						" union all " +
+
+						" select unitCode, ItemCode, ItemName, UnitQtyName, -SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'expenditure' and[ClassificationCode] = 'BP' and(date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode  " +
+
+
 						"union all " +
-						"select unitCode,ItemCode, ItemName,UnitQtyName,SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where  TYPE = 'receipt correction' and[ClassificationCode] = 'BP' and(DATE > '2018-05-31' and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode) as data " +
-						"group by ItemCode, ItemName,UnitQtyName,unitCode " +
-                        "select data.ItemCode,ItemName, UnitQtyName,round(SUM(BeginQty), 2) as BeginQty,SUM(ReceiptQty) ReceiptQty, SUM(ExpenditureQty)ExpenditureQty,SUM(AdjustmentQty) AdjustmentQty, SUM(OpnameQty) as OpnameQty from( "+
-                        "select * from #balance " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +							"union all " +
+						" select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] = 'BP' and(DATE > '2018-05-31' and date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode) as data " +
+
+					   " group by ItemCode, ItemName,UnitQtyName,unitCode " +
+					   " select data.ItemCode,ItemName, UnitQtyName,round(SUM(BeginQty), 2) as BeginQty,SUM(ReceiptQty) ReceiptQty, SUM(ExpenditureQty)ExpenditureQty,SUM(AdjustmentQty) AdjustmentQty, SUM(OpnameQty) as OpnameQty into #tempData from( " +
+
+					   " select *from #balance  " +
+					   "union all " +
+
+						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
+						"union all " +
+					   "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode " +
+
+						"union all " +
 						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty,case when sum(Quantity) > 0 then sum(Quantity) else 0 end as ReceiptQty,case when sum(Quantity) < 0 then(-1) * sum(Quantity) else 0 end as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] = 'BP' and(DATE between @StartDate and @EndDate) group by ItemCode, ItemName, UnitQtyName, unitCode) as data " +
 						"group by itemcode,itemname, unitqtyname " +
-                        "order by itemcode " +
-						"select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData   " +
+						"order by itemcode " +
+						"select * from (select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData   " +
 						"union all " +
-						"select '','','', sum(BeginQty),sum(ReceiptQty),sum(ExpenditureQty),sum(AdjustmentQty),sum(OpnameQty),sum(beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty),0  from #tempData " +
+						"select '','','', sum(BeginQty),sum(ReceiptQty),sum(ExpenditureQty),sum(AdjustmentQty),sum(OpnameQty),sum(beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty),0  from #tempData ) AS DATA " +
 						"drop table #tempData " +
 						"drop table #balance", conn))
                     {
@@ -452,7 +419,7 @@ namespace com.danliris.support.lib.Services
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
 
-        public IQueryable<FactMutationItemViewModel> GetCentralItemBBReport(DateTime? dateFrom, DateTime? dateTo, int offset)
+        public IQueryable<FactMutationItemViewModel> GetCentralItemBBReport(DateTime? dateFrom, DateTime? dateTo,int page,int size, int offset)
         {
             DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime d2 = dateTo == null ? DateTime.Now : (DateTime)dateTo;
@@ -468,75 +435,42 @@ namespace com.danliris.support.lib.Services
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(
+					
                         "declare @StartDate datetime = '" + DateFrom + "' " +
                         "declare @EndDate datetime = '" + DateTo + "' " +
-						"declare @balanceDate1 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=1  order by d.Date desc)  " +
-						"declare @balanceDate2 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=2  order by d.Date desc)   " +
-						"declare @balanceDate3 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=3  order by d.Date desc) " +
-						"declare @balanceDate4 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=4  order by d.Date desc)  " +
-						"declare @balanceDate5 datetime=(select top(1) d.Date from FactItemMutation d  where ClassificationCode='BB' and date <@StartDate and type='balance' and d.UnitCode=5  order by d.Date desc)   " +
-                        "select data.unitCode,data.ItemCode,ItemName, UnitQtyName, Convert(float, SUM(BeginQty)) as BeginQty, Convert(float, SUM(ReceiptQty)) ReceiptQty, Convert(float, SUM(ExpenditureQty)) ExpenditureQty, Convert(float, SUM(AdjustmentQty)) AdjustmentQty, Convert(float, SUM(OpnameQty)) as OpnameQty into #balance from( " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'Balance' and[ClassificationCode] = 'BB'and Date = @balanceDate1 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'receipt' and[ClassificationCode] = 'BB' and(DATE > @balanceDate1 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'expenditure' and[ClassificationCode] = 'BB' and(DATE > @balanceDate1 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'Balance' and[ClassificationCode] = 'BB'and Date = @balanceDate2 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'receipt' and[ClassificationCode] = 'BB' and(DATE > @balanceDate2 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'expenditure' and[ClassificationCode] = 'BB' and(DATE > @balanceDate2 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'Balance' and[ClassificationCode] = 'BB'and Date = @balanceDate3 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'receipt' and[ClassificationCode] = 'BB' and(DATE > @balanceDate3 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'expenditure' and[ClassificationCode] = 'BB' and(DATE > @balanceDate3 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'Balance' and[ClassificationCode] = 'BB'and Date = @balanceDate4 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'receipt' and[ClassificationCode] = 'BB' and(DATE > @balanceDate4 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'expenditure' and[ClassificationCode] = 'BB' and(DATE > @balanceDate4 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName, (Quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'Balance' and[ClassificationCode] = 'BB'and Date = @balanceDate5 " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'receipt' and[ClassificationCode] = 'BB' and(DATE > @balanceDate5 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
-                        "union all " +
-                        "select unitCode,ItemCode, ItemName,UnitQtyName,-SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'expenditure' and[ClassificationCode] = 'BB' and(DATE > @balanceDate5 and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode " +
+						" select data.unitCode,data.ItemCode,ItemName, UnitQtyName, Convert(float, SUM(BeginQty)) as BeginQty, Convert(float, SUM(ReceiptQty)) ReceiptQty, Convert(float, SUM(ExpenditureQty)) ExpenditureQty, Convert(float, SUM(AdjustmentQty)) AdjustmentQty, Convert(float, SUM(OpnameQty)) as OpnameQty into #balance from(  " +
+
+						" select unitCode, ItemCode, ItemName, UnitQtyName, (Quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'Balance' and[ClassificationCode] = 'BB' " +
+
+						" union all " +
+
+						" select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'receipt' and[ClassificationCode] = 'BB' and(date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode " +
+
+						" union all " +
+
+						" select unitCode, ItemCode, ItemName, UnitQtyName, -SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'expenditure' and[ClassificationCode] = 'BB' and(date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode  " +
+
+
 						"union all " +
-						"select unitCode,ItemCode, ItemName,UnitQtyName,SUM(quantity) as BeginQty,0 as ReceiptQty,0 as ExpenditureQty,0 as AdjustmentQty,0 as OpnameQty from FactItemMutation where  TYPE = 'receipt correction' and[ClassificationCode] = 'BB' and(DATE > '2018-05-31' and date < @StartDate) group by ItemCode, ItemName,UnitQtyName ,unitCode) as data " +
-                        "group by ItemCode, ItemName,UnitQtyName,unitCode " +
-						"select data.ItemCode,ItemName, UnitQtyName,round(SUM(BeginQty), 2) as BeginQty,SUM(ReceiptQty) ReceiptQty, SUM(ExpenditureQty)ExpenditureQty,SUM(AdjustmentQty) AdjustmentQty, SUM(OpnameQty) as OpnameQty into #tempData from( " +
-                        "select * from #balance " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 1 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 2 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 3 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 4 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
-                        "union all " +
-                        "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where UnitCode = 5 and TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
+						" select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] = 'BB' and(DATE > '2018-05-31' and date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode) as data " +
+
+					   " group by ItemCode, ItemName,UnitQtyName,unitCode " +
+					   " select data.ItemCode,ItemName, UnitQtyName,round(SUM(BeginQty), 2) as BeginQty,SUM(ReceiptQty) ReceiptQty, SUM(ExpenditureQty)ExpenditureQty,SUM(AdjustmentQty) AdjustmentQty, SUM(OpnameQty) as OpnameQty into #tempData from( " +
+
+					   " select *from #balance  " +
+					   "union all " +
+
+						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
+						"union all " +
+					   "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BB' group by ItemCode, ItemName, UnitQtyName, unitCode " +
+
 						"union all " +
 						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty,case when sum(Quantity) > 0 then sum(Quantity) else 0 end as ReceiptQty,case when sum(Quantity) < 0 then(-1) * sum(Quantity) else 0 end as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] = 'BB' and(DATE between @StartDate and @EndDate) group by ItemCode, ItemName, UnitQtyName, unitCode) as data " +
                         "group by itemcode,itemname, unitqtyname " +
                         "order by itemcode " +
-						"select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData   " +
+						"select * from (select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData   " +
 						"union all " +
-						"select '','','', sum(BeginQty),sum(ReceiptQty),sum(ExpenditureQty),sum(AdjustmentQty),sum(OpnameQty),sum(beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty),0  from #tempData " +
+						"select '','','', sum(BeginQty),sum(ReceiptQty),sum(ExpenditureQty),sum(AdjustmentQty),sum(OpnameQty),sum(beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty),0  from #tempData ) AS DATA " +
 						"drop table #tempData " +
 						"drop table #balance", conn))
                     {
@@ -576,7 +510,7 @@ namespace com.danliris.support.lib.Services
 
         public Tuple<List<FactMutationItemViewModel>, int> GetReportBBCentral(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
         {
-            var Query = GetCentralItemBBReport(dateFrom, dateTo, offset);
+            var Query = GetCentralItemBBReport(dateFrom, dateTo,page,size, offset);
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             if (OrderDictionary.Count.Equals(0))
@@ -600,9 +534,9 @@ namespace com.danliris.support.lib.Services
             return Tuple.Create(Data, TotalData);
         }
 
-        public MemoryStream GenerateExcelBBCentral(DateTime? dateFrom, DateTime? dateTo, int offset)
+        public MemoryStream GenerateExcelBBCentral(DateTime? dateFrom, DateTime? dateTo,int page,int size, int offset)
         {
-            var Query = GetCentralItemBBReport(dateFrom, dateTo, offset);
+            var Query = GetCentralItemBBReport(dateFrom, dateTo,page,size, offset);
             //Query = Query.OrderBy(b => b.ItemCode);
             DataTable result = new DataTable();
 			DataRow row;
