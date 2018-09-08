@@ -419,7 +419,7 @@ namespace com.danliris.support.lib.Services
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
 
-        public IQueryable<FactMutationItemViewModel> GetCentralItemBBReport(DateTime? dateFrom, DateTime? dateTo,int page,int size, int offset)
+        public IQueryable<FactMutationItemViewModel> GetCentralItemBBReport(DateTime? dateFrom, DateTime? dateTo,  int offset)
         {
             DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime d2 = dateTo == null ? DateTime.Now : (DateTime)dateTo;
@@ -510,7 +510,7 @@ namespace com.danliris.support.lib.Services
 
         public Tuple<List<FactMutationItemViewModel>, int> GetReportBBCentral(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
         {
-            var Query = GetCentralItemBBReport(dateFrom, dateTo,page,size, offset);
+            var Query = GetCentralItemBBReport(dateFrom, dateTo, offset);
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             if (OrderDictionary.Count.Equals(0))
@@ -534,9 +534,9 @@ namespace com.danliris.support.lib.Services
             return Tuple.Create(Data, TotalData);
         }
 
-        public MemoryStream GenerateExcelBBCentral(DateTime? dateFrom, DateTime? dateTo,int page,int size, int offset)
+        public MemoryStream GenerateExcelBBCentral(DateTime? dateFrom, DateTime? dateTo,  int offset)
         {
-            var Query = GetCentralItemBBReport(dateFrom, dateTo,page,size, offset);
+            var Query = GetCentralItemBBReport(dateFrom, dateTo, offset);
             //Query = Query.OrderBy(b => b.ItemCode);
             DataTable result = new DataTable();
 			DataRow row;

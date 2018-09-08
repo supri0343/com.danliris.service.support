@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.danliris.support.webapi", "com.danliris.support.webapi\com.danliris.support.webapi.csproj", "{ED3FDD1F-EE76-45E8-AB7B-D9B6851D8D5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.danliris.support.webapi", "com.danliris.support.webapi\com.danliris.support.webapi.csproj", "{ED3FDD1F-EE76-45E8-AB7B-D9B6851D8D5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.danliris.support.lib", "com.danliris.support.lib\com.danliris.support.lib.csproj", "{8ADA5275-3713-4A0B-A4D3-FB6FF0296185}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.danliris.support.lib", "com.danliris.support.lib\com.danliris.support.lib.csproj", "{8ADA5275-3713-4A0B-A4D3-FB6FF0296185}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
