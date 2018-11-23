@@ -16,6 +16,8 @@ using com.danliris.support.lib.Helpers;
 using com.danliris.support.lib.Models;
 using com.danliris.support.lib.ViewModel;
 using OfficeOpenXml;
+using System.Linq.Dynamic.Core;
+using System.Reflection;
 
 namespace com.danliris.support.lib.Services
 {
@@ -414,5 +416,63 @@ namespace com.danliris.support.lib.Services
             return stream;
             //return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
-    }
+
+		public IQueryable<BEACUKAI_TEMP> GetBeacukaiQuery(string no, int offset)
+		{
+			
+			var Query = (from a in context.BeacukaiTemp
+						 where  a.BCNo.Contains(no) && (a.JenisDokumen == "SURAT JALAN" || a.JenisDokumen == "INVOICE" || a.JenisDokumen == "PACKING LIST") 
+						 select a);
+			return Query;
+		}
+		public Tuple<List<BEACUKAI_TEMP>, int> GetBeacukai(string no, int page, int size, string Order, int offset)
+		{
+			var Query = GetBeacukaiQuery(no,  offset);
+
+			Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
+			var q = Query.ToList();
+			if (OrderDictionary.Count.Equals(0))
+			{
+				Query = Query.OrderBy(b => b.TglBCNo).ThenBy(b => b.BCNo);
+			}
+			else
+			{
+				string Key = OrderDictionary.Keys.First();
+				string OrderType = OrderDictionary[Key];
+
+				//Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
+			}
+			 
+			Query = q.AsQueryable();
+
+
+			Pageable<BEACUKAI_TEMP> pageable = new Pageable<BEACUKAI_TEMP>(Query, page - 1, size);
+			List<BEACUKAI_TEMP> Data = pageable.Data.ToList<BEACUKAI_TEMP>();
+
+			int TotalData = pageable.TotalCount;
+
+			return Tuple.Create(Data, TotalData);
+		}
+ 
+
+		public IQueryable<ViewFactBeacukai> GetBEACUKAI_TEMPs( string Keyword = null, string Filter = "{}")
+		{
+			string[] bcType = { "BC 262", "BC 23", "BC 40", "BC 27" };
+			IQueryable<ViewFactBeacukai> Query = this.context.ViewFactBeacukai.Where(s=> bcType.Contains(s.BCType));
+			Query = Query
+				.Select(p => new ViewFactBeacukai
+				{
+					 
+					BCNo=p.BCNo,
+					BonNo = p.BonNo,
+					BCDate=p.BCDate,
+					BCType=p.BCType
+				}).Where(s=>s.BCNo.Contains(Keyword));
+
+			return Query.Distinct();
+		}
+
+
+		
+	}
 }

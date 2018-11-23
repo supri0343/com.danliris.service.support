@@ -571,6 +571,30 @@ namespace com.danliris.support.webapi.Controllers.v1
                     .Fail();
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
-        }		
+        }
+
+		[HttpGet("beacukaitemp")]
+		public IActionResult GetBeacukai(string Keyword = "", string Filter = "{}")
+		{
+			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+			string accept = Request.Headers["Accept"];
+
+			try
+			{
+				var data = factBeacukaiService.GetBEACUKAI_TEMPs(Keyword,Filter);
+				return Ok(new
+				{
+					apiVersion = ApiVersion,
+					data = data
+				});
+			}
+			catch (Exception e)
+			{
+				Dictionary<string, object> Result =
+					new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+					.Fail();
+				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+			}
+		}
 	}
 }
