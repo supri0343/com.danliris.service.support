@@ -9,7 +9,8 @@ namespace com.danliris.support.lib.ViewModel
         public string unitCode { get; set; }
         public string ItemCode { get; set; }
         public string ItemName { get; set; }
-        public string UnitQtyName { get; set; }
+		public string SupplierType { get; set; }
+		public string UnitQtyName { get; set; }
         public string BeginQty { get; set; }
         public string ReceiptQty { get; set; }
         public string ExpenditureQty { get; set; }
