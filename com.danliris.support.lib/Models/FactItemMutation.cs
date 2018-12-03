@@ -19,6 +19,7 @@ namespace com.danliris.support.lib.Models
         public double? Quantity { get; set; }
         public string UnitQtyCode { get; set; }
         public string UnitQtyName { get; set; }
+		public string SupplierType { get; set; }
         public string ClassificationCode { get; set; }
         public string ClassificationName { get; set; }
         public int? StockId { get; set; }
