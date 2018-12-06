@@ -34,11 +34,11 @@ namespace com.danliris.support.lib.Services
 					using (SqlCommand cmd = new SqlCommand("declare @tglBalance datetime set @tglBalance=(select top 1 BalanceDate from BalanceStockProduction where BalanceDate<'" + DateFrom+"' order by BalanceDate desc) "+
 							"if @tglBalance is null	set @tglBalance = CAST(GETDATE() as datetime) "+
 							"select UnitCode, RO, ComodityID, SizeId, Quantity, UnitQuantity, TotalPrice into #tmp from BalanceStockProduction where BalanceDate=@tglBalance select HASIL.KodeBarang, HASIL.NamaBarang, HASIL.Satuan,convert(float, SUM(HASIL.SaldoAwal)) as SaldoAwal, convert(float,SUM(HASIL.Pemasukan)) as Pemasukan, convert(float,SUM(HASIL.Pengeluaran)) as Pengeluaran,convert(float,SUM(HASIL.Penyesuaian)) as Penyesuaian, convert(float,SUM(HASIL.SaldoBuku)) as SaldoBuku, convert(float,SUM(HASIL.StockOpname)) as StockOpname, convert(float,SUM(HASIL.Selisih) ) as Selisih from (select DATA.KodeBarang, DATA.NamaBarang, DATA.Satuan, SUM(DATA.SaldoAwal) as SaldoAwal, SUM(DATA.Pemasukan) as Pemasukan, SUM(DATA.Pengeluaran) as Pengeluaran, SUM(DATA.Penyesuaian) as Penyesuaian, SUM(DATA.SaldoBuku) as SaldoBuku, SUM(DATA.StockOpname) as StockOpname, SUM(DATA.Selisih) as Selisih from (select TERIMA.KodeBarang, TERIMA.NamaBarang, TERIMA.Satuan, TERIMA.SaldoAwal, TERIMA.Pemasukan, TERIMA.Pengeluaran, TERIMA.Penyesuaian,(TERIMA.SaldoAwal + (TERIMA.Pemasukan - TERIMA.Pengeluaran) + TERIMA.Penyesuaian) as SaldoBuku, 0 as StockOpname, 0 as Selisih from (select KodeBarang,   NamaBarang, 'PCS' as Satuan, 0 as SaldoAwal,QuantityFinOut, QuantityStockHistory, QuantityStockHistory as Pemasukan, 0 as Pengeluaran, 0 as Penyesuaian " +
-							"from FactFinishingOutDetail where /* ProcessDate >= '" + DateFrom+ "' and*/  ProcessDate < '"+DateTo+"' " +
+							"from FactFinishingOutDetail where ProcessDate >= '" + DateFrom+ "' and ProcessDate < '"+DateTo+"' " +
 							"union all " +
 							"select  KodeBarang,  NamaBarang, 'PCS' as Satuan, (QuantityStockHistory) as SaldoAwal, 0, 0, 0 as Pemasukan, 0 as Pengeluaran, 0 as Penyesuaian " +
 							"from FactFinishingOutDetail " +
-                            "where /*ProcessDate >= DATEADD(day, 1, @tglBalance) and*/   ProcessDate <= DATEADD(day, -1, '" + DateFrom+"') " +
+                            "where ProcessDate >= DATEADD(day, 1, @tglBalance) and   ProcessDate <= DATEADD(day, -1, '" + DateFrom+"') " +
 							"union all " +
 							"select b.ComodityCode as KodeBarang, b.ComodityName as NamaBarang, 'PCS' as Satuan, a.Quantity as SaldoAwal, 0, 0, 0 as Pemasukan, 0 as Pengeluaran, 0 as Penyesuaian " +
 							"from #tmp a inner join Comodity b on a.ComodityID=b.ComodityID " +
@@ -52,7 +52,7 @@ namespace com.danliris.support.lib.Services
 							"where  ProcessDate >= '"+DateFrom+ "' and  ProcessDate <= '"+DateTo+"' " +
 							"union all " +
 							"select   KodeBarang,   NamaBarang, 'PCS' as Satuan, -(Qty) as SaldoAwal, 0, 0 as Pemasukan, 0 as Pengeluaran, 0 as Penyesuaian " +
-                            "from FactExpenditureGood  where /*ProcessDate >= DATEADD(day, 1, @tglBalance) and*/   ProcessDate <= DATEADD(day, -1, '" + DateFrom + "'))KELUAR )DATA2 group by DATA2.KodeBarang, DATA2.NamaBarang, DATA2.Satuan )HASIL group by HASIL.KodeBarang, HASIL.NamaBarang, HASIL.Satuan " +
+                            "from FactExpenditureGood  where ProcessDate >= DATEADD(day, 1, @tglBalance) and  ProcessDate <= DATEADD(day, -1, '" + DateFrom + "'))KELUAR )DATA2 group by DATA2.KodeBarang, DATA2.NamaBarang, DATA2.Satuan )HASIL group by HASIL.KodeBarang, HASIL.NamaBarang, HASIL.Satuan " +
 							"order by HASIL.KodeBarang drop table #tmp    ", conn))
 					{
 						SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
