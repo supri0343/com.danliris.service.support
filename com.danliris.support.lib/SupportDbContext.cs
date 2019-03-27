@@ -31,7 +31,11 @@ namespace com.danliris.support.lib
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.BCId)
+				entity.Property(e => e.Tipe)
+				   .HasMaxLength(100)
+				   .IsUnicode(false);
+
+				entity.Property(e => e.BCId)
                     .HasColumnName("BCId")
                     .HasMaxLength(50)
                     .IsUnicode(false);

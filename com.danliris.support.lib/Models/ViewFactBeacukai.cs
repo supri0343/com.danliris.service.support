@@ -11,10 +11,11 @@ namespace com.danliris.support.lib.Models
         public string DetailshippingOrderId { get; set; }
         public string BCId { get; set; }
         public string BCNo { get; set; }
-        public string BCType { get; set; }
+		public string Tipe { get; set; }
+		public string BCType { get; set; }
         public DateTime BCDate { get; set; }
         public string BonNo { get; set; }
-        public DateTime BonDate { get; set; }
+        public DateTime? BonDate { get; set; }
         public string SupllierCode { get; set; }
         public string SupplierName { get; set; }
         public string ItemCode { get; set; }
