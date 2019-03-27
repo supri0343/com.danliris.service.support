@@ -36,7 +36,7 @@ namespace com.danliris.support.lib.Services
 
         public IQueryable<FactBeacukaiViewModel> GetReportINQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
-            var array = new string[] { "BC 262", "BC 23", "BC 40", "BC 2.7"};
+            var array = new string[] { "BC 262", "BC 23", "BC 40", "BC 27"};
 			if (type == "BC 2.6.2") 
 			{ type = "BC 262"; }
 			else if (type == "BC 2.3")
@@ -50,14 +50,15 @@ namespace com.danliris.support.lib.Services
             var Query = (from a in context.ViewFactBeacukai
                          where a.BCDate.AddHours(offset).Date >= DateFrom.Date
                              && a.BCDate.AddHours(offset).Date <= DateTo.Date
-                             //&& array.Contains(a.BCType)
+							 && a.Tipe=="in"
+                             && array.Contains(a.BCType)
                              && a.BCType== (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
                          select new FactBeacukaiViewModel
                          {
                              BCNo = a.BCNo,
                              BCType= a.BCType,
                              BCDate=a.BCDate,
-                             BonDate=a.BonDate,
+                             BonDate=a.BonDate.GetValueOrDefault(),
                              BonNo=a.BonNo,
                              ItemCode=a.ItemCode,
                              ItemName=a.ItemName,
@@ -226,7 +227,7 @@ namespace com.danliris.support.lib.Services
 
         public IQueryable<FactBeacukaiViewModel> GetReportOUTQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
-            var array = new string[] { "BC 261", "BC 3.0",  "BC 41", "BC 2.7", "BC 2.7 SUBKON", "BC 25" };
+            var array = new string[] { "BC 261", "BC 3.0",  "BC 41", "BC 27", "BC 25" };
 			if (type == "BC 2.6.1")
 			{ type = "BC 261"; }
 			else if (type == "BC 3.0")
@@ -235,20 +236,23 @@ namespace com.danliris.support.lib.Services
 			{ type = "BC 41"; }
 			else if (type == "BC 2.5")
 			{ type = "BC 25"; }
+			else if (type == "BC 2.7")
+			{ type = "BC 27"; }
 			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             var Query = (from a in context.ViewFactBeacukai
-                         where a.BCDate.AddHours(offset).Date >= DateFrom.Date
-                             && a.BCDate.AddHours(offset).Date <= DateTo.Date
-                             && array.Contains(a.BCType)
-                             && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
+						 where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+							 && a.BCDate.AddHours(offset).Date <= DateTo.Date
+							 && array.Contains(a.BCType)
+							 && a.Tipe == "out"
+							 && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
 
-                         select new FactBeacukaiViewModel
-                         {
+						 select new FactBeacukaiViewModel
+						 {
                              BCNo = a.BCNo,
                              BCType = a.BCType,
                              BCDate = a.BCDate,
-                             BonDate = a.BonDate,
+                             BonDate = a.BonDate.GetValueOrDefault(),
                              BonNo = a.BonNo,
                              ItemCode = a.ItemCode,
                              ItemName = a.ItemName,
