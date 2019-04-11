@@ -31,47 +31,55 @@ namespace com.danliris.support.lib.Services
 					new SqlConnection(connectionString))
 				{
 					conn.Open();
-					using (SqlCommand cmd = new SqlCommand("declare @tglBalance datetime set @tglBalance=(select top 1 BalanceDate from BalanceStockProduction where BalanceDate<'" + DateFrom+"' order by BalanceDate desc) "+
-							"if @tglBalance is null	set @tglBalance = CAST(GETDATE() as datetime) "+
-							"select UnitCode, RO, ComodityID, SizeId, Quantity, UnitQuantity, TotalPrice into #tmp from BalanceStockProduction where BalanceDate=@tglBalance select HASIL.KodeBarang, HASIL.NamaBarang, HASIL.Satuan,convert(float, SUM(HASIL.SaldoAwal)) as SaldoAwal, convert(float,SUM(HASIL.Pemasukan)) as Pemasukan, convert(float,SUM(HASIL.Pengeluaran)) as Pengeluaran,convert(float,SUM(HASIL.Penyesuaian)) as Penyesuaian, convert(float,SUM(HASIL.SaldoBuku)) as SaldoBuku, convert(float,SUM(HASIL.StockOpname)) as StockOpname, convert(float,SUM(HASIL.Selisih) ) as Selisih from (select DATA.KodeBarang, DATA.NamaBarang, DATA.Satuan, SUM(DATA.SaldoAwal) as SaldoAwal, SUM(DATA.Pemasukan) as Pemasukan, SUM(DATA.Pengeluaran) as Pengeluaran, SUM(DATA.Penyesuaian) as Penyesuaian, SUM(DATA.SaldoBuku) as SaldoBuku, SUM(DATA.StockOpname) as StockOpname, SUM(DATA.Selisih) as Selisih from (select TERIMA.KodeBarang, TERIMA.NamaBarang, TERIMA.Satuan, TERIMA.SaldoAwal, TERIMA.Pemasukan, TERIMA.Pengeluaran, TERIMA.Penyesuaian,(TERIMA.SaldoAwal + (TERIMA.Pemasukan - TERIMA.Pengeluaran) + TERIMA.Penyesuaian) as SaldoBuku, 0 as StockOpname, 0 as Selisih from (select KodeBarang,   NamaBarang, 'PCS' as Satuan, 0 as SaldoAwal,QuantityFinOut, QuantityStockHistory, QuantityStockHistory as Pemasukan, 0 as Pengeluaran, 0 as Penyesuaian " +
-							"from FactFinishingOutDetail where ProcessDate >= '" + DateFrom+ "' and ProcessDate <= '"+DateTo+"' " +
-							"union all " +
-							"select  KodeBarang,  NamaBarang, 'PCS' as Satuan, (QuantityFinOut) as SaldoAwal, 0, 0, 0 as Pemasukan, 0 as Pengeluaran, 0 as Penyesuaian " +
-							"from FactFinishingOutDetail " +
-                            "where ProcessDate >= DATEADD(day, 1, @tglBalance) and   ProcessDate <  '" + DateFrom+"' " +
-							"union all " +
-							"select b.ComodityCode as KodeBarang, b.ComodityName as NamaBarang, 'PCS' as Satuan, a.Quantity as SaldoAwal, 0, 0, 0 as Pemasukan, 0 as Pengeluaran, 0 as Penyesuaian " +
-							"from #tmp a inner join Comodity b on a.ComodityID=b.ComodityID " +
-							")TERIMA)DATA group by DATA.KodeBarang, DATA.NamaBarang, DATA.Satuan " +
-							"union all " +
-							"select DATA2.KodeBarang, DATA2.NamaBarang, DATA2.Satuan, SUM(DATA2.SaldoAwal) as SaldoAwal, SUM(DATA2.Pemasukan) as Pemasukan, SUM(DATA2.Pengeluaran) as Pengeluaran, " +
-							"SUM(DATA2.Penyesuaian) as Penyesuaian, SUM(DATA2.SaldoBuku) as SaldoBuku, SUM(DATA2.StockOpname) as StockOpname, SUM(DATA2.Selisih) as Selisih " +
-							"from(select KELUAR.KodeBarang, KELUAR.NamaBarang, KELUAR.Satuan, KELUAR.SaldoAwal, KELUAR.Pemasukan, KELUAR.Pengeluaran, KELUAR.Penyesuaian,(KELUAR.SaldoAwal + (KELUAR.Pemasukan - KELUAR.Pengeluaran) + KELUAR.Penyesuaian) as SaldoBuku, 0 as StockOpname, 0 as Selisih " +
-							"from(select  KodeBarang,   NamaBarang, 'PCS' as Satuan, 0 as SaldoAwal,  Qty, 0 as Pemasukan, (Qty) as Pengeluaran, 0 as Penyesuaian " +
-							"from FactExpenditureGood " +
-							"where  ProcessDate >= '"+DateFrom+ "' and  ProcessDate <= '"+DateTo+"' " +
-							"union all " +
-							"select   KodeBarang,   NamaBarang, 'PCS' as Satuan, -(Qty) as SaldoAwal, 0, 0 as Pemasukan, 0 as Pengeluaran, 0 as Penyesuaian " +
-                            "from FactExpenditureGood  where ProcessDate >= DATEADD(day, 1, @tglBalance) and  ProcessDate < '" + DateFrom + "')KELUAR )DATA2 group by DATA2.KodeBarang, DATA2.NamaBarang, DATA2.Satuan )HASIL group by HASIL.KodeBarang, HASIL.NamaBarang, HASIL.Satuan " +
-							"order by HASIL.KodeBarang drop table #tmp    ", conn))
+					using (SqlCommand cmd = new SqlCommand(
+					"declare @DateFrom datetime = '" + DateFrom + "' " +
+					"declare @DateTo datetime = '" + DateTo + "' " +
+					" select distinct FinishingFrom,FinishingInDetailId into #fin from FinishingIn c join FinishingInDetail d on c.FinishingId = d.FinishingNo where FinishingInDetailId in (select d.ReferenceFinishingInDetailId from FactFinishingDetail d where d.ProcessDate >=@DateFrom)  " +
+					" select comodityCode KodeBarang,comodityname NamaBarang,sum(saldoqtyFin ) SaldoAwal ,sum(finoutSubkon +retur +QtyFin) Pemasukan,sum(QtyExport+QtySample+QtyOther+AdjFin) Pengeluaran,'PCS' UnitQtyName,0 as Penyesuaian,0 as StockOpname, sum(saldoqtyFin )+sum(finoutSubkon +retur +QtyFin)-sum(FinishingTransfer+QtyExport+QtySample+QtyOther+AdjFin)  SaldoBuku from ( " +
+					" select  ComodityId,  (case when ProcessDate < @DateFrom then -Qty else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,(case when ProcessDate >= @DateFrom then Qty else 0 end) as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from FactAdjustment where   ProcessDate <= @DateTo and AdjustType = 'FINISHING'  " +
+				 
+					" union all  " +
+					" select  ComodityId,  (case when ProcessDate < @DateFrom then Qty else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,0 as AdjFin,(case when ProcessDate >= @DateFrom then Qty else 0 end) as Retur,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from  factreturExpend where   ProcessDate <= @DateTo  " +
+					" union all  " +
+					" select ComodityId,(case when ProcessDate < @DateFrom then (-1*Qty) else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,0 as AdjFin,0 as Retur,(case when ProcessDate >= @DateFrom and ExpenditureType = 'E001' then Qty else 0 end) as QtyExport, (case when ProcessDate >= @DateFrom and ExpenditureType = 'E003' then Qty else 0 end) as QtySample, (case when ProcessDate >= @DateFrom and ExpenditureType = 'E002' then Qty else 0 end) as QtyOther  ,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from FactExpenditureGoods where   ProcessDate <= @DateTo " +
+					 
+					" union all  " +
+					" select  ComodityId,(case when ProcessDate < @DateFrom then Qty else 0 end) as SaldoQtyFin, (case when ProcessDate >= @DateFrom and (select  FinishingFrom from TempFinishingFrom f where f.FinishingInDetailId = ReferenceFinishingInDetailId) <> 'PEMBELIAN' and UnitCode= UnitCodeTo then Qty else 0 end) as QtyFin,0 as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur, 0 as  QtyFinSub,	0 as cuttingSubkon ,0 as finoutSubkon 	from FactFinishingDetail where   ProcessDate <= @DateTo   and FinishingOutTo = 'GUDANG JADI'  " +
+				 
+					" union all  " +
+					" select ComodityId,0 as SaldoQtyFin, 0 as QtyFin ,0 as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur,0 as QtyFinSub ,0 as cuttingSubkon, (case when ProcessDate >= @DateFrom then Qty else 0 end) as finoutSubkon from FactFinishingOutSubkon where   ProcessDate <= @DateTo   " +
+					" union all " +
+
+					" select  ComodityId, (case when ProcessDate < @DateFrom then Qty else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,0 as AdjFin,(case when ProcessDate >= @DateFrom then Qty else 0 end) as Retur,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from  factreturExpend where   ProcessDate <= @DateTo  " +
+					" union all  " +
+					" select   ComodityId,  0 as SaldoQtyFin,0 as QtyFin, isnull((select case when ProcessDate >=@DateFrom then Qty else 0 end from  factsewing s where   s.UnitCode <> s.UnitCodeTo  and s.SewingOutTo='FINISHING'),0) as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from [FactSewingNotInSewingIn] where   ProcessDate <= @DateTo  ) as data join(select comodityId, comodityName, comodityCode from comodity ) comodity on data.comodityid = comodity.comodityId   " +
+					" group by comodityname,comodityCode order by comodityCode drop table #fin   ", conn))
 					{
 						SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
 						DataSet dSet = new DataSet();
 						dataAdapter.Fill(dSet);
 						foreach (DataRow data in dSet.Tables[0].Rows)
 						{
+							var a = data["Pemasukan"];
+							var b = data["Pengeluaran"];
+							var c = data["SaldoAwal"];
+							var g = data["SaldoBuku"];
+							var j= data["UnitQtyName"];
+							var o = data["Penyesuaian"];
+							var u = data["StockOpname"];
+
 							FinishedGoodViewModel view = new FinishedGoodViewModel
 							{
 								KodeBarang = data["KodeBarang"].ToString(),
 								NamaBarang=data["NamaBarang"].ToString(),
-								Pemasukan = String.Format("{0:n}", (double)data["Pemasukan"]),
-								Pengeluaran = String.Format("{0:n}", (double)data["Pengeluaran"]),
-								SaldoAwal = String.Format("{0:n}", (double)data["SaldoAwal"]),
-								SaldoBuku = String.Format("{0:n}", (double)data["SaldoBuku"]),
-								UnitQtyName = data["Satuan"].ToString(),
-								Penyesuaian = String.Format("{0:n}", (double)data["Penyesuaian"]),
-								StockOpname = String.Format("{0:n}", (double)data["StockOpname"]),
-								Selisih = String.Format("{0:n}", (double)data["Selisih"])
+								Pemasukan = String.Format("{0:n}", data["Pemasukan"]),
+								Pengeluaran = String.Format("{0:n}", data["Pengeluaran"]),
+								SaldoAwal = String.Format("{0:n}", data["SaldoAwal"]),
+								SaldoBuku = String.Format("{0:n}", data["SaldoBuku"]),
+								UnitQtyName = data["UnitQtyName"].ToString(),
+								Penyesuaian = String.Format("{0:n}", data["Penyesuaian"]),
+								StockOpname = String.Format("{0:n}", data["StockOpname"]),
+								Selisih = String.Format("{0:n}", 0)
 							};
 							wipData.Add(view);
 						}
