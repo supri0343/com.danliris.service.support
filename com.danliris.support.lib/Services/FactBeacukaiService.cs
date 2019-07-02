@@ -470,7 +470,8 @@ namespace com.danliris.support.lib.Services
 					BCNo=p.BCNo,
 					BonNo = p.BonNo,
 					BCDate=p.BCDate,
-					BCType=p.BCType
+					BCType=p.BCType,
+                    TglDatang=p.TglDatang
 				}).Where(s=>s.BCNo.Contains(Keyword));
 
 			return Query.Distinct();
