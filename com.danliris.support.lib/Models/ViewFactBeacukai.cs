@@ -24,6 +24,7 @@ namespace com.danliris.support.lib.Models
         public double Quantity { get; set; }
         public decimal Nominal { get; set; }
         public string CurrencyCode { get; set; }
+        public DateTime TglDatang { get; set; }
 
 
     }
