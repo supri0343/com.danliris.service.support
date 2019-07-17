@@ -34,26 +34,29 @@ namespace com.danliris.support.lib.Services
 					using (SqlCommand cmd = new SqlCommand(
 					"declare @DateFrom datetime = '" + DateFrom + "' " +
 					"declare @DateTo datetime = '" + DateTo + "' " +
-					" select distinct FinishingFrom,FinishingInDetailId into #fin from FinishingIn c join FinishingInDetail d on c.FinishingId = d.FinishingNo where FinishingInDetailId in (select d.ReferenceFinishingInDetailId from FactFinishingDetail d where d.ProcessDate >=@DateFrom)  " +
-					" select comodityCode KodeBarang,comodityname NamaBarang,sum(saldoqtyFin ) SaldoAwal ,sum(finoutSubkon +retur +QtyFin) Pemasukan,sum(QtyExport+QtySample+QtyOther+AdjFin) Pengeluaran,'PCS' UnitQtyName,0 as Penyesuaian,0 as StockOpname, sum(saldoqtyFin )+sum(finoutSubkon +retur +QtyFin)-sum(FinishingTransfer+QtyExport+QtySample+QtyOther+AdjFin)  SaldoBuku from ( " +
-					" select  ComodityId,  (case when ProcessDate < @DateFrom then -Qty else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,(case when ProcessDate >= @DateFrom then Qty else 0 end) as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from FactAdjustment where   ProcessDate <= @DateTo and AdjustType = 'FINISHING'  " +
-				 
+
+					" select * into #temps from ( select  ComodityId,  (case when ProcessDate < @DateFrom then -Qty else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,(case when ProcessDate >= @DateFrom then Qty else 0 end) as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from FactAdjustment where   ProcessDate <= @DateTo and AdjustType = 'FINISHING'  " +
+
 					" union all  " +
 					" select  ComodityId,  (case when ProcessDate < @DateFrom then Qty else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,0 as AdjFin,(case when ProcessDate >= @DateFrom then Qty else 0 end) as Retur,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from  factreturExpend where   ProcessDate <= @DateTo  " +
 					" union all  " +
 					" select ComodityId,(case when ProcessDate < @DateFrom then (-1*Qty) else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,0 as AdjFin,0 as Retur,(case when ProcessDate >= @DateFrom and ExpenditureType = 'E001' then Qty else 0 end) as QtyExport, (case when ProcessDate >= @DateFrom and ExpenditureType = 'E003' then Qty else 0 end) as QtySample, (case when ProcessDate >= @DateFrom and ExpenditureType = 'E002' then Qty else 0 end) as QtyOther  ,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from FactExpenditureGoods where   ProcessDate <= @DateTo " +
-					 
+
 					" union all  " +
 					" select  ComodityId,(case when ProcessDate < @DateFrom then Qty else 0 end) as SaldoQtyFin, (case when ProcessDate >= @DateFrom and (select  FinishingFrom from TempFinishingFrom f where f.FinishingInDetailId = ReferenceFinishingInDetailId) <> 'PEMBELIAN' and UnitCode= UnitCodeTo then Qty else 0 end) as QtyFin,0 as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur, 0 as  QtyFinSub,	0 as cuttingSubkon ,0 as finoutSubkon 	from FactFinishingDetail where   ProcessDate <= @DateTo   and FinishingOutTo = 'GUDANG JADI'  " +
-				 
+
 					" union all  " +
 					" select ComodityId,0 as SaldoQtyFin, 0 as QtyFin ,0 as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur,0 as QtyFinSub ,0 as cuttingSubkon, (case when ProcessDate >= @DateFrom then Qty else 0 end) as finoutSubkon from FactFinishingOutSubkon where   ProcessDate <= @DateTo   " +
 					" union all " +
 
 					" select  ComodityId, (case when ProcessDate < @DateFrom then Qty else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,0 as AdjFin,(case when ProcessDate >= @DateFrom then Qty else 0 end) as Retur,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from  factreturExpend where   ProcessDate <= @DateTo  " +
 					" union all  " +
-					" select   ComodityId,  0 as SaldoQtyFin,0 as QtyFin, isnull((select case when ProcessDate >=@DateFrom then Qty else 0 end from  factsewing s where   s.UnitCode <> s.UnitCodeTo  and s.SewingOutTo='FINISHING'),0) as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from [FactSewingNotInSewingIn] where   ProcessDate <= @DateTo  ) as data join(select comodityId, comodityName, comodityCode from comodity ) comodity on data.comodityid = comodity.comodityId   " +
-					" group by comodityname,comodityCode order by comodityCode drop table #fin   ", conn))
+					" select   ComodityId,  0 as SaldoQtyFin,0 as QtyFin, isnull((select case when ProcessDate >=@DateFrom then Qty else 0 end from  factsewing s where   s.UnitCode <> s.UnitCodeTo  and s.SewingOutTo='FINISHING'),0) as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from [FactSewingNotInSewingIn] where   ProcessDate <= @DateTo ) as data " +
+
+
+					" select distinct FinishingFrom,FinishingInDetailId into #fin from FinishingIn c join FinishingInDetail d on c.FinishingId = d.FinishingNo where FinishingInDetailId in (select d.ReferenceFinishingInDetailId from FactFinishingDetail d where d.ProcessDate >=@DateFrom)  " +
+					" select comodityCode KodeBarang,comodityname NamaBarang,sum(saldoqtyFin ) SaldoAwal ,sum(finoutSubkon +retur +QtyFin) Pemasukan,sum(QtyExport+QtySample+QtyOther+AdjFin) Pengeluaran,'PCS' UnitQtyName,0 as Penyesuaian,0 as StockOpname, sum(saldoqtyFin )+sum(finoutSubkon +retur +QtyFin)-sum(FinishingTransfer+QtyExport+QtySample+QtyOther+AdjFin)  SaldoBuku from ( select * from #temps ) as data join(select comodityId, comodityName, comodityCode from comodity ) comodity on data.comodityid = comodity.comodityId   " +
+					" group by comodityname,comodityCode order by comodityCode drop table #fin   drop table #temps  ", conn))
 					{
 						SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
 						DataSet dSet = new DataSet();
