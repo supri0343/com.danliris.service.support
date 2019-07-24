@@ -48,8 +48,8 @@ namespace com.danliris.support.lib.Services
 			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             var Query = (from a in context.ViewFactBeacukai
-                         where a.TglDatang.AddHours(offset).Date >= DateFrom.Date
-                             && a.TglDatang.AddHours(offset).Date <= DateTo.Date
+                         where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+                             && a.BCDate.AddHours(offset).Date <= DateTo.Date
 							 && a.Tipe=="in"
                              && array.Contains(a.BCType)
                              && a.BCType== (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
@@ -241,8 +241,8 @@ namespace com.danliris.support.lib.Services
 			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             var Query = (from a in context.ViewFactBeacukai
-						 where a.TglDatang.AddHours(offset).Date >= DateFrom.Date
-							 && a.TglDatang.AddHours(offset).Date <= DateTo.Date
+						 where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+							 && a.BCDate.AddHours(offset).Date <= DateTo.Date
 							 && array.Contains(a.BCType)
 							 && a.Tipe == "out"
 							 && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
