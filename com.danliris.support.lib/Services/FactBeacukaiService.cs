@@ -318,7 +318,7 @@ namespace com.danliris.support.lib.Services
             result.Columns.Add(new DataColumn() { ColumnName = "Jenis Dokumen", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Dokumen Pabean", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Bukti Penerimaan Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Bukti Pengiriman Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Pemasok/Pengirim", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
