@@ -22,9 +22,10 @@ namespace com.danliris.support.webapi.Controllers.v1
         private FactItemMutationService factItemMutationService { get; }
         private WIPService wipService { get; }
 		private FinishedGoodService finishedGoodService { get; }
-		private MachineMutationService machineMutationService { get; } 
+		private MachineMutationService machineMutationService { get; }
+        private HOrderService hOrderService { get; }
 
-		public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService)
+        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService, HOrderService hOrderService)
 		{
 			this.scrapService = scrapService;
             this.factBeacukaiService = factBeacukaiService;
@@ -32,6 +33,7 @@ namespace com.danliris.support.webapi.Controllers.v1
 			this.wipService = wipService;
 			this.finishedGoodService = finishedGoodService;
 			this.machineMutationService = machineMutationService;
+            this.hOrderService = hOrderService;
 		}
 
         [HttpGet("in")]
@@ -596,5 +598,29 @@ namespace com.danliris.support.webapi.Controllers.v1
 				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
 			}
 		}
-	}
+
+        [HttpGet("horder")]
+        public IActionResult GetHOrder(string Keyword = "", string Filter = "{}")
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+                var data = hOrderService.GetHOrders(Keyword, Filter);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+    }
 }

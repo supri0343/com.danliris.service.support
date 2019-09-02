@@ -13,8 +13,9 @@ namespace com.danliris.support.lib
 		public virtual DbSet<ScrapViewModel> ViewScrap{ get; set; }
         public virtual DbSet<ViewFactBeacukai> ViewFactBeacukai { get; set; }
 		public virtual DbSet<WIPViewModel> ViewWIP { get; set; }
+        public virtual DbSet<HOrder> HOrder { get; set; }
 
-		public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
+        public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
