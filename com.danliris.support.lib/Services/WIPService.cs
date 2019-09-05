@@ -29,7 +29,7 @@ namespace com.danliris.support.lib.Services
 					new SqlConnection(connectionString))
 				{
 					conn.Open();
-					using (SqlCommand cmd = new SqlCommand(" select   Kode,ComodityName as komoditi, Satuan,  case when SUM(JumlahCutting-jumlahFinish)<0 then 0 else SUM(JumlahCutting-jumlahFinish)end AS WIP FROM (SELECT HO.No RO, HO.Qty, HO.Kode, KOM.ComodityName,LI.JumlahCutting, ISNULL(FOUT.JumlahFinish, 0) AS JumlahFinish, 'PCS' AS Satuan  FROM  HOrder AS HO INNER JOIN  Comodity AS KOM ON HO.Kode = KOM.ComodityCode INNER JOIN  (SELECT  ro,ComodityCode,sum(JumlahCutting)JumlahCutting from Factcutting where   ProcessDate <='" + Dates + "' group by ro,ComodityCode) AS LI ON HO.No = LI.RO and ho.kode = li.ComodityCode  LEFT OUTER JOIN   (SELECT ro,ComodityCode,sum(JumlahFinish) JumlahFinish from FactFinishing where   ProcessDate <='" + Dates + "' group by ro,ComodityCode) AS FOUT ON LI.RO = FOUT.RO  and LI.ComodityCode=FOUT.ComodityCode  ) AS HASIL GROUP BY Kode, ComodityName, Satuan   ", conn))
+					using (SqlCommand cmd = new SqlCommand(" select Kode, komoditi,Satuan,sum(WIP) WIP from (  SELECT   c.ComodityCode Kode, ComodityName komoditi ,'PCS' Satuan,sum(JumlahCutting) WIP from Factcutting j join comodity c on j.ComodityCode=c.ComodityCode where    ProcessDate <='" + Dates + "' group by ro,c.ComodityCode,ComodityName union all SELECT   c.ComodityCode Kode, ComodityName komoditi ,'PCS' Satuan,sum(-JumlahFinish) WIP from FactFinishing j join comodity c on j.ComodityCode=c.ComodityCode where   ProcessDate <='" + Dates + "' group by ro,c.ComodityCode,ComodityName) as data where wip>0 group by Kode,komoditi,Satuan order by komoditi   ", conn))
 					{
 						SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
 						DataSet dSet = new DataSet();
