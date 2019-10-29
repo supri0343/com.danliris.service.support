@@ -44,7 +44,7 @@ namespace com.danliris.support.lib.Services
 						" select * into #factfinishingsubkon from ( select ComodityId,  (case when ProcessDate < @DateFrom then Qty else 0 end)  as SaldoQtyFin, 0 as QtyFin ,0 as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur,0 as QtyFinSub ,0 as cuttingSubkon, (case when ProcessDate >= @DateFrom then Qty else 0 end) as finoutSubkon from FactFinishingOutSubkon where   ProcessDate <= @DateTo  ) as data where finoutSubkon>0 or saldoqtyfin<>0  " +
 						" select ComodityId,sum (case when ProcessDate < @DateFrom then Qty else 0 end) as SaldoQtyFin,0 as QtyFin,0 as FinishingTransfer,0 as AdjFin,sum(case when ProcessDate >= @DateFrom then Qty else 0 end) as Retur,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur ,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon into #returQtyFin from  factreturExpend where   ProcessDate <= @DateTo  group by ComodityId   " +
 						" select * into #factnotsewingIn from ( select  ComodityId,  0 as SaldoQtyFin,0 as QtyFin, isnull(( select case when ProcessDate >= @DateFrom and UnitCode <> UnitCodeTo  and SewingOutTo = 'FINISHING' then Qty else 0 end),0) as FinishingTransfer,0 as AdjFin, 0 as Retur ,0 as QtyExport, 0 as QtySample, 0 as QtyOther ,0 as sewingretur,0 as QtyFinSub,0 as cuttingSubkon,0 as finoutSubkon from[FactSewingNotInSewingIn] where ProcessDate <= @DateTo ) as data2 where FinishingTransfer > 0   " +
-						 " select comodityCode KodeBarang,comodityname NamaBarang,sum(saldoqtyFin ) SaldoAwal ,sum(finoutSubkon +retur +QtyFin) Pemasukan,sum(QtyExport+QtySample+QtyOther+AdjFin) Pengeluaran,'PCS' UnitQtyName,0 as Penyesuaian,0 as StockOpname, sum(saldoqtyFin )+sum(finoutSubkon +retur +QtyFin)-sum(FinishingTransfer+QtyExport+QtySample+QtyOther+AdjFin)  SaldoBuku from (  " +
+						 " select * from (select comodityCode KodeBarang,comodityname NamaBarang,sum(saldoqtyFin ) SaldoAwal ,sum(finoutSubkon +retur +QtyFin) Pemasukan,sum(QtyExport+QtySample+QtyOther+AdjFin) Pengeluaran,'PCS' UnitQtyName,0 as Penyesuaian,0 as StockOpname, sum(saldoqtyFin )+sum(finoutSubkon +retur +QtyFin)-sum(FinishingTransfer+QtyExport+QtySample+QtyOther+AdjFin)  SaldoBuku from (  " +
 					" select * from #adjust  " +
 					" union all  " +
 					" select * from #returexpend  " +
@@ -59,7 +59,7 @@ namespace com.danliris.support.lib.Services
 					 
 					" union all  " +
 					" select * from #factnotsewingIn) as data join( select comodityId, comodityName, comodityCode from comodity ) comodity on data.comodityid = comodity.comodityId    " +
-					" group by comodityname,comodityCode order by comodityCode  drop table #adjust drop table #returexpend drop table #factexpend drop table #finishingbarangjadi  drop table #factsewing     " +
+					" group by comodityname,comodityCode) as data where saldoawal <> 0 or pemasukan <>0 or pengeluaran <>0 or Penyesuaian <>0 or StockOpname <>0 or SaldoBuku <>0  drop table #adjust drop table #returexpend drop table #factexpend drop table #finishingbarangjadi  drop table #factsewing     " +
 					" drop table #factfinishingsubkon drop table #returQtyFin drop table #factnotsewingIn "
 					, conn))
 					{
