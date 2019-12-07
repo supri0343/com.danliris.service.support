@@ -41,7 +41,7 @@ namespace com.danliris.support.lib.Services
                         SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
                         DataSet dSet = new DataSet();
                         dataAdapter.Fill(dSet);
-                        foreach (DataRow data in dataset.Tables[0].Rows)
+                        foreach (DataRow data in dSet.Tables[0].Rows)
                         {
                             if (data["ClassificationId"].ToString() == "SC190001")
                             {
