@@ -330,7 +330,7 @@ namespace com.danliris.support.lib.Services
 						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty,case when sum(Quantity) > 0 then sum(Quantity) else 0 end as ReceiptQty,case when sum(Quantity) < 0 then(-1) * sum(Quantity) else 0 end as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] = 'BP' and(DATE between @StartDate and @EndDate) group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType) as data " +
 						"group by itemcode,itemname, unitqtyname,SupplierType " +
 						"order by itemcode " +
-						"select * from (select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData   " +
+						"select * from (select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData where BeginQty <> 0 or ReceiptQty <> 0 or ExpenditureQty <> 0 or AdjustmentQty <> 0 or OpnameQty <> 0  " +
 						"union all " +
 						"select '','','', sum(BeginQty),sum(ReceiptQty),sum(ExpenditureQty),sum(AdjustmentQty),sum(OpnameQty),'',sum(beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty),0  from #tempData ) AS DATA " +
 						"drop table #tempData " +
@@ -470,7 +470,7 @@ namespace com.danliris.support.lib.Services
 						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty,case when sum(Quantity) > 0 then sum(Quantity) else 0 end as ReceiptQty,case when sum(Quantity) < 0 then(-1) * sum(Quantity) else 0 end as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactMutation where TYPE = 'receipt correction' and[ClassificationCode] = 'BB' and(DATE between @StartDate and @EndDate) group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType) as data " +
 						"group by itemcode,itemname, unitqtyname,SupplierType " +
 						"order by itemcode " +
-						"select * from (select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData   " +
+						"select * from (select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData where BeginQty <> 0 or ReceiptQty <> 0 or ExpenditureQty <> 0 or AdjustmentQty <> 0 or OpnameQty<>0  " +
 						"union all " +
 						"select '','','', sum(BeginQty),sum(ReceiptQty),sum(ExpenditureQty),sum(AdjustmentQty),sum(OpnameQty),'',sum(beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty),0  from #tempData ) AS DATA " +
 						"drop table #tempData " +
