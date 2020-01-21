@@ -62,7 +62,9 @@ namespace com.danliris.support.webapi
 			.AddTransient<MachineMutationService>();
             services
                 .AddTransient<HOrderService>();
-			var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
+            services
+                .AddTransient<ExpenditureGoodsService>();
+            var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
