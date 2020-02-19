@@ -25,8 +25,9 @@ namespace com.danliris.support.webapi.Controllers.v1
 		private MachineMutationService machineMutationService { get; }
         private HOrderService hOrderService { get; }
         private ExpenditureGoodsService expenditureGoodsService { get; }
+        private TraceableInService traceableInService { get; }
 
-        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService, HOrderService hOrderService)
+        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService, HOrderService hOrderService, ExpenditureGoodsService expenditureGoodsService, TraceableInService traceableInService)
 		{
 			this.scrapService = scrapService;
             this.factBeacukaiService = factBeacukaiService;
@@ -35,7 +36,9 @@ namespace com.danliris.support.webapi.Controllers.v1
 			this.finishedGoodService = finishedGoodService;
 			this.machineMutationService = machineMutationService;
             this.hOrderService = hOrderService;
-		}
+            this.expenditureGoodsService = expenditureGoodsService;
+            this.traceableInService = traceableInService;
+        }
 
         [HttpGet("in")]
         public IActionResult GetIN(string type, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
@@ -662,6 +665,101 @@ namespace com.danliris.support.webapi.Controllers.v1
                 var xls = expenditureGoodsService.GenerateExcelExGood(dateFrom, dateTo, offset);
 
                 string filename = String.Format("Laporan Pengeluaran Barang Jadi - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+
+                xlsInBytes = xls.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+        [HttpGet("traceable/in")]
+        public IActionResult GettraceIn(string bcno, string type)
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+                var data2 = traceableInService.getQueryTracable(bcno, type);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data2,
+
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+        [HttpGet("traceable/master")]
+        public IActionResult Gettracemaster(int page = 1, int size = 25, string order = "{}", string keyword = null, string filter = "{}")
+        {
+            try
+            {
+                //identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+
+                var model = traceableInService.Read(page, size, order, keyword, filter);
+
+                var info = new Dictionary<string, object>
+                    {
+                        { "count", model.Data.Count },
+                        { "total", model.TotalData },
+                        { "order", model.Order },
+                        { "page", page },
+                        { "size", size }
+                    };
+
+                //Dictionary<string, object> Result =
+                //    new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
+                //    .Ok(model.Data, info);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = model.Data,
+                    info = new Dictionary<string, object>
+                    {
+                        { "count", model.Data.Count },
+                        { "total", model.TotalData },
+                        { "order", model.Order },
+                        { "page", page },
+                        { "size", size }
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+        [HttpGet("traceable/in/download")]
+        public IActionResult GetXlsINTraceable(string bcno, string type)
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+            try
+            {
+                byte[] xlsInBytes;
+                //DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
+                //DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
+
+                var xls = traceableInService.GetTraceableInExcel(bcno, type);
+
+                string filename = String.Format("Laporan Traceable Masuk - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 
                 xlsInBytes = xls.ToArray();
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
