@@ -37,7 +37,7 @@ namespace com.danliris.support.webapi
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection") ?? Configuration["DefaultConnection"];
-			string DLSQLServerConnectionString = Configuration.GetConnectionString("DLSQLServerConnection") ?? Configuration["DLSQLServerConnection"];
+			string LocalDbConnectionString = Configuration.GetConnectionString("LocalDbProductionConnection") ?? Configuration["LocalDbProductionConnection"];
 			APIEndpoint.ConnectionString = Configuration.GetConnectionString("DefaultConnection") ?? Configuration["DefaultConnection"];
 
 			services
@@ -48,6 +48,7 @@ namespace com.danliris.support.webapi
                     options.AssumeDefaultVersionWhenUnspecified = true;
                     options.DefaultApiVersion = new ApiVersion(1, 0);
                 });
+            services.AddTransient<ILocalDbProductionDBContext>(s => new LocalDbProductionDBContext(LocalDbConnectionString));
             services
                 .AddTransient<FactBeacukaiService>();
 			services
@@ -64,9 +65,9 @@ namespace com.danliris.support.webapi
                 .AddTransient<HOrderService>();
             services
                 .AddTransient<ExpenditureGoodsService>();
+            services.AddTransient<TraceableInService>();
             services
                 .AddTransient<IBeacukaiTempService, BeacukaiTempService>();
-
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
 
