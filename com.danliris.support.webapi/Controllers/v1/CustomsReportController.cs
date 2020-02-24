@@ -26,9 +26,9 @@ namespace com.danliris.support.webapi.Controllers.v1
         private HOrderService hOrderService { get; }
         private ExpenditureGoodsService expenditureGoodsService { get; }
         private TraceableInService traceableInService { get; }
-
-        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService, HOrderService hOrderService, ExpenditureGoodsService expenditureGoodsService, TraceableInService traceableInService)
-		{
+        private TraceableOutService traceableOutService { get; }
+        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService, HOrderService hOrderService, ExpenditureGoodsService expenditureGoodsService, TraceableInService traceableInService, TraceableOutService traceableOutService)
+        {
 			this.scrapService = scrapService;
             this.factBeacukaiService = factBeacukaiService;
             this.factItemMutationService = factItemMutationService;
@@ -38,6 +38,7 @@ namespace com.danliris.support.webapi.Controllers.v1
             this.hOrderService = hOrderService;
             this.expenditureGoodsService = expenditureGoodsService;
             this.traceableInService = traceableInService;
+            this.traceableOutService = traceableOutService;
         }
 
         [HttpGet("in")]
@@ -765,6 +766,160 @@ namespace com.danliris.support.webapi.Controllers.v1
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
                 return file;
 
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("traceable/out")]
+        public IActionResult GettraceOut(string bcno)
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+                var data2 = traceableOutService.getQueryTraceableOut(bcno);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data2
+
+
+
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("traceableout/download")]
+        public IActionResult GetXlsOutTraceable(string bcno)
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+            try
+            {
+                byte[] xlsInBytes;
+                //DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
+                //DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
+
+                var xls = traceableOutService.GetTraceableOutExcel(bcno);
+
+                string filename = String.Format("Laporan Traceable Keluar - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+
+                xlsInBytes = xls.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("traceable/out/detail")]
+        public IActionResult GettraceOutDetail(string ro)
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+                var data2 = traceableOutService.getQueryTraceableOutDetail(ro);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data2,
+
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        //[HttpGet("traceable/out/download")]
+        //public IActionResult GetXlsOutTraceableDetail(string bcno, string type)
+        //{
+        //    int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+        //    string accept = Request.Headers["Accept"];
+        //    try
+        //    {
+        //        byte[] xlsInBytes;
+        //        //DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
+        //        //DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
+
+        //       // var xls = traceableOutService.GetTraceableOutDetailExcel(bcno);
+
+        //        string filename = String.Format("Laporan Traceable Masuk - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+
+        //        xlsInBytes = xls.ToArray();
+        //        var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+        //        return file;
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Dictionary<string, object> Result =
+        //            new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+        //            .Fail();
+        //        return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+        //    }
+        //}
+
+        [HttpGet("traceableout/master")]
+        public IActionResult Gettraceoutmaster(int page = 1, int size = 25, string order = "{}", string keyword = null, string filter = "{}")
+        {
+            try
+            {
+                //identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+
+                var model = traceableOutService.Read(page, size, order, keyword, filter);
+
+                var info = new Dictionary<string, object>
+                    {
+                        { "count", model.Data.Count },
+                        { "total", model.TotalData },
+                        { "order", model.Order },
+                        { "page", page },
+                        { "size", size }
+                    };
+
+                //Dictionary<string, object> Result =
+                //    new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
+                //    .Ok(model.Data, info);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = model.Data,
+                    info = new Dictionary<string, object>
+                    {
+                        { "count", model.Data.Count },
+                        { "total", model.TotalData },
+                        { "order", model.Order },
+                        { "page", page },
+                        { "size", size }
+                    }
+                });
             }
             catch (Exception e)
             {
