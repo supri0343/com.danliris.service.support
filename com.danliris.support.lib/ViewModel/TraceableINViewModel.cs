@@ -6,7 +6,7 @@ namespace com.danliris.support.lib.ViewModel
 {
     public class TraceableINViewModel
     {
-        //public int count { get; set; }
+        public int count { get; set; }
         public string BCNo { get; set; }
         public string BonNo { get; set; }
         public string BCType { get; set; }

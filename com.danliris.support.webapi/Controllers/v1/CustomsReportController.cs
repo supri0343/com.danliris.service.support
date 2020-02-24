@@ -681,14 +681,14 @@ namespace com.danliris.support.webapi.Controllers.v1
             }
         }
         [HttpGet("traceable/in")]
-        public IActionResult GettraceIn(string bcno, string type)
+        public IActionResult GettraceIn(string bcno, string type, DateTime? DateFrom, DateTime? DateTo)
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
 
             try
             {
-                var data2 = traceableInService.getQueryTracable(bcno, type);
+                var data2 = traceableInService.getQueryTracable(bcno, type, DateFrom, DateTo);
                 return Ok(new
                 {
                     apiVersion = ApiVersion,
@@ -748,7 +748,7 @@ namespace com.danliris.support.webapi.Controllers.v1
             }
         }
         [HttpGet("traceable/in/download")]
-        public IActionResult GetXlsINTraceable(string bcno, string type)
+        public IActionResult GetXlsINTraceable(string bcno, string type, DateTime? DateFrom, DateTime? DateTo)
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
@@ -758,7 +758,7 @@ namespace com.danliris.support.webapi.Controllers.v1
                 //DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
                 //DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
 
-                var xls = traceableInService.GetTraceableInExcel(bcno, type);
+                var xls = traceableInService.GetTraceableInExcel(bcno, type, DateFrom, DateTo);
 
                 string filename = String.Format("Laporan Traceable Masuk - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 
