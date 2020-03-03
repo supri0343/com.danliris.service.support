@@ -1,6 +1,8 @@
 ﻿using com.danliris.support.lib.Helpers;
+using com.danliris.support.lib.Models;
 using com.danliris.support.lib.ViewModel;
 using Com.Moonlay.NetCore.Lib;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -15,9 +17,11 @@ using System.Text;
 namespace com.danliris.support.lib.Services
 {
     public class TraceableOutService
-    {
+    {   
         ILocalDbProductionDBContext dBContext;
-        public TraceableOutService(ILocalDbProductionDBContext _dBContext)
+
+        private readonly DbSet<ViewFactBeacukai> dbSet;
+        public TraceableOutService(ILocalDbProductionDBContext _dBContext, SupportDbContext _context)
         {
             this.dBContext = _dBContext;
         }
@@ -255,7 +259,13 @@ namespace com.danliris.support.lib.Services
 
             //try
             //{
-                string cmdtraceableoutdetail = "select c.DestinationJob as 'RO_JOB',d.ItemCode as 'KODE_BARANG',i.ItemName as 'NAMA_BARANG',d.SmallestQuantity as 'JUMLAH_PAKAI',  h.UnitQtyName as SATUAN,g.BCNo as 'NOMOR_BC',g.BCType as 'TIPE_BC',g.BCDate as 'TANGGAL_BC' from DL_Supports.dbo.DETAIL_DELIVERY_ORDER a join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS b  on a.DetailDOId = b.DetailDOId join DL_Supports.dbo.DELIVERY_ORDER c  on a.DeliveryOrderNo = c.DeliveryOrderNo  join DL_Supports.dbo.DO_ITEM d on a.ReferenceNo = d.DOItemNo join DL_Supports.dbo.DETAIL_SHIPPING_ORDER e on d.poid = e.POId  join DL_Supports.dbo.SHIPPING_ORDER f   on e.ShippingOrderId = f.ShippingOrderId join DL_Supports.dbo.BEACUKAI g on f.BCId = g.BCId join DL_Supports.dbo.UNIT_QUANTITY h on d.SmallestUnitQtyCode = h.UnitQtyCode join DL_Supports.dbo.ITEM_CATEGORY i on d.ItemCode = i.ItemCode  where c.DestinationJob = '"+bcno+"'";
+                string cmdtraceableoutdetail = "select c.DestinationJob as 'RO_JOB',d.ItemCode as 'KODE_BARANG',i.ItemName as 'NAMA_BARANG', sum(d.SmallestQuantity) as 'JUMLAH_PAKAI',"+
+                                               " h.UnitQtyName as SATUAN,g.BCNo as 'NOMOR_BC',g.BCType as 'TIPE_BC',g.BCDate as 'TANGGAL_BC' from DL_Supports.dbo.DETAIL_DELIVERY_ORDER a"+
+                                               " join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS b  on a.DetailDOId = b.DetailDOId join DL_Supports.dbo.DELIVERY_ORDER c  on a.DeliveryOrderNo = c.DeliveryOrderNo"+
+                                               " join DL_Supports.dbo.DO_ITEM d on a.ReferenceNo = d.DOItemNo join DL_Supports.dbo.DETAIL_SHIPPING_ORDER e on d.poid = e.POId  join DL_Supports.dbo.SHIPPING_ORDER f"+  
+                                               " on e.ShippingOrderId = f.ShippingOrderId join DL_Supports.dbo.BEACUKAI g on f.BCId = g.BCId join DL_Supports.dbo.UNIT_QUANTITY h on d.SmallestUnitQtyCode = h.UnitQtyCode"+
+                                               " join DL_Supports.dbo.ITEM_CATEGORY i on d.ItemCode = i.ItemCode  where c.DestinationJob = '"+bcno+"' "+
+                                               " group by c.DestinationJob, d.ItemCode, i.ItemName, h.UnitQtyName, g.BCNo, g.BCType, g.BCDate";
 
                 //List<SqlParameter> parameters = new List<SqlParameter>();
                 //parameters.Add(new SqlParameter("@key", bcno));
@@ -319,93 +329,67 @@ namespace com.danliris.support.lib.Services
         //}
 
 
-        public ReadResponse<object> Read(int Page = 1, int Size = 25, string Order = "{}", string Keyword = null, string Filter = "{}")
-        {
-            string Key = "";
-            string cmd = "";
+        //public ReadResponse<object> Read(int Page = 1, int Size = 25, string Order = "{}", string Keyword = null, string Filter = "{}")
+        //{
+        //    string Key = "";
+        //    string cmd = "";
 
-            List<TraceableOutViewModel> data = new List<TraceableOutViewModel>();
+        //    List<TraceableOutViewModel> data = new List<TraceableOutViewModel>();
 
-            List<SqlParameter> parameters = new List<SqlParameter>();
-            Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
-            foreach (var f in FilterDictionary)
-            {
-                Key = f.Value;
+        //    List<SqlParameter> parameters = new List<SqlParameter>();
+        //    Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
+        //    foreach (var f in FilterDictionary)
+        //    {
+        //        Key = f.Value;
 
-            }
+        //    }
             
-                cmd = "SELECT Distinct BCNo  FROM DL_Supports.dbo.BEACUKAI_ADDED where BCNo LIKE @key ";
+        //        cmd = "SELECT Distinct BCNo  FROM DL_Supports.dbo.BEACUKAI_ADDED where BCNo LIKE @key ";
             
-            parameters.Add(new SqlParameter("key", "%" + Keyword + "%"));
-            var reader = dBContext.ExecuteReader(cmd, parameters);
+        //    parameters.Add(new SqlParameter("key", "%" + Keyword + "%"));
+        //    var reader = dBContext.ExecuteReader(cmd, parameters);
 
             
-            while (reader.Read())
-            {
-                data.Add(new TraceableOutViewModel
-                {
-                    BCNo = reader["BCNo"].ToString(),
-                });
+        //    while (reader.Read())
+        //    {
+        //        data.Add(new TraceableOutViewModel
+        //        {
+        //            BCNo = reader["BCNo"].ToString(),
+        //        });
 
-                //switch (Key)
-                //{
-                //    case "BCNo":
-                //        data.Add(new TraceableINViewModel
-                //        {
-                //            BCNo = reader["BCNo"].ToString(),
-                //        });
-                //        break;
-                //    case "ROJob":
-                //        data.Add(new TraceableINViewModel
-                //        {
-                //            ROJob = reader["ROJob"].ToString(),
-                //        });
-                //        break;
-                //    case "ItemCode":
-                //        data.Add(new TraceableINViewModel
-                //        {
-                //            ItemCode = reader["ItemCode"].ToString(),
-                //        });
-                //        break;
-                //        //case "ComodityName":
-                //        //    data.Add(new TraceableINViewModel
-                //        //    {
-                //        //        ComodityName = reader["ComodityName"].ToString(),
-                //        //    });
-                //        //    break;
-                //}
+                
 
-            }
+        //    }
 
-            Pageable< TraceableOutViewModel> pageable = new Pageable<TraceableOutViewModel>(data, Page - 1, Size);
-            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
-            List<TraceableOutViewModel> Data = pageable.Data.ToList();
-            int TotalData = pageable.TotalCount;
+        //    Pageable< TraceableOutViewModel> pageable = new Pageable<TraceableOutViewModel>(data, Page - 1, Size);
+        //    Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
+        //    List<TraceableOutViewModel> Data = pageable.Data.ToList();
+        //    int TotalData = pageable.TotalCount;
 
-            List<object> ListData = new List<object>();
+        //    List<object> ListData = new List<object>();
           
-                    ListData.AddRange(Data.Select(s => new
-                    {
-                        s.BCNo
-                    }));
+        //            ListData.AddRange(Data.Select(s => new
+        //            {
+        //                s.BCNo
+        //            }));
                    
 
-            return new ReadResponse<object>(ListData, TotalData, OrderDictionary);
-        }
+        //    return new ReadResponse<object>(ListData, TotalData, OrderDictionary);
+        //}
 
-        public class ReadResponse<TModel>
-        {
-            public List<TModel> Data { get; set; }
-            public int TotalData { get; set; }
-            public Dictionary<string, string> Order { get; set; }
+        //public class ReadResponse<TModel>
+        //{
+        //    public List<TModel> Data { get; set; }
+        //    public int TotalData { get; set; }
+        //    public Dictionary<string, string> Order { get; set; }
 
-            public ReadResponse(List<TModel> Data, int TotalData, Dictionary<string, string> Order)
-            {
-                this.Data = Data;
-                this.TotalData = TotalData;
-                this.Order = Order;
-            }
-        }
+        //    public ReadResponse(List<TModel> Data, int TotalData, Dictionary<string, string> Order)
+        //    {
+        //        this.Data = Data;
+        //        this.TotalData = TotalData;
+        //        this.Order = Order;
+        //    }
+        //}
 
         string formattedDate(string num)
         {
