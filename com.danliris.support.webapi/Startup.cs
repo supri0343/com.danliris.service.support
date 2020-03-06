@@ -67,6 +67,7 @@ namespace com.danliris.support.webapi
                 .AddTransient<ExpenditureGoodsService>();
             services.AddTransient<TraceableInService>();
             services.AddTransient<TraceableOutService>();
+            services.AddTransient<IViewFactBeacukaiService, ViewFactBeacukaiService>();
             services
                 .AddTransient<IBeacukaiTempService, BeacukaiTempService>();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
