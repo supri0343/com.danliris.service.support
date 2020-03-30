@@ -688,7 +688,7 @@ namespace com.danliris.support.webapi.Controllers.v1
 
             try
             {
-                var data2 = traceableInService.getQueryTracable(bcno, type, DateFrom, DateTo);
+                var data2 = traceableInService.getQueryTracable2(bcno, type, DateFrom, DateTo);
                 return Ok(new
                 {
                     apiVersion = ApiVersion,
