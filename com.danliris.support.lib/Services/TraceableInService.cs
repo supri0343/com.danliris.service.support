@@ -302,6 +302,7 @@ namespace com.danliris.support.lib.Services
                 Dictionary<string, int> countsPEB = new Dictionary<string, int>();
                 Dictionary<string, int> countsekspor = new Dictionary<string, int>();
                 Dictionary<string, int> countsRO = new Dictionary<string, int>();
+                Dictionary<string, int> countsBUK = new Dictionary<string, int>();
                 var docNo = Query.ToArray();
                 int value;
                 foreach (var a in Query)
@@ -342,21 +343,29 @@ namespace com.danliris.support.lib.Services
                     {
                         countsPEB[a.PEB + a.Invoice] = 1;
                     }
-                    if (countsekspor.TryGetValue(a.Invoice + a.EksporQty + a.BJQty + a.ProduksiQty, out value))
+                    if (countsekspor.TryGetValue(a.Invoice + a.EksporQty + a.BJQty + a.ProduksiQty + a.PO, out value))
                     {
-                        countsekspor[a.Invoice + a.EksporQty + a.BJQty + a.ProduksiQty]++;
+                        countsekspor[a.Invoice + a.EksporQty + a.BJQty + a.ProduksiQty + a.PO]++;
                     }
                     else
                     {
-                        countsekspor[a.Invoice + a.EksporQty + a.BJQty + a.ProduksiQty] = 1;
+                        countsekspor[a.Invoice + a.EksporQty + a.BJQty + a.ProduksiQty + a.PO] = 1;
                     }
-                    if (countsRO.TryGetValue(a.ROJob, out value))
+                    if (countsRO.TryGetValue(a.ROJob + a.Invoice + a.PO, out value))
                     {
-                        countsRO[a.ROJob]++;
+                        countsRO[a.ROJob + a.Invoice + a.PO]++;
                     }
                     else
                     {
-                        countsRO[a.ROJob] = 1;
+                        countsRO[a.ROJob + a.Invoice + a.PO] = 1;
+                    }
+                    if(countsBUK.TryGetValue(a.PO + a.ItemCode + a.ItemName + a.SatuanReceipt + a.QtyBUK + a.BUK + a.BonNo + a.Sisa, out value))
+                    {
+                        countsBUK[a.PO + a.ItemCode + a.ItemName + a.SatuanReceipt + a.QtyBUK + a.BUK + a.BonNo + a.Sisa]++;
+                    }
+                    else
+                    {
+                        countsBUK[a.PO + a.ItemCode + a.ItemName + a.SatuanReceipt + a.QtyBUK + a.BUK + a.BonNo + a.Sisa] = 1;
                     }
                 }
 
@@ -425,6 +434,19 @@ namespace com.danliris.support.lib.Services
                     sheet.Cells["Q" + index + ":Q" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
                     sheet.Cells["U" + index + ":U" + (index + c.Value - 1)].Merge = true;
                     sheet.Cells["U" + index + ":U" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                    index += c.Value;
+                }
+                index = 2;
+                foreach (KeyValuePair<string, int> c in countsBUK)
+                {
+                    sheet.Cells["L" + index + ":L" + (index + c.Value - 1)].Merge = true;
+                    sheet.Cells["L" + index + ":L" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                    sheet.Cells["M" + index + ":M" + (index + c.Value - 1)].Merge = true;
+                    sheet.Cells["M" + index + ":M" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                    sheet.Cells["N" + index + ":N" + (index + c.Value - 1)].Merge = true;
+                    sheet.Cells["N" + index + ":N" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                    sheet.Cells["O" + index + ":O" + (index + c.Value - 1)].Merge = true;
+                    sheet.Cells["O" + index + ":O" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
                     index += c.Value;
                 }
                 sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
