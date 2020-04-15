@@ -29,8 +29,6 @@ namespace com.danliris.support.lib.Services
             string datefrom = dateFrom.ToString("yyyy-MM-dd");
             string dateto = dateTo.ToString("yyyy-MM-dd");
             List<TraceableINViewModel> reportData = new List<TraceableINViewModel>();
-            try
-            {
                 string connectionString = APIEndpoint.LocalConnectionString;
                 using (SqlConnection conn =
                     new SqlConnection(connectionString))
@@ -98,7 +96,8 @@ namespace com.danliris.support.lib.Services
                     }
                     else
                     {
-                        using (SqlCommand cmd = new SqlCommand("select * from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, b.Invoice,Sum(c.Qty) As EksporQty, b.ExpenditureType, isnull(a.PEB,'-') as PEB, isnull(a.TglPEB,'1970-01-01') as TAnggalPEB, " +
+                        string cmdtraceable = "select ROW_NUMBER() Over(Order By NoPO, BUK,  QtyBUK, QtyReceipt) row_num, '' as BCNo, '' as BonNo, '' as BCType, null as BCDate,ItemCode,  ItemName,'' as Invoice, 0 as EksporQty, '' as ExpenditureType, '' as PEB, null as TAnggalPEB, QtyReceipt, '' as SatMasuk, '' as SatKeluar, '' as ROJob, BUK, QtyBUK, 0 as ProduksiQty, 0 as subconOut, NoPO, 0 as FinisihingOutQty into #PO " +
+                            "from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, b.Invoice,Sum(c.Qty) As EksporQty, b.ExpenditureType, isnull(a.PEB,'-') as PEB, isnull(a.TglPEB,'1970-01-01') as TAnggalPEB, " +
                             "isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = fcf.DetailShippingOrderId),0) As QtyReceipt," +
                             "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk," +
                             "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar," +
@@ -116,7 +115,31 @@ namespace com.danliris.support.lib.Services
                             "group by BCNo,BCType, BCDate,BonNo," +
                             "ROJob ,DetailReceiptId, DetailShippingOrderId," +
                             "fcf.ItemCode," +
-                            "fcf.ItemName, DetailExpendId,POId, b.Invoice, b.ExpenditureType, a.PEB, a.TglPEB) as data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' order by PEB, Invoice, BCNo, BonNo, BCType, NoPO", conn)) { 
+                            "fcf.ItemName, DetailExpendId,POId, b.Invoice, b.ExpenditureType, a.PEB, a.TglPEB) as data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' order by NoPO, BUK,  QtyBUK,data.QtyReceipt " +
+                            "select ROW_NUMBER() Over(order by Invoice, EksporQty, PEB, BCNo, BonNo, BCType, ROJob, ProduksiQty, FinisihingOutQty) row_num, BCNo,  BonNo, BCType, BCDate, '' as ItemCode, '' as ItemName, Invoice, EksporQty, ExpenditureType, PEB, TAnggalPEB, 0 as QtyReceipt, SatMasuk, SatKeluar, ROJob, '' as BUK, 0 as QtyBUK, ProduksiQty, subconOut, '' as NoPO, FinisihingOutQty into #BCNo " +
+                            "from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, b.Invoice,Sum(c.Qty) As EksporQty, b.ExpenditureType, isnull(a.PEB,'-') as PEB, isnull(a.TglPEB,'1970-01-01') as TAnggalPEB, " +
+                            "isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = fcf.DetailShippingOrderId),0) As QtyReceipt," +
+                            "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk," +
+                            "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar," +
+                            "ROJob,DetailExpendId," +
+                            "(select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = fcf.POId) NoPO," +
+                            "isnull((select  ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId),'-') BUK," +
+                            "isnull((select  SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId),0) QtyBUK," +
+                            "(SELECT isnull(Sum(Qty),0) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo='GUDANG JADI') FinisihingOutQty," +
+                            "(select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN') subconOut," +
+                            "(SELECT isnull(SUM(A.QtyCutting),0) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob) ProduksiQty " +
+                            "from FactControlFlow fcf " +
+                            "join ExpenditureGood b on fcf.ROJob = b.RO " +
+                            "join ExpenditureGoodDetail c on c.ExpenditureGoodId = b.ExpenditureGoodId " +
+                            "left join Shipping.dbo.OmzetKonf a on b.Invoice = a.Invoice_No " +
+                            "group by BCNo,BCType, BCDate,BonNo," +
+                            "ROJob ,DetailReceiptId, DetailShippingOrderId," +
+                            "fcf.ItemCode," +
+                            "fcf.ItemName, DetailExpendId,POId, b.Invoice, b.ExpenditureType, a.PEB, a.TglPEB) as data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' order by Invoice, EksporQty, PEB, BCNo, BonNo, BCType, ROJob, ProduksiQty, FinisihingOutQty " +
+                            "select * from (select * from #PO union all select * from #BCNo)as data " +
+                            "drop table #PO " +
+                            "drop table #BCNo ";
+                        using (SqlCommand cmd = new SqlCommand(cmdtraceable, conn)) { 
                             SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
                             DataSet dSet = new DataSet();
                             dataAdapter.Fill(dSet);
@@ -124,9 +147,10 @@ namespace com.danliris.support.lib.Services
                             {
                                 TraceableINViewModel trace = new TraceableINViewModel
                                 {
+                                    No = (long)data["row_num"],
                                     BCType = data["BCType"].ToString(),
                                     BCNo = data["BCNo"].ToString(),
-                                    BCDate = data["BCDate"].ToString(),
+                                    BCDate = data["BCDate"].ToString() == null ? "" : data["BCDate"].ToString(),
                                     BonNo = data["BonNo"].ToString(),
                                     PO = data["NoPO"].ToString(),
                                     ItemCode = data["ItemCode"].ToString(),
@@ -141,7 +165,7 @@ namespace com.danliris.support.lib.Services
                                     BJQty = (double)data["subconOut"] + (double)data["FinisihingOutQty"],
                                     Invoice = data["Invoice"].ToString(),
                                     PEB = data["PEB"].ToString(),
-                                    PEBDate = data["TAnggalPEB"].ToString() == null ? "-" : data["TAnggalPEB"].ToString(),
+                                    PEBDate = data["TAnggalPEB"].ToString() == null ? "" : data["TAnggalPEB"].ToString(),
                                     EksporQty = data["ExpenditureType"].ToString() == "E001" ? (double)data["EksporQty"] : 0,
                                     SampleQty = data["ExpenditureType"].ToString() == "E003" ? (double)data["SampleQty"] : 0,
                                     SubkonOutQty = (double)data["subconOut"],
@@ -154,13 +178,40 @@ namespace com.danliris.support.lib.Services
                     }
                     conn.Close();
                 }
-                
-                var b = reportData.ToArray();
+                var report = (from a in reportData
+                             group a by a.No into datagroup
+                             select new TraceableINViewModel
+                             {
+                                 BCType = String.Join("", datagroup.Select(i=>i.BCType)),
+                                 BCNo = String.Join("", datagroup.Select(i => i.BCNo)),
+                                 BCDate = String.Join("", datagroup.Select(i => i.BCDate)).Trim(),
+                                 BonNo = String.Join("", datagroup.Select(i => i.BonNo)),
+                                 PO = String.Join("", datagroup.Select(i => i.PO)),
+                                 ItemCode = String.Join("", datagroup.Select(i => i.ItemCode)),
+                                 ItemName = String.Join("", datagroup.Select(i => i.ItemName)),
+                                 ReceiptQty = datagroup.Sum(x => x.ReceiptQty),
+                                 SatuanReceipt = String.Join("", datagroup.Select(i => i.SatuanReceipt)),
+                                 BUK = String.Join("", datagroup.Select(i => i.BUK)),
+                                 QtyBUK = datagroup.Sum(x => x.QtyBUK),
+                                 SatuanBUK = String.Join("", datagroup.Select(i => i.SatuanBUK)),
+                                 ROJob = String.Join("", datagroup.Select(i => i.ROJob)),
+                                 ProduksiQty = datagroup.Sum(x => x.ProduksiQty),
+                                 BJQty = datagroup.Sum(x => x.BJQty),
+                                 Invoice = String.Join("", datagroup.Select(i => i.Invoice)),
+                                 PEB = String.Join("", datagroup.Select(i => i.PEB)),
+                                 PEBDate = String.Join("", datagroup.Select(i => i.PEBDate)).Trim(),
+                                 EksporQty = datagroup.Sum(x => x.EksporQty),
+                                 SampleQty = datagroup.Sum(x => x.SampleQty),
+                                 SubkonOutQty = datagroup.Sum(x => x.SubkonOutQty),
+                                 Sisa = datagroup.Sum(x => x.Sisa),
+                                 ExType = String.Join("", datagroup.Select(i => i.ExType))
+                             }).ToList();
+                var b = report.ToArray();
                 var index = 0;
-                foreach (TraceableINViewModel a in reportData)
+                foreach (TraceableINViewModel a in report)
                 {
-                    //TraceableINViewModel dup = Array.Find(b, o => o.BCType == a.BCType && o.BCNo == a.BCNo && o.BonNo == a.BonNo && o.PO == a.PO && o.ItemCode == a.ItemCode && a.ItemName == a.ItemName && o.ReceiptQty == a.ReceiptQty && o.SatuanReceipt == a.SatuanReceipt && o.ROJob == a.ROJob && o.ProduksiQty == a.ProduksiQty && o.BJQty == a.BJQty && o.Invoice == a.Invoice && o.PEB == a.PEB && o.PEBDate == a.PEBDate && o.EksporQty == a.EksporQty && o.SampleQty == a.SampleQty);
-                    TraceableINViewModel dup = Array.Find(b, o => o.Invoice == a.Invoice && o.PO == a.PO && o.PEB == a.PEB && o.BCType == a.BCType);
+                    TraceableINViewModel dup = Array.Find(b, o => o.BCType == a.BCType && o.BCNo == a.BCNo && o.BonNo == a.BonNo);
+                    //TraceableINViewModel dup = Array.Find(b, o => o.Invoice == a.Invoice && o.PO == a.PO && o.PEB == a.PEB && o.BCType == a.BCType);
                     if (dup != null)
                     {
                         if (dup.count == 0)
@@ -171,242 +222,10 @@ namespace com.danliris.support.lib.Services
                     }
                     a.count = dup.count;
                 }
-
-                
-            }
-            catch (Exception e)
-            {
-
-            }
-            return reportData.AsQueryable();
-        }
-        //public IQueryable<TraceableINViewModel> getQueryTracable(string filter, string tipe, DateTime? Datefrom, DateTime? DateTo)
-        //{
-        //    DateTime dateFrom = Datefrom == null ? new DateTime(1970, 1, 1) : (DateTime)Datefrom;
-        //    DateTime dateTo = DateTo == null ? DateTime.Now : (DateTime)DateTo;
-        //    string datefrom = dateFrom.ToString("yyyy-MM-dd");
-        //    string dateto = dateTo.ToString("yyyy-MM-dd");
-        //    List<TraceableINViewModel> reportData = new List<TraceableINViewModel>();
-
-        //    try
-        //    {
-        //        if (tipe == "BCDate") {
-
-        //            //string cmdtracable = "select * from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = fcf.DetailShippingOrderId),0) As QtyReceipt,(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk,(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar, ROJob,DetailExpendId, (select top(1) Invoice from ExpenditureGood e where e.RO= ROJob) as Invoice, (select top(1) PEB from ExpenditureGood e join Shipping.dbo.OmzetKonf o on o.Invoice_No=e.Invoice where e.RO= fcf.ROJob) PEB, (select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = fcf.POId) NoPO, (select top 1 ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId) BUK, isnull((select top 1 SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId),0) QtyBUK, (select top(1) TglPEB from ExpenditureGood e join Shipping.dbo.OmzetKonf o on o.Invoice_No=e.Invoice where e.RO= fcf.ROJob) TAnggalPEB, isnull((select Isnull(SUM(a.Qty),0) from ExpenditureGoodDetail a join ExpenditureGood b on a.ExpenditureGoodId = b.ExpenditureGoodId where b.RO = fcf.ROJob and ExpenditureType = 'E001'),0) EksporQty, isnull((select Isnull(SUM(a.Qty),0) from ExpenditureGoodDetail a join ExpenditureGood b on a.ExpenditureGoodId = b.ExpenditureGoodId where b.RO = fcf.ROJob and ExpenditureType = 'E003'),0) SampleQty, isnull((SELECT Sum(Qty) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo='GUDANG JADI'),0) FinisihingOutQty, isnull((select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN'),0) subconOut, isnull((SELECT SUM(A.QtyCutting) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob),0) ProduksiQty  from FactControlFlow fcf group by  BCNo,BCType, BCDate,BonNo,ROJob ,DetailReceiptId,DetailShippingOrderId,fcf.ItemCode,fcf.ItemName, DetailExpendId,POId) as data where  bcdate > @datefrom And bcdate <= @dateto order by BCType,BCNo,BonNo,ItemCode,ItemName,QtyReceipt,SatMasuk,ROJob,ProduksiQty,FinisihingOutQty,Invoice,PEB,TAnggalPEB,EksporQty,SampleQty,NoPO";
-        //            //string cmdtracable = "select * from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = fcf.DetailShippingOrderId),0) As QtyReceipt,(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk,(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar, ROJob,DetailExpendId, (select top(1) Invoice from ExpenditureGood e where e.RO= ROJob) as Invoice, (select top(1) PEB from ExpenditureGood e join Shipping.dbo.OmzetKonf o on o.Invoice_No=e.Invoice where e.RO= fcf.ROJob) PEB, (select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = fcf.POId) NoPO, (select top 1 ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId) BUK, isnull((select top 1 SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId),0) QtyBUK, (select top(1) TglPEB from ExpenditureGood e join Shipping.dbo.OmzetKonf o on o.Invoice_No=e.Invoice where e.RO= fcf.ROJob) TAnggalPEB, isnull((select Isnull(SUM(a.Qty),0) from ExpenditureGoodDetail a join ExpenditureGood b on a.ExpenditureGoodId = b.ExpenditureGoodId where b.RO = fcf.ROJob and ExpenditureType = 'E001'),0) EksporQty, isnull((select Isnull(SUM(a.Qty),0) from ExpenditureGoodDetail a join ExpenditureGood b on a.ExpenditureGoodId = b.ExpenditureGoodId where b.RO = fcf.ROJob and ExpenditureType = 'E003'),0) SampleQty, isnull((SELECT Sum(Qty) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo='GUDANG JADI'),0) FinisihingOutQty, isnull((select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN'),0) subconOut, isnull((SELECT SUM(A.QtyCutting) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob),0) ProduksiQty  from FactControlFlow fcf group by  BCNo,BCType, BCDate,BonNo,ROJob ,DetailReceiptId,DetailShippingOrderId,fcf.ItemCode,fcf.ItemName, DetailExpendId,POId) as data where  bcdate > @datefrom And bcdate <= @dateto order by BCType,BCNo,BonNo,NoPO";
-        //            string cmdtracable = "select * from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName,b.Invoice, Sum(c.Qty) As EksporQty, b.ExpenditureType, isnull(a.PEB,'-') as PEB, a.TglPEB as TAnggalPEB, " +
-        //                                  "isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = fcf.DetailShippingOrderId),0) As QtyReceipt," +
-        //                                  "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk," +
-        //                                  "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar, " +
-        //                                  "ROJob,DetailExpendId, " +
-        //                                  "(select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = fcf.POId) NoPO, " +
-        //                                  "(select top 1 ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId) BUK, " +
-        //                                  "isnull((select top 1 SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId),0) QtyBUK, " +
-        //                                  "isnull((SELECT Sum(Qty) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo='GUDANG JADI'),0) FinisihingOutQty, " +
-        //                                  "isnull((select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN'),0) subconOut, " +
-        //                                  "isnull((SELECT SUM(A.QtyCutting) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob),0) ProduksiQty  " +
-        //                                  "from FactControlFlow fcf join ExpenditureGood b on fcf.ROJob = b.RO join ExpenditureGoodDetail c on c.ExpenditureGoodId = b.ExpenditureGoodId left join Shipping.dbo.OmzetKonf a on b.Invoice = a.Invoice_No" +
-        //                                  "group by  BCNo,BCType, BCDate,BonNo,ROJob ,DetailReceiptId,DetailShippingOrderId,fcf.ItemCode,fcf.ItemName, DetailExpendId,POId,b.Invoice, b.ExpenditureType, a.PEB, a.TglPEB) as data " +
-        //                                  "where  bcdate > @datefrom And bcdate <= @dateto order by PEB, Invoice, BCNo, BonNo, BCType, NoPO";
-        //            List<SqlParameter> parameters = new List<SqlParameter>();
-        //            //parameters.Add(new SqlParameter("filter", tipe));
-        //            parameters.Add(new SqlParameter("dateto", dateto));
-        //            parameters.Add(new SqlParameter("datefrom", datefrom));
-
-        //            var data = dBContext.ExecuteReader(cmdtracable,parameters);
-
-        //            while (data.Read())
-        //            {
-        //                reportData.Add(new TraceableINViewModel
-        //                {
-        //                    BCType = data["BCType"].ToString(),
-        //                    BCNo = data["BCNo"].ToString(),
-        //                    BCDate = data["BCDate"].ToString(),
-        //                    BonNo = data["BonNo"].ToString(),
-        //                    PO = data["NoPO"].ToString(),
-        //                    ItemCode = data["ItemCode"].ToString(),
-        //                    ItemName = data["ItemName"].ToString(),
-        //                    ReceiptQty = (double)data["QtyReceipt"],
-        //                    SatuanReceipt = data["SatMasuk"].ToString(),
-        //                    BUK = data["BUK"].ToString(),
-        //                    QtyBUK = (double)data["QtyBUK"],
-        //                    SatuanBUK = data["SatKeluar"].ToString(),
-        //                    ROJob = data["ROJob"].ToString(),
-        //                    ProduksiQty = (double)data["ProduksiQty"],
-        //                    BJQty = (double)data["subconOut"] + (double)data["FinisihingOutQty"],
-        //                    Invoice = data["Invoice"].ToString(),
-        //                    PEB = data["PEB"].ToString(),
-        //                    PEBDate = data["TAnggalPEB"].ToString() == null ? "-" : data["TAnggalPEB"].ToString(),
-        //                    EksporQty = data["ExpenditureType"].ToString() == "E001" ? (double)data["EksporQty"] : 0,
-        //                    SampleQty = data["ExpenditureType"].ToString() == "E003" ? (double)data["SampleQty"] : 0,
-        //                    SubkonOutQty = (double)data["subconOut"],
-        //                    Sisa = (double)data["QtyReceipt"] - (double)data["QtyBUK"],
-        //                    ExType = data["ExpenditureType"].ToString()
-
-        //                });
-        //            }
-
-                    
-        //        }
-        //        else
-        //        {
-        //            //string cmdtracable = "select * from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, isnull((select Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = fcf.DetailShippingOrderId),0) As QtyReceipt,(select b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk,(select b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar, ROJob,DetailExpendId, (select top(1) Invoice from ExpenditureGood e where e.RO= ROJob) as Invoice, (select top(1) PEB from ExpenditureGood e join Shipping.dbo.OmzetKonf o on o.Invoice_No=e.Invoice where e.RO= fcf.ROJob) PEB, (select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = fcf.POId) NoPO, (select top 1 ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId) BUK, isnull((select top 1 SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId),0) QtyBUK, (select top(1) TglPEB from ExpenditureGood e join Shipping.dbo.OmzetKonf o on o.Invoice_No=e.Invoice where e.RO= fcf.ROJob) TAnggalPEB, isnull((select Isnull(SUM(a.Qty),0) from ExpenditureGoodDetail a join ExpenditureGood b on a.ExpenditureGoodId = b.ExpenditureGoodId where b.RO = fcf.ROJob and ExpenditureType = 'E001'),0) EksporQty, isnull((select Isnull(SUM(a.Qty),0) from ExpenditureGoodDetail a join ExpenditureGood b on a.ExpenditureGoodId = b.ExpenditureGoodId where b.RO = fcf.ROJob and ExpenditureType = 'E003'),0) SampleQty, isnull((SELECT Sum(Qty) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo='GUDANG JADI'),0) FinisihingOutQty, isnull((select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN'),0) subconOut, isnull((SELECT SUM(A.QtyCutting) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob),0) ProduksiQty  from FactControlFlow fcf group by  BCNo,BCType, BCDate,BonNo,ROJob ,DetailReceiptId,DetailShippingOrderId,fcf.ItemCode,fcf.ItemName, DetailExpendId,POId) as data where " + tipe + " = @key AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' order by BCType,BCNo,BonNo,ItemCode,ItemName,QtyReceipt,SatMasuk,ROJob,ProduksiQty,FinisihingOutQty,Invoice,PEB,TAnggalPEB,EksporQty,SampleQty,NoPO";
-        //            //string cmdtracable = "select * from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, isnull((select Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = fcf.DetailShippingOrderId),0) As QtyReceipt,(select b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk,(select b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar, ROJob,DetailExpendId, (select top(1) Invoice from ExpenditureGood e where e.RO= ROJob) as Invoice, (select top(1) PEB from ExpenditureGood e join Shipping.dbo.OmzetKonf o on o.Invoice_No=e.Invoice where e.RO= fcf.ROJob) PEB, (select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = fcf.POId) NoPO, (select top 1 ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId) BUK, isnull((select top 1 SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId),0) QtyBUK, (select top(1) TglPEB from ExpenditureGood e join Shipping.dbo.OmzetKonf o on o.Invoice_No=e.Invoice where e.RO= fcf.ROJob) TAnggalPEB, isnull((select Isnull(SUM(a.Qty),0) from ExpenditureGoodDetail a join ExpenditureGood b on a.ExpenditureGoodId = b.ExpenditureGoodId where b.RO = fcf.ROJob and ExpenditureType = 'E001'),0) EksporQty, isnull((select Isnull(SUM(a.Qty),0) from ExpenditureGoodDetail a join ExpenditureGood b on a.ExpenditureGoodId = b.ExpenditureGoodId where b.RO = fcf.ROJob and ExpenditureType = 'E003'),0) SampleQty, isnull((SELECT Sum(Qty) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo='GUDANG JADI'),0) FinisihingOutQty, isnull((select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN'),0) subconOut, isnull((SELECT SUM(A.QtyCutting) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob),0) ProduksiQty  from FactControlFlow fcf group by  BCNo,BCType, BCDate,BonNo,ROJob ,DetailReceiptId,DetailShippingOrderId,fcf.ItemCode,fcf.ItemName, DetailExpendId,POId) as data where " + tipe + " = @key AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' order by BCType,BCNo,BonNo,NoPO,ROJob";
-        //            //string cmdtracable = "select * from(select distinct BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName,b.Invoice, Sum(c.Qty) As EksporQty, b.ExpenditureType, isnull(a.PEB,'-') as PEB, a.TglPEB as TAnggalPEB, " +
-        //            //                      "isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = fcf.DetailShippingOrderId),0) As QtyReceipt," +
-        //            //                      "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk," +
-        //            //                      "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar, " +
-        //            //                      "ROJob,DetailExpendId, " +
-        //            //                      "(select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = fcf.POId) NoPO, " +
-        //            //                      "(select top 1 ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId) BUK, " +
-        //            //                      "isnull((select top 1 SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = fcf.DetailExpendId),0) QtyBUK, " +
-        //            //                      "isnull((SELECT Sum(Qty) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo='GUDANG JADI'),0) FinisihingOutQty, " +
-        //            //                      "isnull((select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN'),0) subconOut, " +
-        //            //                      "isnull((SELECT SUM(A.QtyCutting) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob),0) ProduksiQty  " +
-        //            //                      "from FactControlFlow fcf join ExpenditureGood b on fcf.ROJob = b.RO join ExpenditureGoodDetail c on c.ExpenditureGoodId = b.ExpenditureGoodId left join Shipping.dbo.OmzetKonf a on (b.Invoice = a.Invoice_No and a.RO = ROJob ) " +
-        //            //                      "group by  BCNo,BCType, BCDate,BonNo,ROJob ,DetailReceiptId,DetailShippingOrderId,fcf.ItemCode,fcf.ItemName, DetailExpendId,POId,b.Invoice,  b.ExpenditureType, a.PEB, a.TglPEB) as data where " + tipe + " = @key AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002'" +
-        //            //                      "order by PEB, Invoice, BCNo, BonNo, BCType, NoPO";
-        //            string cmdtracable = "select ROW_NUMBER() Over(Order By NoPO, BUK, QtyBUK, QtyReceipt) row_num, NoPO, QtyReceipt, BUK,ItemCode,ItemName, QtyBUK into #PO from(select distinct " +
-        //                                 "BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, '' as Invoice,'' As EksporQty, b.ExpenditureType, d.ExpenditureNo as BUK, isnull(d.SmallestQuantity, 0) as QtyBUK,isnull(e.Quantity * e.ConvertValue, 0) as QtyReceipt, "+
-					   //                  "isnull(a.PEB, '-') as PEB, "+ 
-					   //                  "isnull(a.TglPEB, '1970-01-01') as TAnggalPEB, "+
-				    //                     "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = fcf.DetailShippingOrderId) as SatMasuk, "+
-				    //                     "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar, "+
-				    //                     "ROJob,DetailExpendId, "+
-				    //                     "f.PlanPO AS NoPO, "+
-				    //                     "(SELECT isnull(Sum(Qty), 0) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI') FinisihingOutQty, "+
-				    //                     "(select isnull(sum(a.Qty), 0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN') subconOut, "+
-				    //                     "(SELECT isnull(SUM(A.QtyCutting), 0) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob) ProduksiQty "+
-        //                                 "from FactControlFlow fcf "+
-        //                                 "join ExpenditureGood b on fcf.ROJob = b.RO "+
-        //                                 "join ExpenditureGoodDetail c on c.ExpenditureGoodId = b.ExpenditureGoodId "+
-        //                                 "left join Shipping.dbo.OmzetKonf a on(b.Invoice = a.Invoice_No) "+
-        //                                 "join DL_Supports.dbo.PURCHASE_ORDER f on fcf.POId = f.POId "+
-        //                                 "left join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS d on fcf.DetailExpendId = d.DetailExpenditureGoodsId "+
-        //                                 "left join DL_Inventories.dbo.DETAIL_RECEIPT_GOODS e on fcf.DetailReceiptId = e.DetailReceiptGoodsId "+
-        //                                 "group by BCNo,BCType, BCDate,BonNo, "+
-				    //                     "ROJob ,DetailReceiptId, fcf.DetailShippingOrderId, "+
-				    //                     "fcf.ItemCode, "+
-        //                                 "fcf.ItemName, DetailExpendId,fcf.POId, b.Invoice, b.ExpenditureType, a.PEB, a.TglPEB, f.PlanPO, d.ExpenditureNo, e.Quantity, e.ConvertValue, d.SmallestQuantity) as data where " + tipe + " = @key AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' order by NoPO, BUK, QtyBUK,data.QtyReceipt, ItemCode, ItemName " +
-        //                                 "select ROW_NUMBER() Over(Order by Invoice, PEB, EksporQty, BCNo, BonNo, BCType, ProduksiQty, FinisihingOutQty) row_num, * into #dataPEBInvoice from(select distinct " +
-        //                                 "BCNo,BonNo,BCType, BCDate,fcf.ItemCode, fcf.ItemName, b.Invoice,Sum(c.Qty) As EksporQty, b.ExpenditureType, "+
-					   //                  "isnull(a.PEB, '-') as PEB, "+
-					   //                  "isnull(a.TglPEB, '1970-01-01') as TAnggalPEB, "+				 
-				    //                      "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailReceiptGoodsId = fcf.DetailReceiptId) as SatMasuk, "+
-				    //                      "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = fcf.DetailExpendId) as SatKeluar, "+
-				    //                      "ROJob,DetailExpendId, "+				  
-				    //                      "(SELECT isnull(Sum(Qty), 0) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI') FinisihingOutQty, "+
-				    //                      "(select isnull(sum(a.Qty), 0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = fcf.ROJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN') subconOut, "+
-				    //                      "(SELECT isnull(SUM(A.QtyCutting), 0) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = fcf.ROJob) ProduksiQty "+
-        //                                   "from FactControlFlow fcf "+
-        //                                  "join ExpenditureGood b on fcf.ROJob = b.RO "+
-        //                                  "join ExpenditureGoodDetail c on c.ExpenditureGoodId = b.ExpenditureGoodId "+
-        //                                 "left join Shipping.dbo.OmzetKonf a on(b.Invoice = a.Invoice_No and a.RO = ROJob) "+
-        //                                  "join DL_Supports.dbo.PURCHASE_ORDER f on fcf.POId = f.POId "+
-        //                                 "left join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS d on fcf.DetailExpendId = d.DetailExpenditureGoodsId "+
-        //                                  "left join DL_Inventories.dbo.DETAIL_RECEIPT_GOODS e on fcf.DetailReceiptId = e.DetailReceiptGoodsId "+
-        //                                  "group by BCNo,BCType, BCDate,BonNo, "+				  
-				    //                      "ROJob ,DetailReceiptId, "+				  
-				    //                      "fcf.ItemCode, "+
-        //                                  "fcf.ItemName, DetailExpendId,fcf.POId, b.Invoice, b.ExpenditureType, a.PEB, a.TglPEB, f.PlanPO) as data where " + tipe + " = @key AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' order by Invoice, EksporQty, PEB, BCNo, BonNo, BCType, ProduksiQty, FinisihingOutQty "+
-        //                                  "select * from #dataPEBInvoice a "+
-        //                                  "join #PO b on a.row_num = b.row_num "+
-        //                                  "where ExpenditureType != 'E002' "+
-        //                                  "Drop table #dataPEBInvoice "+
-        //                                  "Drop table #PO ";
-        //            List<SqlParameter> parameters = new List<SqlParameter>();
-        //            //parameters.Add(new SqlParameter("filter", tipe));
-        //            parameters.Add(new SqlParameter("key", filter));
-
-        //            var data = dBContext.ExecuteReader(cmdtracable, parameters);
-
-        //            while (data.Read())
-        //            {
-        //                reportData.Add(new TraceableINViewModel
-        //                {
-        //                    BCType = data["BCType"].ToString(),
-        //                    BCNo = data["BCNo"].ToString(),
-        //                    BCDate = data["BCDate"].ToString(),
-        //                    BonNo = data["BonNo"].ToString(),
-        //                    PO = data["NoPO"].ToString(),
-        //                    ItemCode = data["ItemCode"].ToString(),
-        //                    ItemName = data["ItemName"].ToString(),
-        //                    ReceiptQty = (double)data["QtyReceipt"],
-        //                    SatuanReceipt = data["SatMasuk"].ToString(),
-        //                    BUK = data["BUK"].ToString(),
-        //                    QtyBUK = (double)data["QtyBUK"],
-        //                    SatuanBUK = data["SatKeluar"].ToString(),
-        //                    ROJob = data["ROJob"].ToString(),
-        //                    ProduksiQty = (double)data["ProduksiQty"],
-        //                    BJQty = (double)data["subconOut"] + (double)data["FinisihingOutQty"],
-        //                    Invoice = data["Invoice"].ToString(),
-        //                    PEB = data["PEB"].ToString(),
-        //                    PEBDate = data["TAnggalPEB"].ToString() == null ? "-" : data["TAnggalPEB"].ToString(),
-        //                    EksporQty = data["ExpenditureType"].ToString() == "E001" ? (double)data["EksporQty"] : 0,
-        //                    SampleQty = data["ExpenditureType"].ToString() == "E003" ? (double)data["SampleQty"] : 0,
-        //                    SubkonOutQty = (double)data["subconOut"],
-        //                    Sisa = (double)data["QtyReceipt"] - (double)data["QtyBUK"],
-        //                    ExType = data["row_num"].ToString(),
-                           
-        //                });
-        //            }
-
-        //        }
-        //        var report = from a in reportData
-        //                     group a by new { a.Invoice, a.PO, a.BUK } into data
-        //                     select new TraceableINViewModel
-        //                     {
-        //                         BCType = data.FirstOrDefault().BCNo,
-        //                         BCNo = data.FirstOrDefault().BCNo,
-        //                         BCDate = data.FirstOrDefault().BCDate,
-        //                         BonNo = data.FirstOrDefault().BonNo,
-        //                         PO = data.FirstOrDefault().PO,
-        //                         ItemCode = data.FirstOrDefault().ItemCode,
-        //                         ItemName = data.FirstOrDefault().ItemName,
-        //                         ReceiptQty = data.FirstOrDefault().ReceiptQty,
-        //                         SatuanReceipt = data.FirstOrDefault().SatuanReceipt,
-        //                         BUK = data.FirstOrDefault().BUK,
-        //                         QtyBUK = data.FirstOrDefault().QtyBUK,
-        //                         SatuanBUK = data.FirstOrDefault().SatuanBUK,
-        //                         ROJob = data.FirstOrDefault().ROJob,
-        //                         ProduksiQty = data.FirstOrDefault().ProduksiQty,
-        //                         BJQty = data.FirstOrDefault().BJQty,
-        //                         Invoice = data.FirstOrDefault().Invoice,
-        //                         PEB = data.FirstOrDefault().PEB,
-        //                         PEBDate = data.FirstOrDefault().PEBDate,
-        //                         EksporQty = data.FirstOrDefault().EksporQty,
-        //                         SampleQty = data.FirstOrDefault().SampleQty,
-        //                         SubkonOutQty = data.FirstOrDefault().SampleQty,
-        //                         Sisa = data.FirstOrDefault().Sisa,
-        //                         ExType = data.FirstOrDefault().ExType
-        //                     };
-        //        var b = reportData.ToArray();
-        //        var index = 0;
-        //        foreach (TraceableINViewModel a in reportData)
-        //        {
-        //            //TraceableINViewModel dup = Array.Find(b, o => o.BCType == a.BCType && o.BCNo == a.BCNo && o.BonNo == a.BonNo && o.PO == a.PO && o.ItemCode == a.ItemCode && a.ItemName == a.ItemName && o.ReceiptQty == a.ReceiptQty && o.SatuanReceipt == a.SatuanReceipt && o.ROJob == a.ROJob && o.ProduksiQty == a.ProduksiQty && o.BJQty == a.BJQty && o.Invoice == a.Invoice && o.PEB == a.PEB && o.PEBDate == a.PEBDate && o.EksporQty == a.EksporQty && o.SampleQty == a.SampleQty);
-        //            TraceableINViewModel dup = Array.Find(b, o=>o.Invoice == a.Invoice && o.PO == a.PO && o.PEB == a.PEB && o.BCType == a.BCType);
-        //            if (dup != null)
-        //            {
-        //                if (dup.count == 0)
-        //                {
-        //                    index++;
-        //                    dup.count = index;
-        //                }
-        //            }
-        //            a.count = dup.count;
-        //        }
-
-
-        //    }
-        //        catch (Exception e)
-        //    {
-
-        //    }
-
             
-        //    return reportData.AsQueryable();
-        //}
+            return report.AsQueryable();
+        }
+        
         public MemoryStream GetTraceableInExcel(string filter, string tipe,DateTime? Datefrom, DateTime? DateTo)
         {
             var Query = getQueryTracable2(filter, tipe, Datefrom, DateTo);
@@ -507,7 +326,7 @@ namespace com.danliris.support.lib.Services
                         countsType[a.BCType] = 1;
                     }
 
-                    if(countsPO.TryGetValue(a.BonNo + a.PO + a.ItemCode + a.ItemName + a.SatuanReceipt, out value))
+                    if (countsPO.TryGetValue(a.BonNo + a.PO + a.ItemCode + a.ItemName + a.SatuanReceipt, out value))
                     {
                         countsPO[a.BonNo + a.PO + a.ItemCode + a.ItemName + a.SatuanReceipt]++;
                     }
