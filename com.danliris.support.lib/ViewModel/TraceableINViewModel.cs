@@ -31,6 +31,6 @@ namespace com.danliris.support.lib.ViewModel
         public double SubkonOutQty { get; set; }
         public double Sisa { get; set; }
         public string ExType { get; set; }
-        public string No { get; set; }
+        public long No { get; set; }
     }
 }
