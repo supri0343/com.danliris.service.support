@@ -273,7 +273,7 @@ namespace com.danliris.support.lib.Services
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             if (OrderDictionary.Count.Equals(0))
             {
-                Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCNo);
+                Query = Query.OrderBy(b => b.BCType).ThenBy(b=>b.BCDate).ThenBy(b => b.BCNo);
             }
             else
             {
