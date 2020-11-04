@@ -22,7 +22,7 @@ namespace com.danliris.support.lib.Services
             this.dBContext = _dBContext;
         }
 
-        public IQueryable<TraceableINViewModel> getQueryTracable2(string filter, string tipe, DateTime? Datefrom, DateTime? DateTo)
+        public IQueryable<TraceableINViewModel> getQueryTracable2(string filter, string tipe, string tipebc, DateTime? Datefrom, DateTime? DateTo)
         {
             DateTime dateFrom = Datefrom == null ? new DateTime(1970, 1, 1) : (DateTime)Datefrom;
             DateTime dateTo = DateTo == null ? DateTime.Now : (DateTime)DateTo;
@@ -35,7 +35,7 @@ namespace com.danliris.support.lib.Services
                     new SqlConnection(connectionString))
                 {
                     conn.Open();
-                if (tipe == "BCDate")
+                if (string.IsNullOrWhiteSpace(tipebc))
                 {
 
                     using (SqlCommand cmd = new SqlCommand("select ROW_NUMBER() OVER ( ORDER BY BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, BUK) row_num, BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt,SatMasuk, BUK, QtyBUK, SatKeluar, ROJob, ProduksiQty, subconOut + FinisihingOutQty as BJQty, subconOut, QtyReceipt - QtyBUK as Sisa, ExpenditureType, '' Invoice, '' PEB, '' TAnggalPEB,'' EksporQty into #2 " +
@@ -225,7 +225,7 @@ namespace com.danliris.support.lib.Services
                         "isnull((select  SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),0) QtyBUK," +
                         "(SELECT isnull(Sum(Qty),0) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = g.DestinationJob and b.FinishingOutTo='GUDANG JADI') FinisihingOutQty," +
                         "(select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = g.DestinationJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN') subconOut," +
-                        "(SELECT isnull(SUM(A.QtyCutting),0) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = g.DestinationJob) ProduksiQty " +
+                        "(SELECT isnull(SUM(A.QtyCutting),0) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo join DL_Supports.dbo.DELIVERY_ORDER c on b.RO = c.DestinationJob join DL_Supports.dbo.DETAIL_DELIVERY_ORDER t on c.DeliveryOrderNo = t.DeliveryOrderNo join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS e on t.DetailDOId = e.DetailDOId where RO = g.DestinationJob and e.PODescription like '%'+ (select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = d.POId) + '%' and a.ItemCode = d.ItemCode) ProduksiQty " +
                         "from DL_Supports.dbo.BEACUKAI a " +
                         "join DL_Supports.dbo.SHIPPING_ORDER b on a.BCId = b.BCId " +
                         "join DL_Supports.dbo.DETAIL_SHIPPING_ORDER c on b.ShippingOrderId = c.ShippingOrderId " +
@@ -241,7 +241,7 @@ namespace com.danliris.support.lib.Services
                         "g.DestinationJob ,k.DetailReceiptGoodsId, c.DetailShippingOrderId," +
                         "d.ItemCode," +
                         "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate " +
-                        ") data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' " +
+                        ") data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' and BCType = '"+ tipebc +"' " +
                         "order by BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, BUK " +
                         "select ROW_NUMBER() OVER ( " +
                         "ORDER BY BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, Invoice " +
@@ -256,7 +256,7 @@ namespace com.danliris.support.lib.Services
                         "isnull((select  SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),0) QtyBUK," +
                         "(SELECT isnull(Sum(Qty),0) as a from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId where b.RO = g.DestinationJob and b.FinishingOutTo='GUDANG JADI') FinisihingOutQty," +
                         "(select isnull(sum(a.Qty),0) from FinishingOutDetail a join FinishingOut b on a.FinishingOutId = b.FinishingOutId join FinishingInDetail c on a.ReferenceFinishingInDetailId = c.FinishingInDetailId join FinishingIn d on c.FinishingNo = d.FinishingId where b.RO = g.DestinationJob and b.FinishingOutTo = 'GUDANG JADI' and d.FinishingFrom = 'PEMBELIAN') subconOut," +
-                        "(SELECT isnull(SUM(A.QtyCutting),0) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo where RO = g.DestinationJob) ProduksiQty " +
+                        "(SELECT isnull(SUM(A.QtyCutting),0) FROM CuttingDODetail a join CuttingDO b on a.DeliveryOrderNo = B.DeliveryOrderNo join DL_Supports.dbo.DELIVERY_ORDER c on b.RO = c.DestinationJob join DL_Supports.dbo.DETAIL_DELIVERY_ORDER t on c.DeliveryOrderNo = t.DeliveryOrderNo join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS e on t.DetailDOId = e.DetailDOId where RO = g.DestinationJob and e.PODescription like '%'+ (select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = d.POId) + '%' and a.ItemCode = d.ItemCode) ProduksiQty " +
                         "from DL_Supports.dbo.BEACUKAI a " +
                         "join DL_Supports.dbo.SHIPPING_ORDER b on a.BCId = b.BCId " +
                         "join DL_Supports.dbo.DETAIL_SHIPPING_ORDER c on b.ShippingOrderId = c.ShippingOrderId " +
@@ -272,7 +272,7 @@ namespace com.danliris.support.lib.Services
                         "g.DestinationJob ,k.DetailReceiptGoodsId, c.DetailShippingOrderId," +
                         "d.ItemCode," +
                         "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate" +
-                        ") data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' " +
+                        ") data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' and BCType = '" + tipebc + "' " +
                         "order by BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, Invoice " +
                         "Select b.BCType, b.BCNo, b.BCDate, b.BonNo, b.NoPO, b.ItemCode, b.ItemName, b.QtyReceipt,b.SatMasuk, b.BUK, b.QtyBUK, b.SatKeluar, b.ROJob, b.ProduksiQty, b.BJQty, b.subconOut, b.Sisa, b.ExpenditureType, a.Invoice, a.PEB, a.TAnggalPEB, a.EksporQty from #1 a join #2 b on a.row_num = b.row_num " +
                         "drop table #1 " +
@@ -393,9 +393,9 @@ namespace com.danliris.support.lib.Services
             return reportData.AsQueryable();
         }
         
-        public MemoryStream GetTraceableInExcel(string filter, string tipe,DateTime? Datefrom, DateTime? DateTo)
+        public MemoryStream GetTraceableInExcel(string filter, string tipe, string tipebc, DateTime? Datefrom, DateTime? DateTo)
         {
-            var Query = getQueryTracable2(filter, tipe, Datefrom, DateTo);
+            var Query = getQueryTracable2(filter, tipe, tipebc, Datefrom, DateTo);
             Query.OrderBy(x => x.BCNo);
             DataTable result = new DataTable();
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -497,13 +497,13 @@ namespace com.danliris.support.lib.Services
                         rospan[a.BCType + a.BCNo + a.BCDate + a.BonNo] = 1;
                     }
 
-                    if (rojobspan.TryGetValue(a.BCType + a.BCNo + a.BonNo + a.ROJob, out value))
+                    if (rojobspan.TryGetValue(a.BCType + a.BCNo + a.BonNo + a.ROJob + a.PO, out value))
                     {
-                        rojobspan[a.BCType + a.BCNo + a.BonNo + a.ROJob]++;
+                        rojobspan[a.BCType + a.BCNo + a.BonNo + a.ROJob + a.PO]++;
                     }
                     else
                     {
-                        rojobspan[a.BCType + a.BCNo + a.BonNo + a.ROJob] = 1;
+                        rojobspan[a.BCType + a.BCNo + a.BonNo + a.ROJob + a.PO] = 1;
                     }
                     if (docspan.TryGetValue(a.BCType + a.BCNo + a.BonNo + a.PO + a.ItemCode + a.ItemName, out value))
                     {
@@ -545,13 +545,13 @@ namespace com.danliris.support.lib.Services
                     {
                         sisaspan[a.BCNo + a.BCType + a.BonNo + a.PO + a.Sisa] = 1;
                     }
-                    if (prospan.TryGetValue(a.BCNo + a.BCType + a.BonNo + a.ROJob + a.ProduksiQty, out value))
+                    if (prospan.TryGetValue(a.BCNo + a.BCType + a.BonNo + a.ROJob + a.PO + a.BUK + a.ProduksiQty, out value))
                     {
-                        prospan[a.BCNo + a.BCType + a.BonNo + a.ROJob + a.ProduksiQty]++;
+                        prospan[a.BCNo + a.BCType + a.BonNo + a.ROJob + a.PO + a.BUK + a.ProduksiQty]++;
                     }
                     else
                     {
-                        prospan[a.BCNo + a.BCType + a.BonNo + a.ROJob + a.ProduksiQty] = 1;
+                        prospan[a.BCNo + a.BCType + a.BonNo + a.ROJob + a.PO + a.BUK + a.ProduksiQty] = 1;
                     }
                     if (eksporspan.TryGetValue(a.BCNo + a.BCType + a.BonNo + a.ROJob + a.Invoice + a.PEB + a.EksporQty, out value))
                     {
@@ -648,20 +648,20 @@ namespace com.danliris.support.lib.Services
 
                     index += c.Value;
                 }
-                index = 2;
-                foreach (KeyValuePair<string, int> c in eksporspan)
-                {
-                    sheet.Cells["R" + index + ":R" + (index + c.Value - 1)].Merge = true;
-                    sheet.Cells["R" + index + ":R" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
-                    sheet.Cells["S" + index + ":S" + (index + c.Value - 1)].Merge = true;
-                    sheet.Cells["S" + index + ":S" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
-                    sheet.Cells["T" + index + ":T" + (index + c.Value - 1)].Merge = true;
-                    sheet.Cells["T" + index + ":T" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
-                    sheet.Cells["U" + index + ":U" + (index + c.Value - 1)].Merge = true;
-                    sheet.Cells["U" + index + ":U" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                //index = 2;
+                //foreach (KeyValuePair<string, int> c in eksporspan)
+                //{
+                //    sheet.Cells["R" + index + ":R" + (index + c.Value - 1)].Merge = true;
+                //    sheet.Cells["R" + index + ":R" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                //    sheet.Cells["S" + index + ":S" + (index + c.Value - 1)].Merge = true;
+                //    sheet.Cells["S" + index + ":S" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                //    sheet.Cells["T" + index + ":T" + (index + c.Value - 1)].Merge = true;
+                //    sheet.Cells["T" + index + ":T" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                //    sheet.Cells["U" + index + ":U" + (index + c.Value - 1)].Merge = true;
+                //    sheet.Cells["U" + index + ":U" + (index + c.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
 
-                    index += c.Value;
-                }
+                //    index += c.Value;
+                //}
                 sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
             }
             MemoryStream stream = new MemoryStream();
