@@ -302,19 +302,19 @@ namespace com.danliris.support.lib.Services
 						"declare @EndDate datetime = '" + DateTo + "' " +
 						" select data.unitCode,data.ItemCode,ItemName, UnitQtyName, Convert(float, SUM(BeginQty)) as BeginQty, Convert(float, SUM(ReceiptQty)) ReceiptQty, Convert(float, SUM(ExpenditureQty)) ExpenditureQty, Convert(float, SUM(AdjustmentQty)) AdjustmentQty, Convert(float, SUM(OpnameQty)) as OpnameQty,SupplierType into #balance from(  " +
 
-						" select unitCode, ItemCode, ItemName, UnitQtyName, (Quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'Balance' and[ClassificationCode] = 'BP' " +
+						" select unitCode, ItemCode, ItemName, UnitQtyName, (Quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'Balance' and[ClassificationCode] != 'BP' " +
 
 						" union all " +
 
-						" select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt' and[ClassificationCode] = 'BP' and(date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode ,SupplierType " +
+						" select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt' and[ClassificationCode] != 'BP' and(date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode ,SupplierType " +
 
 						" union all " +
 
-						" select unitCode, ItemCode, ItemName, UnitQtyName, -SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'expenditure' and[ClassificationCode] = 'BP' and(date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType   " +
+						" select unitCode, ItemCode, ItemName, UnitQtyName, -SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'expenditure' and[ClassificationCode] != 'BP' and(date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType   " +
 
 
 						"union all " +
-						" select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] = 'BP' and(DATE > '2018-05-31' and date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType ) as data " +
+						" select unitCode, ItemCode, ItemName, UnitQtyName, SUM(quantity) as BeginQty, 0 as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] != 'BP' and(DATE > '2018-05-31' and date < @StartDate) group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType ) as data " +
 
 					   " group by ItemCode, ItemName,UnitQtyName,unitCode ,SupplierType" +
 					   " select data.ItemCode,ItemName, UnitQtyName,round(SUM(BeginQty), 2) as BeginQty,SUM(ReceiptQty) ReceiptQty, SUM(ExpenditureQty)ExpenditureQty,SUM(AdjustmentQty) AdjustmentQty, SUM(OpnameQty) as OpnameQty,SupplierType into #tempData from( " +
@@ -322,12 +322,12 @@ namespace com.danliris.support.lib.Services
 					   " select *from #balance  " +
 					   "union all " +
 
-						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode ,SupplierType " +
+						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, 0 as ReceiptQty, SUM(quantity) as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'expenditure' and DATE between @StartDate and @EndDate and[ClassificationCode] != 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode ,SupplierType " +
 						"union all " +
-					   "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] = 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType  " +
+					   "select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty, SUM(quantity) as ReceiptQty, 0 as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt' and DATE between @StartDate and @EndDate and[ClassificationCode] != 'BP' group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType  " +
 
 						"union all " +
-						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty,case when sum(Quantity) > 0 then sum(Quantity) else 0 end as ReceiptQty,case when sum(Quantity) < 0 then(-1) * sum(Quantity) else 0 end as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] = 'BP' and(DATE between @StartDate and @EndDate) group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType) as data " +
+						"select unitCode, ItemCode, ItemName, UnitQtyName, 0 as BeginQty,case when sum(Quantity) > 0 then sum(Quantity) else 0 end as ReceiptQty,case when sum(Quantity) < 0 then(-1) * sum(Quantity) else 0 end as ExpenditureQty, 0 as AdjustmentQty, 0 as OpnameQty,SupplierType from FactItemMutation where TYPE = 'receipt correction' and[ClassificationCode] != 'BP' and(DATE between @StartDate and @EndDate) group by ItemCode, ItemName, UnitQtyName, unitCode,SupplierType) as data " +
 						"group by itemcode,itemname, unitqtyname,SupplierType " +
 						"order by itemcode " +
 						"select * from (select * , beginqty +receiptqty-expenditureQty +adjustmentqty + opnameQty as LastQty,0 as Selisih from #tempData where BeginQty <> 0 or ReceiptQty <> 0 or ExpenditureQty <> 0 or AdjustmentQty <> 0 or OpnameQty <> 0  " +
