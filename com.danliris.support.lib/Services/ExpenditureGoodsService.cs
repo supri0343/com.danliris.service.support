@@ -32,7 +32,7 @@ namespace com.danliris.support.lib.Services
 
             try
             {
-                string connectionString = APIEndpoint.ConnectionString;
+                string connectionString = APIEndpoint.LocalConnectionString;
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
