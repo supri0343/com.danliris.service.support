@@ -37,7 +37,12 @@ namespace com.danliris.support.lib.Services
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(
-                        "declare @StartDate datetime = '" + DateFrom + "' declare @EndDate datetime = '" + DateTo + "' select a.ExpenditureGoodId, a.RO, a.Article, a.UnitCode, a.BuyerContract, e.ExpenditureTypeName, a.Description, c.ComodityName, d.SizeNumber, b.Description as Desb, b.Qty from ExpenditureGood a join ExpenditureGoodDetail b on a.ExpenditureGoodId = b.ExpenditureGoodId join Comodity c on b.ComodityId = c.ComodityID join Sizes d on b.SizeId = d.SizeId join ExpenditureType e on a.ExpenditureType = e.ExpenditureTypeId where a.UpdateDate > @StartDate and a.UpdateDate <= @EndDate", conn))
+                        "declare @StartDate datetime = '" + DateFrom + "' declare @EndDate datetime = '" + DateTo + "' " +
+                        "select a.ExpenditureGoodId, a.RO, a.Article, a.UnitCode, a.BuyerContract, e.ExpenditureTypeName, a.Description, c.ComodityName, d.SizeNumber, c.ComodityCode, b.Description as Desb, b.Qty from ExpenditureGood a " +
+                        "join ExpenditureGoodDetail b on a.ExpenditureGoodId = b.ExpenditureGoodId " +
+                        "join Comodity c on b.ComodityId = c.ComodityID " +
+                        "join Sizes d on b.SizeId = d.SizeId join ExpenditureType e on a.ExpenditureType = e.ExpenditureTypeId " +
+                        "where a.ProcessDate between @StartDate and @EndDate", conn))
 
                     {
                         SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
@@ -55,6 +60,7 @@ namespace com.danliris.support.lib.Services
                                 ExpenditureTypeName = data["ExpenditureTypeName"].ToString(),
                                 Description = data["Description"].ToString(),
                                 ComodityName = data["ComodityName"].ToString(),
+                                ComodityCode = data["ComodityCode"].ToString(),
                                 SizeNumber = data["SizeNumber"].ToString(),
                                 Descriptionb = data["Desb"].ToString(),
                                 Qty = String.Format("{0:n}", (double)data["Qty"])
@@ -114,6 +120,7 @@ namespace com.danliris.support.lib.Services
             result.Columns.Add(new DataColumn() { ColumnName = "Buyer Contract", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tipe", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Deskripsi", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Komoditi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Komoditi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Ukuran", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Warna", DataType = typeof(String) });
@@ -121,7 +128,7 @@ namespace com.danliris.support.lib.Services
 
             if (Query.ToArray().Count() == 0)
             {
-                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", 0); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", 0); // to allow column name to be generated properly for empty data as template
             }
             else
             {
@@ -129,7 +136,7 @@ namespace com.danliris.support.lib.Services
                 foreach (var item in Query)
                 {
                     i++;
-                    result.Rows.Add(i.ToString(), item.ExpenditureGoodId, item.RO, item.Article, item.UnitCode, "-", item.BuyerContract, item.ExpenditureTypeName, item.Description, item.ComodityName, item.SizeNumber, item.Descriptionb, item.Qty);
+                    result.Rows.Add(i.ToString(), item.ExpenditureGoodId, item.RO, item.Article, item.UnitCode, "-", item.BuyerContract, item.ExpenditureTypeName, item.Description, item.ComodityCode ,item.ComodityName, item.SizeNumber, item.Descriptionb, item.Qty);
                 }
             }
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);

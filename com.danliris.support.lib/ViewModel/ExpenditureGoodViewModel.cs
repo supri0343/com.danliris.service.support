@@ -14,6 +14,7 @@ namespace com.danliris.support.lib.ViewModel
         public string ExpenditureTypeName { get; set; }
         public string Description { get; set; }
         public string ComodityName { get; set; }
+        public string ComodityCode { get; set; }
         public string SizeNumber { get; set; }
         public string Descriptionb { get; set; }
         public string Qty { get; set; }
