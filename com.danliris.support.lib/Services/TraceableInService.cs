@@ -103,6 +103,7 @@ namespace com.danliris.support.lib.Services
                     "drop table #1 " +
                     "drop table #2", conn))
                     {
+                        cmd.CommandTimeout = (1000 * 60 * 20);
                         SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
                         DataSet dSet = new DataSet();
                         dataAdapter.Fill(dSet);
@@ -279,6 +280,7 @@ namespace com.danliris.support.lib.Services
                         "drop table #2";
                     using (SqlCommand cmd = new SqlCommand(cmdtraceable, conn))
                     {
+                        cmd.CommandTimeout = (1000 * 60 * 20);
                         SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
                         DataSet dSet = new DataSet();
                         dataAdapter.Fill(dSet);
