@@ -38,13 +38,14 @@ namespace com.danliris.support.lib.Services
                 if (string.IsNullOrWhiteSpace(tipebc))
                 {
 
-                    using (SqlCommand cmd = new SqlCommand("select ROW_NUMBER() OVER ( ORDER BY BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, BUK) row_num, BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt,SatMasuk, BUK, QtyBUK, SatKeluar, ROJob, ProduksiQty, subconOut + FinisihingOutQty as BJQty, subconOut, QtyReceipt - QtyBUK as Sisa, ExpenditureType, '' Invoice, '' PEB, '' TAnggalPEB,'' EksporQty into #2 " +
+                    using (SqlCommand cmd = new SqlCommand("select ROW_NUMBER() OVER ( ORDER BY BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, BUK) row_num, BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt,SatMasuk, BUK, QtyBUK, SatKeluar, ROJob, ProduksiQty, subconOut + FinisihingOutQty as BJQty, subconOut, QtyReceipt - QtyBUK as Sisa, ExpenditureType, '' Invoice, '' PEB, '' TAnggalPEB,'' EksporQty, ExpenditureTypeId into #2 " +
                     "from " +
-                    "(Select a.BCNo, b.BonNo, a.BCType, a.BCDate,d.ItemCode, (select top 1 ItemName from DL_Supports.dbo.ITEM_CATEGORY where ItemCode = d.ItemCode) as ItemName, h.Invoice,Sum(i.Qty) As EksporQty, h.ExpenditureType, isnull(j.BCNo,'-') as PEB, isnull(j.BCDate,'1970-01-01') as TAnggalPEB, " +
+                    "(Select a.BCNo, b.BonNo, a.BCType, a.BCDate,d.ItemCode, (select top 1 ItemName from DL_Supports.dbo.ITEM_CATEGORY where ItemCode = d.ItemCode) as ItemName, isnull(h.Invoice,'-') Invoice ,Sum(i.Qty) As EksporQty, isnull(h.ExpenditureType, '-') ExpenditureType, isnull(j.BCNo,'-') as PEB, isnull(j.BCDate,'1970-01-01') as TAnggalPEB, " +
                     "isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = c.DetailShippingOrderId),0) As QtyReceipt," +
                     "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = c.DetailShippingOrderId) as SatMasuk," +
                     "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId) as SatKeluar," +
-                    "g.DestinationJob as ROJob, " +
+                    "isnull(g.DestinationJob,'-') as ROJob, " +
+                    "isnull(x.ExpenditureTypeId, '-') ExpenditureTypeId, " +
                     "(select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = d.POId) NoPO," +
                     "isnull((select  ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),'-') BUK," +
                     "isnull((select  SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),0) QtyBUK," +
@@ -55,27 +56,29 @@ namespace com.danliris.support.lib.Services
                     "join DL_Supports.dbo.SHIPPING_ORDER b on a.BCId = b.BCId " +
                     "join DL_Supports.dbo.DETAIL_SHIPPING_ORDER c on b.ShippingOrderId = c.ShippingOrderId " +
                     "join DL_Supports.dbo.DO_ITEM d on c.POId= d.POId " +
-                    "join DL_Supports.dbo.DETAIL_DELIVERY_ORDER e on d.DOItemNo = e.ReferenceNo " +
-                    "join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS f on e.DetailDOId = f.DetailDOId " +
-                    "join DL_Supports.dbo.DELIVERY_ORDER g  on e.DeliveryOrderNo = g.DeliveryOrderNo " +
-                    "join ExpenditureGood h on h.RO = g.DestinationJob " +
-                    "join ExpenditureGoodDetail i on h.ExpenditureGoodId = i.ExpenditureGoodId " +
+                    "left join DL_Supports.dbo.DETAIL_DELIVERY_ORDER e on d.DOItemNo = e.ReferenceNo " +
+                    "left join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS f on e.DetailDOId = f.DetailDOId " +
+                    "left join (Select ExpenditureNo, ExpenditureTypeId from DL_Inventories.dbo.EXPENDITURE_GOODS) x on f.ExpenditureNo = x.ExpenditureNo" +
+                    "left join DL_Supports.dbo.DELIVERY_ORDER g  on e.DeliveryOrderNo = g.DeliveryOrderNo " +
+                    "left join ExpenditureGood h on h.RO = g.DestinationJob " +
+                    "left join ExpenditureGoodDetail i on h.ExpenditureGoodId = i.ExpenditureGoodId " +
                     "join DL_Inventories.dbo.DETAIL_RECEIPT_GOODS k on k.DetailShippingOrderId = c.DetailShippingOrderId " +
                     "left join DL_Supports.dbo.BEACUKAI_ADDED j on j.ExpenditureNo = h.Invoice " +
                     "group by a.BCNo,a.BCType, a.BCDate,BonNo," +
                     "g.DestinationJob ,k.DetailReceiptGoodsId, c.DetailShippingOrderId," +
                     "d.ItemCode," +
-                    "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate " +
+                    "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate, ExpenditureTypeId " +
                     ") data where bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' " +
                     "order by BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, BUK " +
                     "select ROW_NUMBER() OVER ( " +
                     "ORDER BY BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, Invoice " +
-                    ") row_num,  '' BCType, '' BCNo, '' BCDate, '' BonNo,'' NoPO, '' ItemCode, '' ItemName, 0 QtyReceipt, '' SatMasuk, '' BUK, 0 QtyBUK, '' SatKeluar, '' ROJob, 0 ProduksiQty, 0 as BJQty, 0 subconOut, 0 as Sisa, '' as ExpenditureType, Invoice, PEB, TAnggalPEB, EksporQty into #1 from " +
-                    "(Select a.BCNo, b.BonNo, a.BCType, a.BCDate,d.ItemCode, D.ItemDetailId as ItemName, h.Invoice,Sum(i.Qty) As EksporQty, h.ExpenditureType, isnull(j.BCNo,'-') as PEB, isnull(j.BCDate,'1970-01-01') as TAnggalPEB, " +
+                    ") row_num,  '' BCType, '' BCNo, '' BCDate, '' BonNo,'' NoPO, '' ItemCode, '' ItemName, 0 QtyReceipt, '' SatMasuk, '' BUK, 0 QtyBUK, '' SatKeluar, '' ROJob, 0 ProduksiQty, 0 as BJQty, 0 subconOut, 0 as Sisa, '' as ExpenditureType, Invoice, PEB, TAnggalPEB, EksporQty, ExpenditureTypeId into #1 from " +
+                    "(Select a.BCNo, b.BonNo, a.BCType, a.BCDate,d.ItemCode, D.ItemDetailId as ItemName, isnull(h.Invoice,'-') Invoice ,Sum(i.Qty) As EksporQty, isnull(h.ExpenditureType, '-') ExpenditureType, isnull(j.BCNo,'-') as PEB, isnull(j.BCDate,'1970-01-01') as TAnggalPEB, " +
                     "isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = c.DetailShippingOrderId),0) As QtyReceipt," +
                     "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = c.DetailShippingOrderId) as SatMasuk," +
                     "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId) as SatKeluar," +
-                    "g.DestinationJob as ROJob," +
+                    "isnull(g.DestinationJob,'-') as ROJob, " +
+                    "isnull(x.ExpenditureTypeId, '-') ExpenditureTypeId, " +
                     "(select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = d.POId) NoPO," +
                     "isnull((select  ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),'-') BUK," +
                     "isnull((select  SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),0) QtyBUK," +
@@ -86,20 +89,22 @@ namespace com.danliris.support.lib.Services
                     "join DL_Supports.dbo.SHIPPING_ORDER b on a.BCId = b.BCId " +
                     "join DL_Supports.dbo.DETAIL_SHIPPING_ORDER c on b.ShippingOrderId = c.ShippingOrderId " +
                     "join DL_Supports.dbo.DO_ITEM d on c.POId= d.POId " +
-                    "join DL_Supports.dbo.DETAIL_DELIVERY_ORDER e on d.DOItemNo = e.ReferenceNo " +
-                    "join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS f on e.DetailDOId = f.DetailDOId " +
-                    "join DL_Supports.dbo.DELIVERY_ORDER g  on e.DeliveryOrderNo = g.DeliveryOrderNo " +
-                    "join ExpenditureGood h on h.RO = g.DestinationJob " +
-                    "join ExpenditureGoodDetail i on h.ExpenditureGoodId = i.ExpenditureGoodId " +
+                    "left join DL_Supports.dbo.DETAIL_DELIVERY_ORDER e on d.DOItemNo = e.ReferenceNo " +
+                    "left join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS f on e.DetailDOId = f.DetailDOId " +
+                    "left join (Select ExpenditureNo, ExpenditureTypeId from DL_Inventories.dbo.EXPENDITURE_GOODS) x on f.ExpenditureNo = x.ExpenditureNo " +
+                    "left join DL_Supports.dbo.DELIVERY_ORDER g  on e.DeliveryOrderNo = g.DeliveryOrderNo " +
+                    "left join ExpenditureGood h on h.RO = g.DestinationJob " +
+                    "left join ExpenditureGoodDetail i on h.ExpenditureGoodId = i.ExpenditureGoodId " +
                     "join DL_Inventories.dbo.DETAIL_RECEIPT_GOODS k on k.DetailShippingOrderId = c.DetailShippingOrderId " +
                     "left join DL_Supports.dbo.BEACUKAI_ADDED j on j.ExpenditureNo = h.Invoice " +
                     "group by a.BCNo,a.BCType, a.BCDate,BonNo, " +
                     "g.DestinationJob ,k.DetailReceiptGoodsId, c.DetailShippingOrderId," +
                     "d.ItemCode," +
-                    "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate" +
+                    "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate , ExpenditureTypeId" +
                     ") data where bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' " +
                     "order by BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, Invoice " +
                     "Select b.BCType, b.BCNo, b.BCDate, b.BonNo, b.NoPO, b.ItemCode, b.ItemName, b.QtyReceipt,b.SatMasuk, b.BUK, b.QtyBUK, b.SatKeluar, b.ROJob, b.ProduksiQty, b.BJQty, b.subconOut, b.Sisa, b.ExpenditureType, a.Invoice, a.PEB, a.TAnggalPEB, a.EksporQty from #1 a join #2 b on a.row_num = b.row_num " +
+                    "where a.ExpenditureTypeId NOT IN ('EXT002','EXT003','EXT004','EXT005') " +
                     "drop table #1 " +
                     "drop table #2", conn))
                     {
@@ -214,13 +219,14 @@ namespace com.danliris.support.lib.Services
                     //    "select * from (select * from #PO union all select * from #BCNo)as data " +
                     //    "drop table #PO " +
                     //    "drop table #BCNo ";
-                    string cmdtraceable = "select ROW_NUMBER() OVER ( ORDER BY BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, BUK) row_num, BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt,SatMasuk, BUK, QtyBUK, SatKeluar, ROJob, ProduksiQty, subconOut + FinisihingOutQty as BJQty, subconOut, QtyReceipt - QtyBUK as Sisa, ExpenditureType, '' Invoice, '' PEB, '' TAnggalPEB,'' EksporQty into #2 " +
+                    string cmdtraceable = "select ROW_NUMBER() OVER ( ORDER BY BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, BUK) row_num, BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt,SatMasuk, BUK, QtyBUK, SatKeluar, ROJob, ProduksiQty, subconOut + FinisihingOutQty as BJQty, subconOut, QtyReceipt - QtyBUK as Sisa, ExpenditureType, '' Invoice, '' PEB, '' TAnggalPEB,'' EksporQty, ExpenditureTypeId into #2 " +
                         "from " +
-                        "(Select a.BCNo, b.BonNo, a.BCType, a.BCDate,d.ItemCode, (select top 1 ItemName from DL_Supports.dbo.ITEM_CATEGORY where ItemCode = d.ItemCode) as ItemName, h.Invoice,Sum(i.Qty) As EksporQty, h.ExpenditureType, isnull(j.BCNo,'-') as PEB, isnull(j.BCDate,'1970-01-01') as TAnggalPEB, " +
+                        "(Select a.BCNo, b.BonNo, a.BCType, a.BCDate,d.ItemCode, (select top 1 ItemName from DL_Supports.dbo.ITEM_CATEGORY where ItemCode = d.ItemCode) as ItemName, isnull(h.Invoice,'-') Invoice ,Sum(i.Qty) As EksporQty, isnull(h.ExpenditureType, '-') ExpenditureType , isnull(j.BCNo,'-') as PEB, isnull(j.BCDate,'1970-01-01') as TAnggalPEB, " +
                         "isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = c.DetailShippingOrderId),0) As QtyReceipt," +
                         "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = c.DetailShippingOrderId) as SatMasuk," +
-                        "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId) as SatKeluar," +
-                        "g.DestinationJob as ROJob, " +
+                        "isnull((select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),'-') as SatKeluar," +
+                        "isnull(g.DestinationJob,'-') as ROJob, " +
+                        "isnull(x.ExpenditureTypeId, '-') ExpenditureTypeId, " +
                         "(select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = d.POId) NoPO," +
                         "isnull((select  ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),'-') BUK," +
                         "isnull((select  SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),0) QtyBUK," +
@@ -231,27 +237,29 @@ namespace com.danliris.support.lib.Services
                         "join DL_Supports.dbo.SHIPPING_ORDER b on a.BCId = b.BCId " +
                         "join DL_Supports.dbo.DETAIL_SHIPPING_ORDER c on b.ShippingOrderId = c.ShippingOrderId " +
                         "join DL_Supports.dbo.DO_ITEM d on c.POId= d.POId " +
-                        "join DL_Supports.dbo.DETAIL_DELIVERY_ORDER e on d.DOItemNo = e.ReferenceNo " +
-                        "join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS f on e.DetailDOId = f.DetailDOId " +
-                        "join DL_Supports.dbo.DELIVERY_ORDER g  on e.DeliveryOrderNo = g.DeliveryOrderNo " +
-                        "join ExpenditureGood h on h.RO = g.DestinationJob " +
-                        "join ExpenditureGoodDetail i on h.ExpenditureGoodId = i.ExpenditureGoodId " +
+                        "left join DL_Supports.dbo.DETAIL_DELIVERY_ORDER e on d.DOItemNo = e.ReferenceNo " +
+                        "left join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS f on e.DetailDOId = f.DetailDOId " +
+                        "left join (Select ExpenditureNo, ExpenditureTypeId from DL_Inventories.dbo.EXPENDITURE_GOODS ) x on f.ExpenditureNo = x.ExpenditureNo " +
+                        "left join DL_Supports.dbo.DELIVERY_ORDER g  on e.DeliveryOrderNo = g.DeliveryOrderNo " +
+                        "left join ExpenditureGood h on h.RO = g.DestinationJob " +
+                        "left join ExpenditureGoodDetail i on h.ExpenditureGoodId = i.ExpenditureGoodId " +
                         "join DL_Inventories.dbo.DETAIL_RECEIPT_GOODS k on k.DetailShippingOrderId = c.DetailShippingOrderId " +
                         "left join DL_Supports.dbo.BEACUKAI_ADDED j on j.ExpenditureNo = h.Invoice " +
                         "group by a.BCNo,a.BCType, a.BCDate,BonNo," +
                         "g.DestinationJob ,k.DetailReceiptGoodsId, c.DetailShippingOrderId," +
                         "d.ItemCode," +
-                        "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate " +
+                        "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate, ExpenditureTypeId " +
                         ") data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' and BCType = '"+ tipebc +"' " +
                         "order by BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, BUK " +
                         "select ROW_NUMBER() OVER ( " +
                         "ORDER BY BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, Invoice " +
-                        ") row_num,  '' BCType, '' BCNo, '' BCDate, '' BonNo,'' NoPO, '' ItemCode, '' ItemName, 0 QtyReceipt, '' SatMasuk, '' BUK, 0 QtyBUK, '' SatKeluar, '' ROJob, 0 ProduksiQty, 0 as BJQty, 0 subconOut, 0 as Sisa, '' as ExpenditureType, Invoice, PEB, TAnggalPEB, EksporQty into #1 from " +
-                        "(Select a.BCNo, b.BonNo, a.BCType, a.BCDate,d.ItemCode, D.ItemDetailId as ItemName, h.Invoice,Sum(i.Qty) As EksporQty, h.ExpenditureType, isnull(j.BCNo,'-') as PEB, isnull(j.BCDate,'1970-01-01') as TAnggalPEB, " +
+                        ") row_num,  '' BCType, '' BCNo, '' BCDate, '' BonNo,'' NoPO, '' ItemCode, '' ItemName, 0 QtyReceipt, '' SatMasuk, '' BUK, 0 QtyBUK, '' SatKeluar, '' ROJob, 0 ProduksiQty, 0 as BJQty, 0 subconOut, 0 as Sisa, '' as ExpenditureType, Invoice, PEB, TAnggalPEB, EksporQty, ExpenditureTypeId into #1 from " +
+                        "(Select a.BCNo, b.BonNo, a.BCType, a.BCDate,d.ItemCode, D.ItemDetailId as ItemName, isnull(h.Invoice,'-') Invoice ,Sum(i.Qty) As EksporQty, isnull(h.ExpenditureType, '-') ExpenditureType , isnull(j.BCNo,'-') as PEB, isnull(j.BCDate,'1970-01-01') as TAnggalPEB, " +
                         "isnull((select top 1 Quantity * ConvertValue from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS where DetailShippingOrderId = c.DetailShippingOrderId),0) As QtyReceipt," +
                         "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_RECEIPT_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQtyCode = b.UnitQtyCode where a.DetailShippingOrderId = c.DetailShippingOrderId) as SatMasuk," +
-                        "(select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId) as SatKeluar," +
-                        "g.DestinationJob as ROJob," +
+                        "isnull((select top 1 b.UnitQtyName from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a join DL_Inventories.dbo.UNIT_QUANTITY b on a.SmallestUnitQuantity = b.UnitQtyCode Where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),'-') as SatKeluar," +
+                        "isnull(g.DestinationJob,'-') as ROJob," +
+                        "isnull(x.ExpenditureTypeId, '-') ExpenditureTypeId," +
                         "(select top 1 PlanPO from DL_Supports.dbo.PURCHASE_ORDER f where f.POId = d.POId) NoPO," +
                         "isnull((select  ExpenditureNo from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),'-') BUK," +
                         "isnull((select  SmallestQuantity from DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS a where a.DetailExpenditureGoodsId = f.DetailExpenditureGoodsId),0) QtyBUK," +
@@ -262,20 +270,22 @@ namespace com.danliris.support.lib.Services
                         "join DL_Supports.dbo.SHIPPING_ORDER b on a.BCId = b.BCId " +
                         "join DL_Supports.dbo.DETAIL_SHIPPING_ORDER c on b.ShippingOrderId = c.ShippingOrderId " +
                         "join DL_Supports.dbo.DO_ITEM d on c.POId= d.POId " +
-                        "join DL_Supports.dbo.DETAIL_DELIVERY_ORDER e on d.DOItemNo = e.ReferenceNo " +
-                        "join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS f on e.DetailDOId = f.DetailDOId " +
-                        "join DL_Supports.dbo.DELIVERY_ORDER g  on e.DeliveryOrderNo = g.DeliveryOrderNo " +
-                        "join ExpenditureGood h on h.RO = g.DestinationJob " +
-                        "join ExpenditureGoodDetail i on h.ExpenditureGoodId = i.ExpenditureGoodId " +
+                        "left join DL_Supports.dbo.DETAIL_DELIVERY_ORDER e on d.DOItemNo = e.ReferenceNo " +
+                        "left join DL_Inventories.dbo.DETAIL_EXPENDITURE_GOODS f on e.DetailDOId = f.DetailDOId " +
+                        "left join (Select ExpenditureNo, ExpenditureTypeId from DL_Inventories.dbo.EXPENDITURE_GOODS ) x on f.ExpenditureNo = x.ExpenditureNo " +
+                        "left join DL_Supports.dbo.DELIVERY_ORDER g  on e.DeliveryOrderNo = g.DeliveryOrderNo " +
+                        "left join ExpenditureGood h on h.RO = g.DestinationJob " +
+                        "left join ExpenditureGoodDetail i on h.ExpenditureGoodId = i.ExpenditureGoodId " +
                         "join DL_Inventories.dbo.DETAIL_RECEIPT_GOODS k on k.DetailShippingOrderId = c.DetailShippingOrderId " +
                         "left join DL_Supports.dbo.BEACUKAI_ADDED j on j.ExpenditureNo = h.Invoice " +
                         "group by a.BCNo,a.BCType, a.BCDate,BonNo, " +
                         "g.DestinationJob ,k.DetailReceiptGoodsId, c.DetailShippingOrderId," +
-                        "d.ItemCode," +
-                        "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate" +
+                        "d.ItemCode, ExpenditureTypeId, " +
+                        "d.ItemDetailId, d.POId, h.Invoice, f.DetailExpenditureGoodsId, h.ExpenditureType, j.BCNo, j.BCDate, ExpenditureTypeId" +
                         ") data where " + tipe + " = '" + filter + "' AND bcdate > '" + datefrom + "' And bcdate <= '" + dateTo + "' and ExpenditureType != 'E002' and BCType = '" + tipebc + "' " +
                         "order by BCType, BCNo, BCDate, BonNo, NoPO, ItemCode, ItemName, QtyReceipt, ROJob, Invoice " +
                         "Select b.BCType, b.BCNo, b.BCDate, b.BonNo, b.NoPO, b.ItemCode, b.ItemName, b.QtyReceipt,b.SatMasuk, b.BUK, b.QtyBUK, b.SatKeluar, b.ROJob, b.ProduksiQty, b.BJQty, b.subconOut, b.Sisa, b.ExpenditureType, a.Invoice, a.PEB, a.TAnggalPEB, a.EksporQty from #1 a join #2 b on a.row_num = b.row_num " +
+                        "where a.ExpenditureTypeId NOT IN ('EXT002','EXT003','EXT004','EXT005') " +
                         "drop table #1 " +
                         "drop table #2";
                     using (SqlCommand cmd = new SqlCommand(cmdtraceable, conn))
