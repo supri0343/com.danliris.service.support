@@ -18,6 +18,7 @@ using com.danliris.support.lib.ViewModel;
 using OfficeOpenXml;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
+using System.Data.SqlClient;
 
 namespace com.danliris.support.lib.Services
 {
@@ -36,6 +37,7 @@ namespace com.danliris.support.lib.Services
 
         public IQueryable<FactBeacukaiViewModel> GetReportINQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
+
             var array = new string[] { "BC 262", "BC 23", "BC 40", "BC 27"};
 			if (type == "BC 2.6.2") 
 			{ type = "BC 262"; }
@@ -478,6 +480,67 @@ namespace com.danliris.support.lib.Services
 		}
 
 
-		
-	}
+        public List<ViewFactBeacukai> GetBEACUKAI_ADDEDs(string invoice)
+        {
+            var invoices = invoice.Split(",").ToArray();
+            string connectionString = APIEndpoint.ConnectionString;
+            string cmdText = "Select a.BCNo, a.BCDate, b.Quantity, b.ItemCode, b.ItemName, a.ExpenditureNo FROM BEACUKAI_ADDED a JOIN BEACUKAI_ADDED_DETAIL b on a.BCId = b.BCId WHERE a.ExpenditureNo IN ({0})";
+
+            //string command = string.Format(cmdText, inClause);
+
+            List<SqlParameter> parameters = new List<SqlParameter>();
+
+            for (int i = 0; i < invoices.Length; i++)
+            {
+                parameters.Add(new SqlParameter("@inv" + i, invoices[i]));
+            }
+
+            string inClause = string.Join(", ", parameters.Select(s => s.ParameterName));
+
+
+
+
+            List<ViewFactBeacukai> data = new List<ViewFactBeacukai>();
+
+            if (parameters.Count > 0)
+            {
+                string command = string.Format(cmdText, inClause);
+
+                using (SqlConnection connection = new SqlConnection(connectionString)) {
+
+                    connection.Open();
+
+                    SqlCommand cmd = new SqlCommand(command, connection);
+
+                    foreach (var parameter in parameters)
+                    {
+                        cmd.Parameters.Add(parameter);
+                    }
+
+                    using (cmd)
+                    {
+                        cmd.CommandTimeout = (1000 * 60 * 20);
+                        SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
+                        DataSet dSet = new DataSet();
+                        dataAdapter.Fill(dSet);
+                        foreach (DataRow dataRow in dSet.Tables[0].Rows)
+                        {
+                            ViewFactBeacukai trace = new ViewFactBeacukai
+                            {
+                                BCNo = dataRow["BCNo"].ToString(),
+                                BCDate = Convert.ToDateTime(dataRow["BCDate"].ToString()),
+                                Quantity = (double)dataRow["Quantity"],
+                                BonNo = dataRow["ExpenditureNo"].ToString(),
+                                ItemCode = dataRow["ItemCode"].ToString()
+                            };
+
+                            data.Add(trace);
+                        }
+                    }
+                }
+            }
+            return data;
+        }
+
+    }
 }

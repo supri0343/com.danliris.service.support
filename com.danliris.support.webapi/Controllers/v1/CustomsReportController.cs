@@ -856,6 +856,32 @@ namespace com.danliris.support.webapi.Controllers.v1
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
+        [HttpGet("getPEB")]
+        public IActionResult GetPEB([FromBody] string invoice)
+        {
+            int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+            string accept = Request.Headers["Accept"];
+
+            try
+            {
+
+                var data = factBeacukaiService.GetBEACUKAI_ADDEDs(invoice);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data,
+                    info = new { total = data.Count() }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
 
         //[HttpGet("traceable/out/download")]
         //public IActionResult GetXlsOutTraceableDetail(string bcno, string type)
