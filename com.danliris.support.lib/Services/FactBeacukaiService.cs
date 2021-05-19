@@ -542,5 +542,60 @@ namespace com.danliris.support.lib.Services
             return data;
         }
 
+        public List<ViewFactBeacukai> GetBEACUKAI_ADDEDbyBCNo(string bcno)
+        {
+            string connectionString = APIEndpoint.ConnectionString;
+            string cmdText = String.Format("Select a.BCNo, a.BCDate, b.Quantity, b.ItemCode, b.ItemName, a.ExpenditureNo, a.BCType FROM BEACUKAI_ADDED a JOIN BEACUKAI_ADDED_DETAIL b on a.BCId = b.BCId WHERE a.BCNo = '{0}'", bcno);
+
+            //List<SqlParameter> parameters = new List<SqlParameter>();
+
+            //parameters.Add(new SqlParameter("@bcno", bcno));
+
+            List<ViewFactBeacukai> data = new List<ViewFactBeacukai>();
+
+            //var reader 
+
+            //if (parameters.Count > 0)
+            //{
+            //    string command = string.Format(cmdText, inClause);
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+
+                    connection.Open();
+
+                    SqlCommand cmd = new SqlCommand(cmdText, connection);
+
+                    //foreach (var parameter in parameters)
+                    //{
+                    //    cmd.Parameters.Add(parameter);
+                    //}
+
+                    using (cmd)
+                    {
+                        cmd.CommandTimeout = (1000 * 60 * 20);
+                        SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
+                        DataSet dSet = new DataSet();
+                        dataAdapter.Fill(dSet);
+                        foreach (DataRow dataRow in dSet.Tables[0].Rows)
+                        {
+                            ViewFactBeacukai trace = new ViewFactBeacukai
+                            {
+                                BCNo = dataRow["BCNo"].ToString(),
+                                BCDate = Convert.ToDateTime(dataRow["BCDate"].ToString()),
+                                Quantity = (double)dataRow["Quantity"],
+                                BonNo = dataRow["ExpenditureNo"].ToString(),
+                                ItemCode = dataRow["ItemCode"].ToString(),
+                                BCType = dataRow["BCType"].ToString()
+                            };
+
+                            data.Add(trace);
+                        }
+                    }
+                }
+            //}
+            return data;
+        }
+
     }
 }
