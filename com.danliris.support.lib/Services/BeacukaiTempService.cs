@@ -19,7 +19,7 @@ namespace com.danliris.support.lib.Services
         {
             string[] bcType = { "BC 262", "BC 23", "BC 40", "BC 27" };
 
-            IQueryable<BEACUKAI_TEMP> Query = context.BeacukaiTemp.Where(s => bcType.Contains(s.JenisBC));
+            IQueryable<BEACUKAI_TEMP> Query = context.BeacukaiTemp.Where(s => bcType.Contains(s.JenisBC) && s.TglBCNo.Year >= DateTime.Now.Year - 1 && s.Barang != null);
 
             Query = Query
                 .Select(p => new BEACUKAI_TEMP
@@ -30,7 +30,9 @@ namespace com.danliris.support.lib.Services
                     TglBCNo = p.TglBCNo, //BCDate = p.BCDate,
                     JenisBC = p.JenisBC, //BCType = p.BCType,
                     TglDatang = p.TglDatang,
-                    Hari = p.Hari
+                    Hari = p.Hari,
+                    Netto = Convert.ToDouble(p.Netto),
+                    Bruto = Convert.ToDouble(p.Bruto)
                 });
 
             if (!string.IsNullOrWhiteSpace(keyword))
