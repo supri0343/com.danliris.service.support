@@ -11,7 +11,7 @@ namespace com.danliris.support.lib.Models
 		public string Tipe { get; set; }
 		public string BCNo { get; set; }
       public string Barang { get; set; }
-      public double Bruto { get; set; }
+      public decimal Bruto { get; set; }
       public int CIF { get; set; }
       public int CIF_Rupiah { get; set; }
       public string KodeDokumenPabean { get; set; }
@@ -19,7 +19,7 @@ namespace com.danliris.support.lib.Models
       public string KodeBarang { get; set; }
       public string KodeKemasan { get; set; }
       public string NamaKemasan { get; set; }
-      public double Netto { get; set; }
+      public decimal Netto { get; set; }
       public string NoAju { get; set; }
       public string NamaSupplier { get; set; }
       public DateTime TglDaftarAju { get; set; }
