@@ -1,4 +1,5 @@
 ﻿using com.danliris.support.lib.Models;
+using com.danliris.support.lib.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +16,15 @@ namespace com.danliris.support.lib.Services
             this.context = context;
         }
 
-        public List<BEACUKAI_TEMP> Get(int size = 25, string keyword = null)
+        public List<BEACUKAI_TEMPViewModel> Get(int size = 25, string keyword = null)
         {
             string[] bcType = { "BC 262", "BC 23", "BC 40", "BC 27" };
 
             IQueryable<BEACUKAI_TEMP> Query = context.BeacukaiTemp.Where(s => bcType.Contains(s.JenisBC) && s.TglBCNo.Year >= DateTime.Now.Year - 1 && s.Barang != null);
 
-            Query = Query
-                .Select(p => new BEACUKAI_TEMP
+
+            var Query2 = Query
+                .Select(p => new BEACUKAI_TEMPViewModel
                 {
 
                     BCNo = p.BCNo,
@@ -37,17 +39,29 @@ namespace com.danliris.support.lib.Services
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                Query = Query.Where(s => s.BCNo.StartsWith(keyword));
+                Query2 = Query2.Where(s => s.BCNo.StartsWith(keyword));
             }
 
-            Query = Query
+            Query2 = Query2
                 .OrderBy(o => o.BCNo)
                 .Distinct();
 
-            Query = Query
+            var Query3 = Query2.GroupBy(x => new { x.BCNo, x.JenisBC }, (key, group) => new BEACUKAI_TEMPViewModel
+            {
+                BCNo = key.BCNo,
+                BCId = group.FirstOrDefault().BCId, //BonNo = p.BonNo,
+                TglBCNo = group.FirstOrDefault().TglBCNo, //BCDate = p.BCDate,
+                JenisBC = key.JenisBC, //BCType = p.BCType,
+                TglDatang = group.FirstOrDefault().TglDatang,
+                Hari = group.FirstOrDefault().Hari,
+                Netto = Convert.ToDouble(group.Sum(x=>x.Netto)),
+                Bruto = Convert.ToDouble(group.FirstOrDefault().Bruto)
+            });
+
+            Query3 = Query3
                 .Take(size);
 
-            return Query.ToList();
+            return Query3.ToList();
         }
 
 
@@ -55,6 +69,6 @@ namespace com.danliris.support.lib.Services
 
     public interface IBeacukaiTempService
     {
-        List<BEACUKAI_TEMP> Get(int size = 25, string keyword = null);
+        List<BEACUKAI_TEMPViewModel> Get(int size = 25, string keyword = null);
     }
 }
