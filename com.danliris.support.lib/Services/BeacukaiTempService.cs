@@ -46,11 +46,11 @@ namespace com.danliris.support.lib.Services
                 .OrderBy(o => o.BCNo)
                 .Distinct();
 
-            var Query3 = Query2.GroupBy(x => new { x.BCNo, x.JenisBC }, (key, group) => new BEACUKAI_TEMPViewModel
+            var Query3 = Query2.GroupBy(x => new { x.BCNo, x.JenisBC, x.TglBCNo }, (key, group) => new BEACUKAI_TEMPViewModel
             {
                 BCNo = key.BCNo,
                 BCId = group.FirstOrDefault().BCId, //BonNo = p.BonNo,
-                TglBCNo = group.FirstOrDefault().TglBCNo, //BCDate = p.BCDate,
+                TglBCNo = key.TglBCNo, //BCDate = p.BCDate,
                 JenisBC = key.JenisBC, //BCType = p.BCType,
                 TglDatang = group.FirstOrDefault().TglDatang,
                 Hari = group.FirstOrDefault().Hari,
