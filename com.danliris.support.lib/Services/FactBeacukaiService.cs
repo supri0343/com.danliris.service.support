@@ -484,7 +484,7 @@ namespace com.danliris.support.lib.Services
         {
             var invoices = invoice.Split(",").ToArray();
             string connectionString = APIEndpoint.ConnectionString;
-            string cmdText = "Select a.BCNo, a.BCDate, b.Quantity, b.ItemCode, b.ItemName, a.ExpenditureNo FROM BEACUKAI_ADDED a JOIN BEACUKAI_ADDED_DETAIL b on a.BCId = b.BCId WHERE a.ExpenditureNo IN ({0})";
+            string cmdText = "Select a.BCNo, a.BCDate, a.ExpenditureDate, b.Quantity, b.ItemCode, b.ItemName, a.ExpenditureNo FROM BEACUKAI_ADDED a JOIN BEACUKAI_ADDED_DETAIL b on a.BCId = b.BCId WHERE a.ExpenditureNo IN ({0})";
 
             //string command = string.Format(cmdText, inClause);
 
@@ -528,6 +528,7 @@ namespace com.danliris.support.lib.Services
                             ViewFactBeacukai trace = new ViewFactBeacukai
                             {
                                 BCNo = dataRow["BCNo"].ToString(),
+                                BonDate = Convert.ToDateTime(dataRow["ExpenditureDate"].ToString()),
                                 BCDate = Convert.ToDateTime(dataRow["BCDate"].ToString()),
                                 Quantity = (double)dataRow["Quantity"],
                                 BonNo = dataRow["ExpenditureNo"].ToString(),
@@ -601,7 +602,7 @@ namespace com.danliris.support.lib.Services
         {
 
             string connectionString = APIEndpoint.ConnectionString;
-            string cmdText = String.Format("Select a.BCNo, a.BCDate, b.Quantity, b.ItemCode, b.ItemName, a.ExpenditureNo, a.ExpenditureDate, a.BCType FROM BEACUKAI_ADDED a JOIN BEACUKAI_ADDED_DETAIL b on a.BCId = b.BCId WHERE a.ExpenditureDate BETWEEN '" + dateFrom + "' and '" + dateTo + "' ");
+            string cmdText = String.Format("Select distinct a.BCNo, a.BCDate, b.Quantity, b.ItemCode, b.ItemName, a.ExpenditureNo, a.ExpenditureDate, a.BCType FROM BEACUKAI_ADDED a JOIN BEACUKAI_ADDED_DETAIL b on a.BCId = b.BCId WHERE a.ExpenditureDate BETWEEN '" + dateFrom + "' and '" + dateTo + "' ");
 
             //List<SqlParameter> parameters = new List<SqlParameter>();
 
