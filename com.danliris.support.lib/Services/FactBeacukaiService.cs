@@ -38,38 +38,93 @@ namespace com.danliris.support.lib.Services
         public IQueryable<FactBeacukaiViewModel> GetReportINQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
 
-            var array = new string[] { "BC 262", "BC 23", "BC 40", "BC 27"};
-			if (type == "BC 2.6.2") 
-			{ type = "BC 262"; }
-			else if (type == "BC 2.3")
-			{ type = "BC 23"; }
-			else if (type == "BC 4.0")
-			{ type = "BC 40"; }
-			else if (type == "BC 2.7")
-			{ type = "BC 27"; }
-			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            var array = new string[] { "BC 262", "BC 23", "BC 40", "BC 27" };
+            if (type == "BC 2.6.2")
+            { type = "BC 262"; }
+            else if (type == "BC 2.3")
+            { type = "BC 23"; }
+            else if (type == "BC 4.0")
+            { type = "BC 40"; }
+            else if (type == "BC 2.7")
+            { type = "BC 27"; }
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
-            var Query = (from a in context.ViewFactBeacukai
-                         where a.BCDate.AddHours(offset).Date >= DateFrom.Date
-                             && a.BCDate.AddHours(offset).Date <= DateTo.Date
-							 && a.Tipe=="in"
-                             && array.Contains(a.BCType)
-                             && a.BCType== (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
-                         select new FactBeacukaiViewModel
-                         {
-                             BCNo = a.BCNo,
-                             BCType= a.BCType,
-                             BCDate=a.BCDate,
-                             BonDate=a.BonDate.GetValueOrDefault(),
-                             BonNo=a.BonNo,
-                             ItemCode=a.ItemCode,
-                             ItemName=a.ItemName,
-                             SupplierName=a.SupplierName,
-                             Quantity= String.Format("{0:n}", a.Quantity),
-                             Nominal= String.Format("{0:n}", a.Nominal),
-                             CurrencyCode=a.CurrencyCode,
-                             UnitQtyName=a.UnitQtyName
-                         });
+
+            //if (type == "BC 27")
+            //{
+            var Query = type == "BC 27" ? (from a in context.ViewFactBeacukai
+                                           where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+                                               && a.BCDate.AddHours(offset).Date <= DateTo.Date
+                                               && a.Tipe == "in"
+                                               && array.Contains(a.BCType)
+                                               && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
+                                               && a.SupplierName != "DAN LIRIS"
+                                           select new FactBeacukaiViewModel
+                                           {
+                                               BCNo = a.BCNo,
+                                               BCType = a.BCType,
+                                               BCDate = a.BCDate,
+                                               BonDate = a.BonDate.GetValueOrDefault(),
+                                               BonNo = a.BonNo,
+                                               ItemCode = a.ItemCode,
+                                               ItemName = a.ItemName,
+                                               SupplierName = a.SupplierName,
+                                               Quantity = String.Format("{0:n}", a.Quantity),
+                                               Nominal = String.Format("{0:n}", a.Nominal),
+                                               CurrencyCode = a.CurrencyCode,
+                                               UnitQtyName = a.UnitQtyName
+                                           }) :
+                         (from a in context.ViewFactBeacukai
+                          where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+                              && a.BCDate.AddHours(offset).Date <= DateTo.Date
+                              && a.Tipe == "in"
+                              && array.Contains(a.BCType)
+                              && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
+                              && a.SupplierName != "DAN LIRIS"
+                          select new FactBeacukaiViewModel
+                          {
+                              BCNo = a.BCNo,
+                              BCType = a.BCType,
+                              BCDate = a.BCDate,
+                              BonDate = a.BonDate.GetValueOrDefault(),
+                              BonNo = a.BonNo,
+                              ItemCode = a.ItemCode,
+                              ItemName = a.ItemName,
+                              SupplierName = a.SupplierName,
+                              Quantity = String.Format("{0:n}", a.Quantity),
+                              Nominal = String.Format("{0:n}", a.Nominal),
+                              CurrencyCode = a.CurrencyCode,
+                              UnitQtyName = a.UnitQtyName
+
+                          });
+
+            //} else
+            //{
+            //    var Query = (from a in context.ViewFactBeacukai
+            //                 where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+            //                     && a.BCDate.AddHours(offset).Date <= DateTo.Date
+            //                     && a.Tipe == "in"
+            //                     && array.Contains(a.BCType)
+            //                     && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
+            //                 select new FactBeacukaiViewModel
+            //                 {
+            //                     BCNo = a.BCNo,
+            //                     BCType = a.BCType,
+            //                     BCDate = a.BCDate,
+            //                     BonDate = a.BonDate.GetValueOrDefault(),
+            //                     BonNo = a.BonNo,
+            //                     ItemCode = a.ItemCode,
+            //                     ItemName = a.ItemName,
+            //                     SupplierName = a.SupplierName,
+            //                     Quantity = String.Format("{0:n}", a.Quantity),
+            //                     Nominal = String.Format("{0:n}", a.Nominal),
+            //                     CurrencyCode = a.CurrencyCode,
+            //                     UnitQtyName = a.UnitQtyName
+            //                 });
+            //}
+
+
+
             return Query;
         }
 
@@ -242,29 +297,52 @@ namespace com.danliris.support.lib.Services
 			{ type = "BC 27"; }
 			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
-            var Query = (from a in context.ViewFactBeacukai
-						 where a.BCDate.AddHours(offset).Date >= DateFrom.Date
-							 && a.BCDate.AddHours(offset).Date <= DateTo.Date
-							 && array.Contains(a.BCType)
-							 && a.Tipe == "out"
-							 && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
+            var Query = type == "BC 27" ? (from a in context.ViewFactBeacukai
+                                           where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+                                               && a.BCDate.AddHours(offset).Date <= DateTo.Date
+                                               && array.Contains(a.BCType)
+                                               //&& a.Tipe == "in"
+                                               && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
+                                               && a.SupplierName == "DAN LIRIS"
+                                           select new FactBeacukaiViewModel
+                                           {
+                                               BCNo = a.BCNo,
+                                               BCType = a.BCType,
+                                               BCDate = a.BCDate,
+                                               BonDate = a.BonDate.GetValueOrDefault(),
+                                               BonNo = a.BonNo,
+                                               ItemCode = a.ItemCode,
+                                               ItemName = a.ItemName,
+                                               SupplierName = a.SupplierName,
+                                               Quantity = String.Format("{0:n}", a.Quantity),
+                                               Nominal = String.Format("{0:n}", a.Nominal),
+                                               CurrencyCode = a.CurrencyCode,
+                                               UnitQtyName = a.UnitQtyName
+                                           }) :
+                         (from a in context.ViewFactBeacukai
+                          where a.BCDate.AddHours(offset).Date >= DateFrom.Date
+                              && a.BCDate.AddHours(offset).Date <= DateTo.Date
+                              && array.Contains(a.BCType)
+                              && a.Tipe == "out"
+                              && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
 
-						 select new FactBeacukaiViewModel
-						 {
-                             BCNo = a.BCNo,
-                             BCType = a.BCType,
-                             BCDate = a.BCDate,
-                             BonDate = a.BonDate.GetValueOrDefault(),
-                             BonNo = a.BonNo,
-                             ItemCode = a.ItemCode,
-                             ItemName = a.ItemName,
-                             SupplierName = a.SupplierName,
-                             Quantity = String.Format("{0:n}", a.Quantity),
-                             Nominal = String.Format("{0:n}", a.Nominal),
-                             CurrencyCode = a.CurrencyCode,
-                             UnitQtyName = a.UnitQtyName
-                         });
-            
+                          select new FactBeacukaiViewModel
+                          {
+                              BCNo = a.BCNo,
+                              BCType = a.BCType,
+                              BCDate = a.BCDate,
+                              BonDate = a.BonDate.GetValueOrDefault(),
+                              BonNo = a.BonNo,
+                              ItemCode = a.ItemCode,
+                              ItemName = a.ItemName,
+                              SupplierName = a.SupplierName,
+                              Quantity = String.Format("{0:n}", a.Quantity),
+                              Nominal = String.Format("{0:n}", a.Nominal),
+                              CurrencyCode = a.CurrencyCode,
+                              UnitQtyName = a.UnitQtyName
+                          });
+
+
             return Query;
         }
 
