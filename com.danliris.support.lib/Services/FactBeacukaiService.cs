@@ -313,7 +313,7 @@ namespace com.danliris.support.lib.Services
                                                BonNo = a.BonNo,
                                                ItemCode = a.ItemCode,
                                                ItemName = a.ItemName,
-                                               SupplierName = a.SupplierName,
+                                               SupplierName = a.Vendor,
                                                Quantity = String.Format("{0:n}", a.Quantity),
                                                Nominal = String.Format("{0:n}", a.Nominal),
                                                CurrencyCode = a.CurrencyCode,
