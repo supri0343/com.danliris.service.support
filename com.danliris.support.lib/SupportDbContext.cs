@@ -122,6 +122,9 @@ namespace com.danliris.support.lib
                 entity.Property(e => e.Valuta)
                     .HasMaxLength(50)
                     .IsUnicode(false);
+                entity.Property(e => e.Vendor)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<FactBeacukai>(entity =>

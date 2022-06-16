@@ -35,5 +35,6 @@ namespace com.danliris.support.lib.Models
       public string Sat { get; set; }
       public string KodeSupplier { get; set; }
       public DateTime TglDatang { get; set; }
+      public string Vendor { get; set; }
     }
 }
