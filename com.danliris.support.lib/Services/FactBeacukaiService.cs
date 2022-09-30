@@ -733,5 +733,19 @@ namespace com.danliris.support.lib.Services
             return data;
         }
 
+        public List<BEACUKAI_TEMPViewModel> GetBeacukaiTempQuery(string keyword, int offset)
+        {
+
+            var Query = (from a in context.BeacukaiTemp
+                         where a.BCNo.Contains(keyword) && a.JenisBC == "BC 23" && a.TglBCNo.Year >= DateTime.Now.Year
+                         select new BEACUKAI_TEMPViewModel
+                         {
+                             JenisBC = a.JenisBC,
+                             BCNo = a.BCNo
+                         }).Distinct();
+                        
+            return Query.ToList();
+        }
+
     }
 }
