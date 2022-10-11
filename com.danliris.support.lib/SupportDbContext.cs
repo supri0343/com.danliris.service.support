@@ -1,4 +1,5 @@
 ﻿using com.danliris.support.lib.Models;
+using com.danliris.support.lib.Models.Machine;
 using com.danliris.support.lib.ViewModel;
 using Com.Moonlay.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,10 @@ namespace com.danliris.support.lib
         public virtual DbSet<ViewFactBeacukai> ViewFactBeacukai { get; set; }
 		public virtual DbSet<WIPViewModel> ViewWIP { get; set; }
         public virtual DbSet<HOrder> HOrder { get; set; }
+        public virtual DbSet<Machine> Machine { get; set; }
+        public virtual DbSet<MachineBrand> MachineBrand { get; set; }
+        public virtual DbSet<MachineCategory> MachineCategory { get; set; }
+        public virtual DbSet<MachineMutation> MachineMutation { get; set; }
 
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {

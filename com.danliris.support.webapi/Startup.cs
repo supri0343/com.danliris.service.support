@@ -16,6 +16,9 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using com.danliris.support.lib.Interfaces;
+using Com.DanLiris.Service.support.lib.Services;
+using Com.DanLiris.Service.support.lib.Interfaces;
 
 namespace com.danliris.support.webapi
 {
@@ -71,6 +74,7 @@ namespace com.danliris.support.webapi
             services.AddTransient<IViewFactBeacukaiService, ViewFactBeacukaiService>();
             services
                 .AddTransient<IBeacukaiTempService, BeacukaiTempService>();
+            services.AddTransient<IMachineService, MachineService>();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
 
@@ -122,8 +126,22 @@ namespace com.danliris.support.webapi
                 c.CustomSchemaIds(i => i.FullName);
             });
             #endregion
-
+            //string env = Configuration.GetValue<string>(APIEndpoint.ConnectionString);
             RegisterEndpoint();
+            RegisterServices(services);
+        }
+        private void RegisterServices(IServiceCollection services)
+        {
+            services
+                .AddScoped<IdentityService>()
+                .AddScoped<ValidateService>()
+                //.AddScoped<IHttpClientService, HttpClientService>()
+                .AddScoped<IValidateService, ValidateService>();
+
+            //if (isTest == false)
+            //{
+            //    services.AddScoped<IHttpClientService, HttpClientService>();
+            //}
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
