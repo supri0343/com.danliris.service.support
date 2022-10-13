@@ -37,7 +37,7 @@ namespace com.danliris.support.lib.ViewModel
         {
             if (TransactionType == "IN")
             {
-               
+
                 if (MachineCategory == null)
                 {
                     yield return new ValidationResult("Kategori tidak boleh kosong", new List<string> { "MachineCategory" });
@@ -82,23 +82,21 @@ namespace com.danliris.support.lib.ViewModel
                 {
                     yield return new ValidationResult("Jumlah Transaksi harus diisi", new List<string> { "TransactionAmount" });
                 }
+            }
+            else if (TransactionType == "OUT")
+            {
+                if (TransactionDate.Equals(DateTimeOffset.MinValue) || TransactionDate == null)
+                {
+                    yield return new ValidationResult("Tgl. Transaksi harus diisi", new List<string> { "TransactionDate" });
+                }
+                if (TransactionAmount == 0 || TransactionAmount == null)
+                {
+                    yield return new ValidationResult("Jumlah Transaksi harus diisi", new List<string> { "TransactionAmount" });
+                }
                 if (UnitQuantity == null)
                 {
                     yield return new ValidationResult("Satuan tidak boleh kosong", new List<string> { "UnitQuantity" });
                 }
-            }
-
-            if (TransactionDate.Equals(DateTimeOffset.MinValue) || TransactionDate == null)
-            {
-                yield return new ValidationResult("Tgl. Transaksi harus diisi", new List<string> { "TransactionDate" });
-            }
-            if (TransactionAmount == 0 || TransactionAmount == null)
-            {
-                yield return new ValidationResult("Jumlah Transaksi harus diisi", new List<string> { "TransactionAmount" });
-            }
-            if (UnitQuantity == null)
-            {
-                yield return new ValidationResult("Satuan tidak boleh kosong", new List<string> { "UnitQuantity" });
             }
 
         }
