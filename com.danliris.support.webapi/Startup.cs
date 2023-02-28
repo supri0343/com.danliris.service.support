@@ -19,6 +19,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using com.danliris.support.lib.Interfaces;
 using Com.DanLiris.Service.support.lib.Services;
 using Com.DanLiris.Service.support.lib.Interfaces;
+using com.danliris.support.lib.Services.Ceisa;
+using AutoMapper;
 
 namespace com.danliris.support.webapi
 {
@@ -75,6 +77,8 @@ namespace com.danliris.support.webapi
             services
                 .AddTransient<IBeacukaiTempService, BeacukaiTempService>();
             services.AddTransient<IMachineService, MachineService>();
+            services.AddTransient<IPEBService, PEBService>();
+            services.AddAutoMapper();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
 

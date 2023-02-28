@@ -1,4 +1,5 @@
 ﻿using com.danliris.support.lib.Models;
+using com.danliris.support.lib.Models.Ceisa.PEB;
 using com.danliris.support.lib.Models.Machine;
 using com.danliris.support.lib.ViewModel;
 using Com.Moonlay.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace com.danliris.support.lib
         public virtual DbSet<MachineBrand> MachineBrand { get; set; }
         public virtual DbSet<MachineCategory> MachineCategory { get; set; }
         public virtual DbSet<MachineMutation> MachineMutation { get; set; }
+        public virtual DbSet<PEBHeader> PEBHeader { get; set; }
 
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {
