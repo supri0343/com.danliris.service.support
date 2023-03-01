@@ -27,7 +27,7 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel
         public decimal hargaSatuan { get; set; }
         public double jumlahKemasan { get; set; }
         public double jumlahSatuan { get; set; }
-        //public string kodeAsalBahanBaku { get; set; }
+        public string kodeAsalBahanBaku { get; set; }
         public string kodeBarang { get; set; }
         public string kodeDaerahAsal { get; set; }
         public string kodeDokumen { get; set; }

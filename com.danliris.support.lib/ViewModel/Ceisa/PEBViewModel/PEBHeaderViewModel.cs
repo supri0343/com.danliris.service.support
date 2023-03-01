@@ -4,14 +4,14 @@ using System.Text;
 using com.danliris.support.lib.Utilities;
 namespace com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel
 {
-    public class PEBHeaderViewModel : BaseViewModelCeisa
+    public class PEBHeaderViewModel 
     {
         //public long Id { get; set; }
         public string asalData { get; set; }
         public double asuransi { get; set; }
         public decimal bruto { get; set; }
         public double cif { get; set; }
-        //public string disclaimer { get; set; }
+        public string disclaimer { get; set; }
         public string flagCurah { get; set; }
         public string flagMigas { get; set; }
         public double fob { get; set; }
@@ -25,8 +25,8 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel
         public string kodeDokumen { get; set; }
         public string kodeIncoterm { get; set; }
         public string kodeJenisEkspor { get; set; }
-        //public string kodeJenisNilai { get; set; }
-        //public string kodeJenisProsedur { get; set; }
+        public string kodeJenisNilai { get; set; }
+        public string kodeJenisProsedur { get; set; }
         public string kodeKantor { get; set; }
         public string kodeKantorEkspor { get; set; }
         public string kodeKantorMuat { get; set; }
@@ -50,12 +50,12 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel
 
         public double nilaiMaklon { get; set; }
         public string nomorAju { get; set; }
-        //public string nomorBc11 { get; set; }
-        //public string posBc11 { get; set; }
+        public string nomorBc11 { get; set; }
+        public string posBc11 { get; set; }
         public int seri { get; set; }
-        //public string subposBc11 { get; set; }
+        public string subposBc11 { get; set; }
         public DateTime tanggalAju { get; set; }
-        //public DateTime tanggalBc11 { get; set; }
+        public DateTime tanggalBc11 { get; set; }
         public DateTime tanggalEkspor { get; set; }
         public DateTime tanggalPeriksa { get; set; }
         public DateTime tanggalTtd { get; set; }
