@@ -36,7 +36,7 @@ namespace com.danliris.support.lib.Services.Ceisa
 
         public ReadResponse<object> Read(int Page = 1, int Size = 25, string Order = "{}", string Keyword = null, string Filter = "{}")
         {
-            IQueryable<PEBViewModelList> Query = dbSet.Where(s => s.kodeDokumen == "30" && s._IsDeleted==false).Select(m => new PEBViewModelList
+            IQueryable<PEBViewModelList> Query = dbSet.Where(s => s.kodeDokumen == "30" && s._IsDeleted == false).Select(m => new PEBViewModelList
             {
                 Id = m.Id,
                 nomorAju = m.nomorAju,
@@ -45,8 +45,9 @@ namespace com.danliris.support.lib.Services.Ceisa
                 tanggalDaftar = m.tanggalDaftar == null ? "-" : m.tanggalDaftar.Value.ToString("dd-MMM-yyyy"),
                 namaPenerima = m.entitas.Where(x => x.kodeEntitas == "8").Select(i => i.namaEntitas).FirstOrDefault(),
                 isPosted = m.isPosted,
-                postedBy = string.IsNullOrWhiteSpace(m.postedBy) ? "-" : m.postedBy
-            }) ;
+                postedBy = string.IsNullOrWhiteSpace(m.postedBy) ? "-" : m.postedBy,
+                CreatedDate = m._CreatedUtc.ToString("dd-MMM-yyyy")
+            }).OrderByDescending(x => x.nomorAju) ;
             //Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
             //Query = QueryHelper<PEBViewModel>.ConfigureFilter(Query, FilterDictionary);
 
@@ -67,7 +68,8 @@ namespace com.danliris.support.lib.Services.Ceisa
                 s.tanggalDaftar,
                 s.namaPenerima,
                 s.isPosted,
-                s.postedBy
+                s.postedBy,
+                s.CreatedDate
             }));
 
             return new ReadResponse<object>(ListData, 0, null);

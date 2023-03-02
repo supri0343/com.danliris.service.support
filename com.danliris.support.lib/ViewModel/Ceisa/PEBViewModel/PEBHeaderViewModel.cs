@@ -60,8 +60,8 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel
         public DateTime tanggalPeriksa { get; set; }
         public DateTime tanggalTtd { get; set; }
         public double totalDanaSawit { get; set; }
-        public string nomorDaftar { get; set; }
-        public DateTime? tanggalDaftar { get; set; }
+        //public string nomorDaftar { get; set; }
+        //public DateTime? tanggalDaftar { get; set; }
         public virtual List<PEBBarangViewModel> barang { get; set; }
         public virtual List<PEBEntitasViewModel> entitas { get; set; }
         public virtual List<PEBKemasanViewModel> kemasan { get; set; }
