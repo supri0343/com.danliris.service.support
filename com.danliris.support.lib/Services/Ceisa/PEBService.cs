@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
@@ -15,6 +17,7 @@ using com.danliris.support.lib.ViewModel.Ceisa;
 using com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel;
 using Com.Moonlay.NetCore.Lib;
 using AutoMapper;
+using Newtonsoft.Json;
 
 namespace com.danliris.support.lib.Services.Ceisa
 {
@@ -99,17 +102,23 @@ namespace com.danliris.support.lib.Services.Ceisa
         public string Urut(string tipe)
         {
             var Query = dbSet.Where(s => s.kodeDokumen == tipe && s._IsDeleted==false).OrderByDescending(x => x.nomorAju).Select(x => new { x.nomorAju }).FirstOrDefault();
+            var NoUrut = "";
+            if (Query!= null)
+            {
+                var recentNo = Query.nomorAju.Substring(20, 6);
+                var No = int.Parse(recentNo) + 1;
 
-            var recentNo = Query.nomorAju.Substring(20, 6);
-            var No = int.Parse(recentNo) + 1;
-             
-            var NoUrut = No.ToString().PadLeft(6, '0');
-
+                NoUrut = No.ToString().PadLeft(6, '0');
+            }
+            else
+            {
+                NoUrut = "1".PadLeft(6, '0');
+            }
             return NoUrut;
 
         }
 
-            public async Task<int> Create(PEBHeader model)
+        public async Task<int> Create(PEBHeader model)
         {
             int Created = 0;
             using (var transaction = this.context.Database.BeginTransaction())
@@ -330,5 +339,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                 }
             }
         }
+
+        
     }
 }

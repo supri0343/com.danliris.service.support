@@ -21,6 +21,8 @@ using Com.DanLiris.Service.support.lib.Services;
 using Com.DanLiris.Service.support.lib.Interfaces;
 using com.danliris.support.lib.Services.Ceisa;
 using AutoMapper;
+using com.danliris.support.lib.Interfaces.Ceisa;
+using com.danliris.support.lib.Services.Ceisa;
 
 namespace com.danliris.support.webapi
 {
@@ -78,6 +80,7 @@ namespace com.danliris.support.webapi
                 .AddTransient<IBeacukaiTempService, BeacukaiTempService>();
             services.AddTransient<IMachineService, MachineService>();
             services.AddTransient<IPEBService, PEBService>();
+            services.AddTransient<ICeisaService, CeisaService>();
             services.AddAutoMapper();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
