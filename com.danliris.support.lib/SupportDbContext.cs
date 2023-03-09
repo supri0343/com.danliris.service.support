@@ -21,6 +21,10 @@ namespace com.danliris.support.lib
         public virtual DbSet<MachineCategory> MachineCategory { get; set; }
         public virtual DbSet<MachineMutation> MachineMutation { get; set; }
         public virtual DbSet<PEBHeader> PEBHeader { get; set; }
+        public virtual DbSet<PEBBarang> PEBBarang { get; set; }
+        public virtual DbSet<PEBDokumen> PEBDokumen { get; set; }
+        public virtual DbSet<BEACUKAI_ADDED> BEACUKAI_ADDED { get; set; }
+        public virtual DbSet<BEACUKAI_ADDED_DETAIL> BEACUKAI_ADDED_DETAIL { get; set; }
 
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {

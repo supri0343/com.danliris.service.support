@@ -4,7 +4,7 @@ using System.Text;
 using com.danliris.support.lib.Models.Ceisa.PEB;
 using System.Threading.Tasks;
 using com.danliris.support.lib.Helpers;
-
+using com.danliris.support.lib.ViewModel.Ceisa;
 
 namespace com.danliris.support.lib.Interfaces
 {
@@ -15,6 +15,8 @@ namespace com.danliris.support.lib.Interfaces
         string Urut(string tipe);
         Task<PEBHeader> ReadById(long id);
         Task<int> UpdateAsync(int id, PEBHeader viewModel);
-        
+        PEBViewModelList ReadByIdToPush(long id, string auth);
+
+
     }
 }

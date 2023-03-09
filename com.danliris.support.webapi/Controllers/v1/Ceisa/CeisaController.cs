@@ -27,14 +27,16 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
         public readonly IServiceProvider serviceProvider;
         public readonly IMapper Mapper;
         private ICeisaService ceisaService;
+        private IPEBService pEBService;
         private readonly IdentityService identityService;
 
-        public CeisaController(ICeisaService ceisaService, IServiceProvider serviceProvider, IMapper mapper)
+        public CeisaController(ICeisaService ceisaService, IServiceProvider serviceProvider, IMapper mapper, IPEBService pEBService)
         {
             this.ceisaService = ceisaService;
             this.serviceProvider = serviceProvider;
             this.identityService = (IdentityService)serviceProvider.GetService(typeof(IdentityService));
             this.Mapper = mapper;
+            this.pEBService = pEBService;
 
         }
         [HttpGet("getRate")]
@@ -73,6 +75,34 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
                 var authCeisa = Request.Headers["AuthorizationCeisa"].First();
 
                 var data = await ceisaService.GetLartas(kode, authCeisa);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data,
+                    message = General.OK_MESSAGE,
+                    statusCode = General.OK_STATUS_CODE
+                }
+                );
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("support/{id}")]
+        public IActionResult GetByIdToSupport(long id)
+        {
+            try
+            {
+                identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
+                var authCeisa = Request.Headers["AuthorizationCeisa"].First();
+                var data = pEBService.ReadByIdToPush(id, authCeisa);
 
                 return Ok(new
                 {

@@ -16,5 +16,6 @@ namespace com.danliris.support.lib.ViewModel.Ceisa
         public bool isPosted { get; set; }
         public string postedBy { get; set; }
         public string CreatedDate { get; set; }
+        public DateTime? tanggalDatang { get; set; }
     }
 }

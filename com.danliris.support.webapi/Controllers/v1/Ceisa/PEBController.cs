@@ -13,6 +13,7 @@ using com.danliris.support.lib.Models.Ceisa.PEB;
 using com.danliris.support.webapi.Helpers;
 using com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel;
 using Newtonsoft.Json;
+using com.danliris.support.lib.ViewModel.Ceisa;
 
 namespace com.danliris.support.webapi.Controllers.v1
 {
@@ -175,6 +176,32 @@ namespace com.danliris.support.webapi.Controllers.v1
                 Dictionary<string, object> Result =
                     new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
                     .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpPut("support-PEB/{id}")]
+        public async Task<IActionResult> PostToSupport(int id, [FromBody] PEBViewModelList viewModel)
+        {
+            try
+            {
+                identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
+
+                await pEBService.UpdateAsync(id, viewModel);
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    message = General.UPDATE_MESSAGE,
+                    statusCode = General.UPDATED_STATUS_CODE
+                });
+            }
+
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                   new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                   .Fail();
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
