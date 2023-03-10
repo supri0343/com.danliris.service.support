@@ -188,7 +188,7 @@ namespace com.danliris.support.webapi.Controllers.v1
                 identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
                 identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
 
-                await pEBService.UpdateAsync(id, viewModel);
+                await pEBService.PostToSupportPEB(id, viewModel);
                 return Ok(new
                 {
                     apiVersion = ApiVersion,

@@ -23,6 +23,8 @@ namespace com.danliris.support.lib
         public virtual DbSet<PEBHeader> PEBHeader { get; set; }
         public virtual DbSet<PEBBarang> PEBBarang { get; set; }
         public virtual DbSet<PEBDokumen> PEBDokumen { get; set; }
+        public virtual DbSet<PEBEntitas> PEBEntitas { get; set; }
+        public virtual DbSet<PEBKemasan> PEBKemasan { get; set; }
         public virtual DbSet<BEACUKAI_ADDED> BEACUKAI_ADDED { get; set; }
         public virtual DbSet<BEACUKAI_ADDED_DETAIL> BEACUKAI_ADDED_DETAIL { get; set; }
 

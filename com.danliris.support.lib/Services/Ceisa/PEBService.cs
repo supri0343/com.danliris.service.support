@@ -378,13 +378,29 @@ namespace com.danliris.support.lib.Services.Ceisa
             }
         }
 
+        public string GenerateBCID()
+        {
+            var dateNow = new DateTime();
+            var year = dateNow.ToString("yy");
+            var month = dateNow.ToString("MM");
+            var day = dateNow.ToString("dd");
+            var hours = dateNow.ToString("hh");
+            var minute = dateNow.ToString("mm");
+            var second = dateNow.ToString("ss");
+            var milisec = dateNow.ToString("ffffff");
+
+            var BCId = "BC" + year + month + day + hours + minute + second + milisec;
+            return BCId;
+
+        }
+
         public async Task<int> PostToSupportPEB(int id, PEBViewModelList viewModel)
         {
             using (var transaction = context.Database.CurrentTransaction ?? context.Database.BeginTransaction())
             {
                 try
                 {
-                    int Updated = 0;
+                    int Created = 0;
 
                     PEBHeader data = await ReadById(id);
 
@@ -392,9 +408,86 @@ namespace com.danliris.support.lib.Services.Ceisa
                     data.nomorDaftar = viewModel.nomorDaftar;
 
                     var Query = from a in context.PEBHeader
-                                
-                    
+                                join b in context.PEBBarang on a.Id equals b.IdHeader
+                                join c in context.PEBDokumen on a.Id equals c.IdHeader
+                                join d in context.PEBEntitas on a.Id equals d.IdHeader
+                                join e in context.PEBKemasan on a.Id equals e.IdHeader
+                                where d.kodeEntitas == "6"
+                                select new SupportPEBViewModel
+                                {
+                                    BCType = a.kodeDokumen == "30" ? "BC 3.0" : a.kodeDokumen,
+                                    BCNo = viewModel.nomorDaftar,
+                                    CAR = a.nomorAju,
+                                    BCDate = DateTime.Parse(viewModel.tanggalDaftar),
+                                    ExpenditureNo = c.nomorDokumen,
+                                    ExpenditureDate = c.tanggalDokumen,
+                                    BuyerCode = "-",
+                                    BuyerName = d.namaEntitas,
+                                    Netto = a.netto,
+                                    Bruto = a.bruto,
+                                    Pack = e.kodeJenisKemasan,
+                                    CreateUser = identityService.Username,
+                                    CreateDate = DateTime.Now,
+                                    UpdateUser = identityService.Username,
+                                    UpdateDate = DateTime.Now,
+                                    Vendor = d.namaEntitas,
+                                    ItemCode = "-",
+                                    ItemName = b.kodeBarang + " " + b.uraian + " " + b.merk,
+                                    UnitQtyCode = b.kodeSatuanBarang,
+                                    Quantity = b.jumlahSatuan,
+                                    Price = b.fob,
+                                    CurrencyCode = a.kodeValuta,
+                                    UomUnit = b.kodeSatuanBarang,
+                                };
 
+
+                    //Input Header
+                    var genBCid = GenerateBCID();
+                    var InputBC_ADDED = Query.Select(x => new BEACUKAI_ADDED
+                    {
+                        BCId = genBCid,
+                        BCType = x.BCType,
+                        BCNo = x.BCNo,
+                        CAR = x.CAR,
+                        BCDate = x.BCDate,
+                        ExpenditureNo = x.ExpenditureNo,
+                        ExpenditureDate = x.ExpenditureDate,
+                        BuyerCode = x.BuyerCode,
+                        BuyerName = x.BuyerName,
+                        Netto = x.Netto,
+                        Bruto = x.Bruto,
+                        Pack = x.Pack,
+                        CreateUser = x.CreateUser,
+                        CreateDate = x.CreateDate,
+                        UpdateUser = x.UpdateUser,
+                        UpdateDate = x.UpdateDate,
+                    }).First();
+                    bEACUKAI_ADDEDs.Add(InputBC_ADDED);
+
+                    //Input Item
+                    var idDetail = 1;
+                    foreach(var a in Query)
+                    {
+                        var item = new BEACUKAI_ADDED_DETAIL
+                        {
+                            DetailBCId = genBCid + idDetail.ToString().PadLeft(3,'0'),
+                            BCId = genBCid,
+                            ItemCode = a.ItemCode,
+                            ItemName = a.ItemName,
+                            UnitQtyCode = a.UnitQtyCode,
+                            Quantity =a.Quantity,
+                            Price = a.Price,
+                            CurrencyCode = a.CurrencyCode,
+                            UomUnit = a.UomUnit,
+                        };
+                        bEACUKAI_ADDED_DETAILs.Add(item);
+                        idDetail++;
+                    }
+
+                    Created = await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    return Created;
                 }
                 catch(Exception e)
                 {
