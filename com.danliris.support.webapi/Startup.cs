@@ -23,6 +23,7 @@ using com.danliris.support.lib.Services.Ceisa;
 using AutoMapper;
 using com.danliris.support.lib.Interfaces.Ceisa;
 using com.danliris.support.lib.Services.Ceisa;
+using com.danliris.support.lib.Services.Ceisa.TPB;
 
 namespace com.danliris.support.webapi
 {
@@ -81,6 +82,7 @@ namespace com.danliris.support.webapi
             services.AddTransient<IMachineService, MachineService>();
             services.AddTransient<IPEBService, PEBService>();
             services.AddTransient<ICeisaService, CeisaService>();
+            services.AddTransient<IBC40, BC40Service>();
             services.AddAutoMapper();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));

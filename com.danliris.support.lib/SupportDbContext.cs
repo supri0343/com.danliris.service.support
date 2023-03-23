@@ -1,5 +1,6 @@
 ﻿using com.danliris.support.lib.Models;
 using com.danliris.support.lib.Models.Ceisa.PEB;
+using com.danliris.support.lib.Models.Ceisa.TPB;
 using com.danliris.support.lib.Models.Machine;
 using com.danliris.support.lib.ViewModel;
 using Com.Moonlay.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace com.danliris.support.lib
         public virtual DbSet<MachineBrand> MachineBrand { get; set; }
         public virtual DbSet<MachineCategory> MachineCategory { get; set; }
         public virtual DbSet<MachineMutation> MachineMutation { get; set; }
+        //PEB
         public virtual DbSet<PEBHeader> PEBHeader { get; set; }
         public virtual DbSet<PEBBarang> PEBBarang { get; set; }
         public virtual DbSet<PEBDokumen> PEBDokumen { get; set; }
@@ -27,6 +29,8 @@ namespace com.danliris.support.lib
         public virtual DbSet<PEBKemasan> PEBKemasan { get; set; }
         public virtual DbSet<BEACUKAI_ADDED> BEACUKAI_ADDED { get; set; }
         public virtual DbSet<BEACUKAI_ADDED_DETAIL> BEACUKAI_ADDED_DETAIL { get; set; }
+        //TPB
+        public virtual DbSet<TPBHeader> TPBHeader { get; set; }
 
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {

@@ -462,7 +462,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                         UpdateUser = x.UpdateUser,
                         UpdateDate = x.UpdateDate,
                     }).First();
-                    bEACUKAI_ADDEDs.Add(InputBC_ADDED);
+                    //bEACUKAI_ADDEDs.Add(InputBC_ADDED);
 
                     //Input Item
                     var idDetail = 1;
@@ -480,10 +480,12 @@ namespace com.danliris.support.lib.Services.Ceisa
                             CurrencyCode = a.CurrencyCode,
                             UomUnit = a.UomUnit,
                         };
-                        bEACUKAI_ADDED_DETAILs.Add(item);
+                        //bEACUKAI_ADDED_DETAILs.Add(item);
+                        InputBC_ADDED.Items.Add(item);
                         idDetail++;
                     }
 
+                    bEACUKAI_ADDEDs.Add(InputBC_ADDED);
                     Created = await context.SaveChangesAsync();
                     transaction.Commit();
 
