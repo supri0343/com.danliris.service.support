@@ -17,6 +17,7 @@ namespace com.danliris.support.lib.Interfaces
         Task<int> UpdateAsync(int id, PEBHeader viewModel);
         PEBViewModelList ReadByIdToPush(long id, string auth);
         Task<int> PostToSupportPEB(int id, PEBViewModelList viewModel);
+        Task<int> Delete(int id);
 
 
     }

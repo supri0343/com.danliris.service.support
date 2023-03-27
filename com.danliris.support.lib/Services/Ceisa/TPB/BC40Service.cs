@@ -163,5 +163,129 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
 
             return model;
         }
+        public async Task<int> UpdateAsync(int id, TPBHeader viewModel)
+        {
+            int Updated = 0;
+            using (var transaction = this.context.Database.BeginTransaction())
+            {
+                try
+                {
+                    TPBHeader data = await ReadById(id);
+
+                    #region Delete
+                    MoonlayEntityExtension.FlagForDelete(data, identityService.Username, USER_AGENT);
+                    foreach (var barang in data.barang)
+                    {
+                        foreach (var barangTarif in barang.barangTarif)
+                        {
+                            MoonlayEntityExtension.FlagForDelete(barangTarif, identityService.Username, USER_AGENT);
+                        }
+                    }
+
+                    foreach (var entitas in data.entitas)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(entitas, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var kemasan in data.kemasan)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(kemasan, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var kontainer in data.kontainer)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(kontainer, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var entitas in data.entitas)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(entitas, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var dokumen in data.dokumen)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(dokumen, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var pengangkut in data.pengangkut)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(pengangkut, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var pungutan in data.pungutan)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(pungutan, identityService.Username, USER_AGENT);
+                    }
+
+
+                    #endregion
+
+                    #region Insert
+                    if (viewModel.isPosted)
+                    {
+                        viewModel.postedBy = identityService.Username;
+                    }
+                    MoonlayEntityExtension.FlagForCreate(viewModel, identityService.Username, USER_AGENT);
+                    MoonlayEntityExtension.FlagForUpdate(viewModel, identityService.Username, USER_AGENT);
+                    foreach (var barang in viewModel.barang)
+                    {
+                        MoonlayEntityExtension.FlagForCreate(barang, identityService.Username, USER_AGENT);
+                        MoonlayEntityExtension.FlagForUpdate(barang, identityService.Username, USER_AGENT);
+                      
+                        foreach (var barangTarif in barang.barangTarif)
+                        {
+                            MoonlayEntityExtension.FlagForCreate(barangTarif, identityService.Username, USER_AGENT);
+                            MoonlayEntityExtension.FlagForUpdate(barangTarif, identityService.Username, USER_AGENT);
+                        }
+
+                    }
+
+                    foreach (var entitas in viewModel.entitas)
+                    {
+                        MoonlayEntityExtension.FlagForCreate(entitas, identityService.Username, USER_AGENT);
+                        MoonlayEntityExtension.FlagForUpdate(entitas, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var kemasan in viewModel.kemasan)
+                    {
+                        MoonlayEntityExtension.FlagForCreate(kemasan, identityService.Username, USER_AGENT);
+                        MoonlayEntityExtension.FlagForUpdate(kemasan, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var kontainer in viewModel.kontainer)
+                    {
+                        MoonlayEntityExtension.FlagForCreate(kontainer, identityService.Username, USER_AGENT);
+                        MoonlayEntityExtension.FlagForUpdate(kontainer, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var entitas in viewModel.entitas)
+                    {
+                        MoonlayEntityExtension.FlagForCreate(entitas, identityService.Username, USER_AGENT);
+                        MoonlayEntityExtension.FlagForUpdate(entitas, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var dokumen in viewModel.dokumen)
+                    {
+                        MoonlayEntityExtension.FlagForCreate(dokumen, identityService.Username, USER_AGENT);
+                        MoonlayEntityExtension.FlagForUpdate(dokumen, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var pengangkut in viewModel.pengangkut)
+                    {
+                        MoonlayEntityExtension.FlagForCreate(pengangkut, identityService.Username, USER_AGENT);
+                        MoonlayEntityExtension.FlagForUpdate(pengangkut, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var pungutan in viewModel.pungutan)
+                    {
+                        MoonlayEntityExtension.FlagForCreate(pungutan, identityService.Username, USER_AGENT);
+                        MoonlayEntityExtension.FlagForUpdate(pungutan, identityService.Username, USER_AGENT);
+                    }
+                   
+
+                    #endregion
+                    dbSet.Add(viewModel);
+
+                    Updated = await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    return Updated;
+
+                }
+                catch(Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
     }
 }

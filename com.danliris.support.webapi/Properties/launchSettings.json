@@ -17,11 +17,11 @@
     },
     "com.danliris.support.webapi": {
       "commandName": "Project",
-      "launchBrowser": false,
+      "launchUrl": "http://192.168.1.195:9080/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:9080/"
+      "applicationUrl": "http://192.168.1.195:9080/"
     }
   }
 }

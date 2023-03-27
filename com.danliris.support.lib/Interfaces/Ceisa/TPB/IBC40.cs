@@ -13,5 +13,6 @@ namespace com.danliris.support.lib.Interfaces.Ceisa
         string Urut();
         Task<int> Create(TPBHeader model);
         Task<TPBHeader> ReadById(long id);
+        Task<int> UpdateAsync(int id, TPBHeader viewModel);
     }
 }
