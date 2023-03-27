@@ -14,5 +14,6 @@ namespace com.danliris.support.lib.Interfaces.Ceisa
         Task<int> Create(TPBHeader model);
         Task<TPBHeader> ReadById(long id);
         Task<int> UpdateAsync(int id, TPBHeader viewModel);
+        Task<int> Delete(int id);
     }
 }

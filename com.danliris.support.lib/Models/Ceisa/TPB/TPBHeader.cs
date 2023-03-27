@@ -38,7 +38,7 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public DateTime? tanggalDaftar { get; set; }
         public bool isPosted { get; set; }
         public string postedBy { get; set; }
-        public double diskon { get; set; }
+        //public double diskon { get; set; }
         public virtual IEnumerable<TPBBarang> barang { get; set; }
         public virtual IEnumerable<TPBEntitas> entitas { get; set; }
         public virtual IEnumerable<TPBDokumen> dokumen { get; set; }

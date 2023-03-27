@@ -287,5 +287,67 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                 }
             }
         }
+        public async Task<int> Delete(int id)
+        {
+            int Deleted = 0;
+
+            using (var transaction = context.Database.CurrentTransaction ?? context.Database.BeginTransaction())
+            {
+                try
+                {
+                    TPBHeader data = await ReadById(id);
+
+                    MoonlayEntityExtension.FlagForDelete(data, identityService.Username, USER_AGENT);
+                    foreach (var barang in data.barang)
+                    {
+                      
+                        foreach (var barangTarif in barang.barangTarif)
+                        {
+                            MoonlayEntityExtension.FlagForDelete(barangTarif, identityService.Username, USER_AGENT);
+                        }
+                    }
+
+                    foreach (var entitas in data.entitas)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(entitas, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var kemasan in data.kemasan)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(kemasan, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var kontainer in data.kontainer)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(kontainer, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var entitas in data.entitas)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(entitas, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var dokumen in data.dokumen)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(dokumen, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var pengangkut in data.pengangkut)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(pengangkut, identityService.Username, USER_AGENT);
+                    }
+                    foreach (var pungutan in data.pungutan)
+                    {
+                        MoonlayEntityExtension.FlagForDelete(pungutan, identityService.Username, USER_AGENT);
+                    }
+                   
+                    Deleted = await context.SaveChangesAsync();
+                    transaction.Commit();
+
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw new Exception(e.Message);
+                }
+
+            }
+            return Deleted;
+        }
     }
 }

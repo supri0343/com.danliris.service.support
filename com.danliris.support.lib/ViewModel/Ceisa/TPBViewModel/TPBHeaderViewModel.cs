@@ -33,10 +33,10 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public double vd { get; set; }
         public double uangMuka { get; set; }
         public double nilaiJasa { get; set; }
-        public string nomorDaftar { get; set; }
-        public DateTime? tanggalDaftar { get; set; }
-        public bool isPosted { get; set; }
-        public string postedBy { get; set; }
+        //public string nomorDaftar { get; set; }
+        //public DateTime? tanggalDaftar { get; set; }
+        //public bool isPosted { get; set; }
+        //public string postedBy { get; set; }
         public virtual List<TPBBarangViewModel> barang { get; set; }
         public virtual List<TPBEntitasViewModel> entitas { get; set; }
         public virtual List<TPBDokumenViewModel> dokumen { get; set; }
