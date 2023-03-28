@@ -1,5 +1,6 @@
 ﻿using com.danliris.support.lib.Helpers;
 using com.danliris.support.lib.Models.Ceisa.TPB;
+using com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,5 +16,6 @@ namespace com.danliris.support.lib.Interfaces.Ceisa
         Task<TPBHeader> ReadById(long id);
         Task<int> UpdateAsync(int id, TPBHeader viewModel);
         Task<int> Delete(int id);
+        Task<int> PostToSupportTPB(int id, TPBViewModelList viewModel);
     }
 }

@@ -77,13 +77,13 @@ namespace com.danliris.support.lib.Services.Ceisa
             {
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                //var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/status/{kode}").Result;
-                var response = client.GetAsync($"https://nlehub-dev.kemenkeu.go.id/openapi/status/{kode}").Result;
+                var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/status/{kode}").Result;
+                //var response = client.GetAsync($"https://nlehub-dev.kemenkeu.go.id/openapi/status/{kode}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var content = response.Content.ReadAsStringAsync().Result;
                     Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
-                    List<ResponViewModel> viewModel = JsonConvert.DeserializeObject<List<ResponViewModel>>(result.GetValueOrDefault("dataStatus").ToString()); ;
+                    List<ResponViewModel> viewModel = JsonConvert.DeserializeObject<List<ResponViewModel>>(result.GetValueOrDefault("dataRespon").ToString()); ;
                     return viewModel;
                 }
                 else

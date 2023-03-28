@@ -14,6 +14,7 @@ using com.danliris.support.webapi.Helpers;
 using com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel;
 using Newtonsoft.Json;
 using com.danliris.support.lib.Interfaces.Ceisa;
+using com.danliris.support.lib.Interfaces.Ceisa.TPB;
 
 namespace com.danliris.support.webapi.Controllers.v1.Ceisa
 {
@@ -28,16 +29,17 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
         public readonly IMapper Mapper;
         private ICeisaService ceisaService;
         private IPEBService pEBService;
+        private ITPBService TPBService;
         private readonly IdentityService identityService;
 
-        public CeisaController(ICeisaService ceisaService, IServiceProvider serviceProvider, IMapper mapper, IPEBService pEBService)
+        public CeisaController(ICeisaService ceisaService, IServiceProvider serviceProvider, IMapper mapper, IPEBService pEBService, ITPBService tPBService)
         {
             this.ceisaService = ceisaService;
             this.serviceProvider = serviceProvider;
             this.identityService = (IdentityService)serviceProvider.GetService(typeof(IdentityService));
             this.Mapper = mapper;
             this.pEBService = pEBService;
-
+            this.TPBService = tPBService;
         }
         [HttpGet("getRate")]
         public async Task<IActionResult> getRate(string kode)
@@ -94,15 +96,43 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
             }
         }
 
-        [HttpGet("support/{id}")]
-        public IActionResult GetByIdToSupport(long id)
+        [HttpGet("GetBC-PEB/{id}")]
+        public IActionResult GetPEBByIdToSupport(long id)
         {
             try
             {
                 identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
                 identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
                 var authCeisa = Request.Headers["AuthorizationCeisa"].First();
-                var data = pEBService.ReadByIdToPush(id, authCeisa);
+                var data = pEBService.ReadByIdToPushAsync(id, authCeisa);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data,
+                    message = General.OK_MESSAGE,
+                    statusCode = General.OK_STATUS_CODE
+                }
+                );
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("GetBC-TPB/{id}")]
+        public async Task<IActionResult> GetTPBByIdToSupportAsync(long id)
+        {
+            try
+            {
+                identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
+                var authCeisa = Request.Headers["AuthorizationCeisa"].First();
+                var data = await TPBService.ReadByIdToPushAsync(id, authCeisa);
 
                 return Ok(new
                 {

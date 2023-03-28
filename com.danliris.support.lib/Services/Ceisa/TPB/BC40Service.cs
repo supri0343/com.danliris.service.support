@@ -1,5 +1,6 @@
 ﻿using com.danliris.support.lib.Helpers;
 using com.danliris.support.lib.Interfaces.Ceisa;
+using com.danliris.support.lib.Models;
 using com.danliris.support.lib.Models.Ceisa.TPB;
 using com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel;
 using Com.DanLiris.Service.support.lib.Services;
@@ -20,6 +21,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
         private readonly IServiceProvider serviceProvider                                                                                                       ;
         private readonly IdentityService identityService;
         private readonly DbSet<TPBHeader> dbSet;
+        GenerateBPNo GenerateBPNo = new GenerateBPNo();
 
         public BC40Service(SupportDbContext context, IServiceProvider serviceProvider)
         {
@@ -348,6 +350,117 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
 
             }
             return Deleted;
+        }
+
+        public async Task<int> PostToSupportTPB(int id, TPBViewModelList viewModel)
+        {
+            using (var transaction = context.Database.CurrentTransaction ?? context.Database.BeginTransaction())
+            {
+                try
+                {
+                    int Created = 0;
+
+                    TPBHeader data = await ReadById(id);
+
+                    data.tanggalDaftar = DateTime.Parse(viewModel.tanggalDaftar);
+                    data.nomorDaftar = viewModel.nomorDaftar;
+                    context.SaveChangesAsync();
+                    var ID = await GenerateBPNo.GenerateNo();
+
+                    var QueryBarang = from a in context.TPBHeader
+                                join b in context.TPBBarang on a.Id equals b.IdHeader
+                                join d in context.TPBEntitas on a.Id equals d.IdHeader          
+                                where a.Id == id
+                                select new BEACUKAI_TEMP
+                                {
+                                    ID = 0,
+                                    BCId = ID,
+                                    BCNo = viewModel.nomorDaftar,
+                                    Barang = b.uraian,
+                                    Bruto = Convert.ToInt32(a.bruto),
+                                    CIF = Convert.ToInt32(a.cif),
+                                    CIF_Rupiah = Convert.ToInt32(b.cifRupiah),
+                                    JumlahSatBarang = Convert.ToInt32(b.jumlahSatuan),
+                                    KodeBarang = b.kodeBarang,
+                                    KodeKemasan = "",
+                                    NamaKemasan = "",
+                                    Netto = (decimal)a.netto,
+                                    NoAju = a.nomorAju,
+                                    NamaSupplier = d.kodeEntitas == "9" ? d.namaEntitas : "",
+                                    TglDaftarAju = a.tanggalAju,
+                                    TglBCNo = DateTime.Parse(viewModel.tanggalDaftar),
+                                    Valuta = "IDR",
+                                    JenisBC = "BC " + a.kodeDokumen,
+                                    IDHeader = (int)a.Id,
+                                    JenisDokumen = null,
+                                    NomorDokumen = null,
+                                    TanggalDokumen = null,
+                                    JumlahBarang = context.TPBBarang.Where(x => x.IdHeader == id).Count(),
+                                    Sat = b.kodeSatuanBarang,
+                                    KodeSupplier = d.nomorIdentitas,
+                                    TglDatang = viewModel.tanggalDatang.Value,
+                                    CreatedBy = identityService.Username,
+                                    Vendor = d.kodeEntitas == "7" ? d.namaEntitas : "",
+                                    Hari = DateTime.Today
+                                };
+
+                    var QueryDokumen = from a in context.TPBHeader
+                                      join c in context.TPBDokumen on a.Id equals c.IdHeader
+                                      join d in context.TPBEntitas on a.Id equals d.IdHeader
+                                      join e in context.BeacukaiDocuments on c.kodeDokumen equals e.Code.ToString()
+                                      where a.Id == id
+                                      select new BEACUKAI_TEMP
+                                      {
+                                          ID = 0,
+                                          BCId = ID,
+                                          BCNo = viewModel.nomorDaftar,
+                                          Barang = null,
+                                          Bruto = (decimal)a.bruto,
+                                          CIF = (int)a.cif,
+                                          CIF_Rupiah = null,
+                                          JumlahSatBarang = null,
+                                          KodeBarang = null,
+                                          KodeKemasan = "",
+                                          NamaKemasan = "",
+                                          Netto = (decimal)a.netto,
+                                          NoAju = a.nomorAju,
+                                          NamaSupplier = d.kodeEntitas == "9" ? d.namaEntitas : "",
+                                          TglDaftarAju = a.tanggalAju,
+                                          TglBCNo = DateTime.Parse(viewModel.tanggalDaftar),
+                                          Valuta = "IDR",
+                                          JenisBC = "BC " + a.kodeDokumen,
+                                          IDHeader = (int)a.Id,
+                                          JenisDokumen = e.Name,
+                                          NomorDokumen = c.nomorDokumen,
+                                          TanggalDokumen = c.tanggalDokumen,
+                                          JumlahBarang = context.TPBBarang.Where(x => x.IdHeader == id).Count(),
+                                          Sat = null,
+                                          KodeSupplier = d.nomorIdentitas,
+                                          TglDatang = viewModel.tanggalDatang.Value,
+                                          CreatedBy = identityService.Username,
+                                          Vendor = d.kodeEntitas == "7" ? d.namaEntitas : "",
+                                          Hari = DateTime.Today
+                                      };
+
+
+                    var lastNo = context.BeacukaiTemp.Select(x => x.ID).OrderByDescending(x => x).Take(1).ToArray();
+                    var index = 1;
+                    //foreach (var a in Query)
+                    //{
+                    //    a.ID = Convert.ToInt32(lastNo[0] + index);
+
+                    //    index++;
+                    //}
+
+                    return Created;
+                }
+                
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
         }
     }
 }
