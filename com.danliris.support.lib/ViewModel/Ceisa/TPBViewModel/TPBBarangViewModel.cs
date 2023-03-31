@@ -37,6 +37,10 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public double ndpbm { get; set; }
         public double uangMuka { get; set; }
         public int nilaiJasa { get; set; }
+        //261
+        public string kodeAsalBarang { get; set; }
+        public string kodeKategoriBarang { get; set; }
+        public string kodeNegaraAsal { get; set; }
         public List<TPBBarang_TarifViewModel> barangTarif { get; set; }
     }
 }

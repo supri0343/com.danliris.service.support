@@ -9,6 +9,7 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
     {
         public string asalData { get; set; }
         public double asuransi { get; set; }
+     
         public double bruto { get; set; }
         public double cif { get; set; }
         public string kodeJenisTpb { get; set; }
@@ -38,6 +39,15 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public DateTime? tanggalDaftar { get; set; }
         public bool isPosted { get; set; }
         public string postedBy { get; set; }
+        //261
+        public string disclaimer { get; set; }
+        public string kodeValuta { get; set; }
+        public double ndpbm { get; set; }
+        public double nilaiBarang { get; set; }
+        public string tempatStuffing { get; set; }
+        public DateTime? tglAkhirBerlaku { get; set; }
+        public DateTime? tglAwalBerlaku { get; set; }
+        public double totalDanaSawit { get; set; }
         //public double diskon { get; set; }
         public virtual IEnumerable<TPBBarang> barang { get; set; }
         public virtual IEnumerable<TPBEntitas> entitas { get; set; }
@@ -46,6 +56,11 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public virtual IEnumerable<TPBKontainer> kontainer { get; set; }
         public virtual IEnumerable<TPBKemasan> kemasan { get; set; }
         public virtual IEnumerable<TPBPungutan> pungutan { get; set; }
-      
+        //261
+        public virtual IEnumerable<TPBBahanBaku> bahanBaku { get; set; }
+        public virtual IEnumerable<TPBBahanBakuTarif> bahanBakuTarif { get; set; }
+        public virtual IEnumerable<TPBJaminan> jaminan { get; set; }
+
+
     }
 }

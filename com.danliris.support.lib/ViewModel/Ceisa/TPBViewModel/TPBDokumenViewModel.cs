@@ -10,5 +10,7 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public string nomorDokumen { get; set; }
         public int seriDokumen { get; set; }
         public DateTime tanggalDokumen { get; set; }
+        //261
+        public string kodeFasilitas { get; set; }
     }
 }

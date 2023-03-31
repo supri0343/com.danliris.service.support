@@ -11,5 +11,8 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public string namaPengangkut { get; set; }
         public string nomorPengangkut { get; set; }
         public int seriPengangkut { get; set; }
+        public string idPengangkut { get; set; }
+        public string kodeCaraAngkut { get; set; }
+
     }
 }

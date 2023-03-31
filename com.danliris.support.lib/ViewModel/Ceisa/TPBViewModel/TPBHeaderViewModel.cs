@@ -37,6 +37,16 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         //public DateTime? tanggalDaftar { get; set; }
         //public bool isPosted { get; set; }
         //public string postedBy { get; set; }
+
+        //261
+        public string disclaimer { get; set; }
+        public string kodeValuta { get; set; }
+        public double ndpbm { get; set; }
+        public double nilaiBarang { get; set; }
+        public string tempatStuffing { get; set; }
+        public DateTime? tglAkhirBerlaku { get; set; }
+        public DateTime? tglAwalBerlaku { get; set; }
+        public double totalDanaSawit { get; set; }
         public virtual List<TPBBarangViewModel> barang { get; set; }
         public virtual List<TPBEntitasViewModel> entitas { get; set; }
         public virtual List<TPBDokumenViewModel> dokumen { get; set; }
@@ -44,5 +54,9 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public virtual List<TPBKontainerViewModel> kontainer { get; set; }
         public virtual List<TPBKemasanViewModel> kemasan { get; set; }
         public virtual List<TPBPungutanViewModel> pungutan { get; set; }
+        //261
+        public virtual List<TPBBahanBakuViewModel> bahanBaku { get; set; }
+        public virtual List<TPBBahanBakuTarifViewModel> bahanBakuTarif { get; set; }
+        public virtual List<TPBJaminanViewModel> jaminan { get; set; }
     }
 }

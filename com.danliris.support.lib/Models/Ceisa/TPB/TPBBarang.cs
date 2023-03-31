@@ -43,6 +43,10 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public double ndpbm { get; set; }
         public double uangMuka { get; set; }
         public int nilaiJasa { get; set; }
+        //261
+        public string kodeAsalBarang { get; set; }
+        public string kodeKategoriBarang { get; set; }
+        public string kodeNegaraAsal { get; set; }
         public virtual IEnumerable<TPBBarang_Tarif> barangTarif { get; set; }
     }
 }

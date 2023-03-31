@@ -11,9 +11,10 @@ using System;
 namespace com.danliris.support.lib.Migrations
 {
     [DbContext(typeof(SupportDbContext))]
-    partial class SupportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230331032018_add-id-pungutan-TPB")]
+    partial class addidpungutanTPB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1581,10 +1582,6 @@ namespace com.danliris.support.lib.Migrations
                     b.Property<string>("_LastModifiedBy");
 
                     b.Property<DateTime>("_LastModifiedUtc");
-
-                    b.Property<string>("idPengangkut");
-
-                    b.Property<string>("kodeCaraAngkut");
 
                     b.Property<string>("namaPengangkut");
 

@@ -7,6 +7,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20230323073921_add-table-for-tpb-BC40.cs" />
     <Compile Remove="Migrations\20230323073921_add-table-for-tpb-BC40.Designer.cs" />
+    <Compile Remove="Migrations\20230331021709_modify-table-tpb-for-261.cs" />
+    <Compile Remove="Migrations\20230331021709_modify-table-tpb-for-261.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

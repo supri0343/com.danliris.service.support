@@ -11,7 +11,8 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public long IdHeader { get; set; }
         [ForeignKey("IdHeader")]
         public virtual TPBHeader TPBHeader { get; set; }
-        public string kodeFasilitasTarif { get; set; }
+        public string idPungutan { get; set; }
+        public string kodeFasilitasTarif { get; set; } 
         public string kodeJenisPungutan { get; set; }
         public double nilaiPungutan { get; set; }
     }
