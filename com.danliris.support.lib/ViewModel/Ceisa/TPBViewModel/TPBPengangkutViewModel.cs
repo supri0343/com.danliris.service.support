@@ -11,5 +11,6 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public int seriPengangkut { get; set; }
         public string idPengangkut { get; set; }
         public string kodeCaraAngkut { get; set; }
+        public string kodeBendera { get; set; }
     }
 }

@@ -41,6 +41,12 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public string kodeAsalBarang { get; set; }
         public string kodeKategoriBarang { get; set; }
         public string kodeNegaraAsal { get; set; }
+        //23
+        public double fob { get; set; }
+        public double freight { get; set; }
+        public string kodePerhitungan { get; set; }
+        public double nilaiTambah { get; set; }
         public List<TPBBarang_TarifViewModel> barangTarif { get; set; }
+        public List<TPBBarang_DokumenViewModel> barangDokumen { get; set; }
     }
 }

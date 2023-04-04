@@ -11,9 +11,10 @@ using System;
 namespace com.danliris.support.lib.Migrations
 {
     [DbContext(typeof(SupportDbContext))]
-    partial class SupportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230404031427_add-kodeBendera-for-pengangkut-tpb")]
+    partial class addkodeBenderaforpengangkuttpb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1323,8 +1324,6 @@ namespace com.danliris.support.lib.Migrations
                     b.Property<string>("kodeJenisApi");
 
                     b.Property<string>("kodeJenisIdentitas");
-
-                    b.Property<string>("kodeNegara");
 
                     b.Property<string>("kodeStatus");
 

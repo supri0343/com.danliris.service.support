@@ -11,9 +11,10 @@ using System;
 namespace com.danliris.support.lib.Migrations
 {
     [DbContext(typeof(SupportDbContext))]
-    partial class SupportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230404024112_modify-table-for-bc23")]
+    partial class modifytableforbc23
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1324,8 +1325,6 @@ namespace com.danliris.support.lib.Migrations
 
                     b.Property<string>("kodeJenisIdentitas");
 
-                    b.Property<string>("kodeNegara");
-
                     b.Property<string>("kodeStatus");
 
                     b.Property<string>("namaEntitas");
@@ -1663,8 +1662,6 @@ namespace com.danliris.support.lib.Migrations
                     b.Property<DateTime>("_LastModifiedUtc");
 
                     b.Property<string>("idPengangkut");
-
-                    b.Property<string>("kodeBendera");
 
                     b.Property<string>("kodeCaraAngkut");
 

@@ -17,5 +17,7 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public DateTime tanggalIjinEntitas { get; set; }
         public string kodeJenisApi { get; set; }
         public string kodeStatus { get; set; }
+        public string kodeNegara { get; set; }
+     
     }
 }

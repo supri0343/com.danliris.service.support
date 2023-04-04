@@ -48,6 +48,24 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public DateTime? tglAkhirBerlaku { get; set; }
         public DateTime? tglAwalBerlaku { get; set; }
         public double totalDanaSawit { get; set; }
+        //23
+        public double fob { get; set; }
+        public string kodeTutupPu { get; set; }
+        public DateTime? tanggalTiba { get; set; }
+        public string kodePelBongkar { get; set; }
+        public string kodeTujuanTpb { get; set; }
+        public string kodeKantorBongkar { get; set; }
+        public string nomorBc11 { get; set; }
+        public DateTime? tanggalBc11 { get; set; }
+        public string posBc11 { get; set; }
+        public string subposBc11 { get; set; }
+        public string kodePelMuat { get; set; }
+        public string kodePelTransit { get; set; }
+        public string kodeTps { get; set; }
+        
+        public string kodeIncoterm { get; set; }
+        public string kodeAsuransi { get; set; }
+        public string kodeKenaPajak { get; set; }
         //public double diskon { get; set; }
         public virtual IEnumerable<TPBBarang> barang { get; set; }
         public virtual IEnumerable<TPBEntitas> entitas { get; set; }
