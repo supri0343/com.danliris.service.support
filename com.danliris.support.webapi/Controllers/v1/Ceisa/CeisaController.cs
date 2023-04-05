@@ -96,6 +96,34 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
             }
         }
 
+        [HttpGet("getManifes")]
+        public async Task<IActionResult> getManifes(string kodeKantor, string noHostBl, DateTime tglHostBl)
+        {
+            try
+            {
+                identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                var authCeisa = Request.Headers["AuthorizationCeisa"].First();
+
+                var data = await ceisaService.GetManifestBC11(kodeKantor,noHostBl,tglHostBl, authCeisa);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data,
+                    message = General.OK_MESSAGE,
+                    statusCode = General.OK_STATUS_CODE
+                }
+                );
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
         [HttpGet("GetBC-PEB/{id}")]
         public IActionResult GetPEBByIdToSupport(long id)
         {

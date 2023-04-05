@@ -59,6 +59,31 @@ namespace com.danliris.support.lib.Services.Ceisa
             }
         }
 
+        public async Task<ManifesBC11ViewModel> GetManifestBC11(string kodeKantor,string noHostBl,DateTime tglHostBl, string token)
+        {
+
+            using (var client = new HttpClient())
+            {
+                var tglManifes = tglHostBl.ToString("dd-MM-yyyy");
+                var authCeisa = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = authCeisa;
+                var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/manifes-bc11?kodeKantor={kodeKantor}&noHostBl={noHostBl}&tglHostBl={tglManifes}").Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    //var content = response.Content.ReadAsStringAsync().Result;
+                    ManifesBC11ViewModel viewModel = JsonConvert.DeserializeObject<ManifesBC11ViewModel>(response.Content.ReadAsStringAsync().Result);
+                    //Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                    //ManifesBC11ViewModel viewModel = JsonConvert.DeserializeObject<ManifesBC11ViewModel>(result.GetValueOrDefault("data").ToString()); ;
+                    return viewModel;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+
         public class ResponViewModel
         {
             public string nomorAju { get; set; }
