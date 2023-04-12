@@ -59,6 +59,29 @@ namespace com.danliris.support.lib.Services.Ceisa
             }
         }
 
+        public async Task<List<LartasViewModel>> GetTarifHS(string kode, string token)
+        {
+
+            using (var client = new HttpClient())
+            {
+                var dateNow = DateTime.Now.ToString("yyyy-MM-dd");
+                var authCeisa = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = authCeisa;
+                var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/tarif-hs?kodeHs={kode}&tanggal={dateNow}").Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = response.Content.ReadAsStringAsync().Result;
+                    Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                    List<LartasViewModel> viewModel = JsonConvert.DeserializeObject<List<LartasViewModel>>(result.GetValueOrDefault("posTarif").ToString()); ;
+                    return viewModel;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         public async Task<ManifesBC11ViewModel> GetManifestBC11(string kodeKantor,string noHostBl,DateTime tglHostBl, string token)
         {
 

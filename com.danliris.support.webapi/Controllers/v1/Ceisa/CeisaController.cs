@@ -124,6 +124,34 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
             }
         }
 
+        [HttpGet("getTarifHS")]
+        public async Task<IActionResult> getTarifHS(string kode)
+        {
+            try
+            {
+                identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                var authCeisa = Request.Headers["AuthorizationCeisa"].First();
+
+                var data = await ceisaService.GetTarifHS(kode, authCeisa);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data,
+                    message = General.OK_MESSAGE,
+                    statusCode = General.OK_STATUS_CODE
+                }
+                );
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
         [HttpGet("GetBC-PEB/{id}")]
         public IActionResult GetPEBByIdToSupport(long id)
         {

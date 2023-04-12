@@ -12,5 +12,6 @@ namespace com.danliris.support.lib.Interfaces.Ceisa
         Task<List<LartasViewModel>> GetLartas(string kode, string token);
         Task<ManifesBC11ViewModel> GetManifestBC11(string kodeKantor, string noHostBl, DateTime tglHostBl, string token);
         Task<List<ResponViewModel>> GetRespon(string kode, string token);
+        Task<List<LartasViewModel>> GetTarifHS(string kode, string token);
     }
 }
