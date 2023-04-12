@@ -86,6 +86,7 @@ namespace com.danliris.support.webapi
             services.AddTransient<IBC40, BC40Service>();
             services.AddTransient<IBC261, BC261Service>();
             services.AddTransient<IBC23, BC23Service>();
+            services.AddTransient<IBC262, BC262Service>();
             services.AddTransient<ITPBService, TPBService>();
             services.AddAutoMapper();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
