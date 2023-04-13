@@ -66,6 +66,8 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public string kodeIncoterm { get; set; }
         public string kodeAsuransi { get; set; }
         public string kodeKenaPajak { get; set; }
+        //262
+        public string kodeTujuanPemasukan { get; set; }
         //public double diskon { get; set; }
         public virtual IEnumerable<TPBBarang> barang { get; set; }
         public virtual IEnumerable<TPBEntitas> entitas { get; set; }

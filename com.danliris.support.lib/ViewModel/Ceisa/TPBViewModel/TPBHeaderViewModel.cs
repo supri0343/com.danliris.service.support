@@ -65,6 +65,8 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public string kodeIncoterm { get; set; }
         public string kodeAsuransi { get; set; }
         public string kodeKenaPajak { get; set; }
+        //262
+        public string kodeTujuanPemasukan { get; set; }
         public virtual List<TPBBarangViewModel> barang { get; set; }
         public virtual List<TPBEntitasViewModel> entitas { get; set; }
         public virtual List<TPBDokumenViewModel> dokumen { get; set; }
