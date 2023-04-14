@@ -152,6 +152,8 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa.TPBController
                 identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
                 identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
 
+            
+
                 await bC25Service.UpdateAsync(id, viewModel);
                 return Ok(new
                 {

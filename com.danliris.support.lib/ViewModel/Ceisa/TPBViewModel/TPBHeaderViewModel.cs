@@ -69,6 +69,12 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public string kodeTujuanPemasukan { get; set; }
         //25
         public string kodeCaraBayar { get; set; }
+        public double diskon { get; set; }
+        public double ppnPajak { get; set; }
+        public double tarifPpnPajak { get; set; }
+        public double ppnbmPajak { get; set; }
+        public double tarifPpnbmPajak { get; set; }
+        public string kodeLokasiBayar { get; set; }
         public virtual List<TPBBarangViewModel> barang { get; set; }
         public virtual List<TPBEntitasViewModel> entitas { get; set; }
         public virtual List<TPBDokumenViewModel> dokumen { get; set; }

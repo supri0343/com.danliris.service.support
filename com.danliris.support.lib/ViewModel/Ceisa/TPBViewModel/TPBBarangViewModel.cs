@@ -46,7 +46,12 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public double freight { get; set; }
         public string kodePerhitungan { get; set; }
         public double nilaiTambah { get; set; }
+        //25
+        public string kodeDokAsal { get; set; }
+        public string kodeGunaBarang { get; set; }
+        public string kodeKondisiBarang { get; set; }
         public List<TPBBarang_TarifViewModel> barangTarif { get; set; }
         public List<TPBBarang_DokumenViewModel> barangDokumen { get; set; }
+        public List<TPBBarang_BahanBakuViewModel> bahanBaku { get; set; }
     }
 }
