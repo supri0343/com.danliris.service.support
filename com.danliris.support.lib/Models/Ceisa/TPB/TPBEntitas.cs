@@ -21,5 +21,6 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public string kodeJenisApi { get; set; }
         public string kodeStatus { get; set; }
         public string kodeNegara { get; set; }
+        public string niperEntitas { get; set; }
     }
 }

@@ -52,7 +52,12 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public double freight { get; set; }
         public string kodePerhitungan { get; set; }
         public double nilaiTambah { get; set; }
+        //25
+        public string kodeDokAsal { get; set; }
+        public string kodeGunaBarang { get; set; }
+        public string kodeKondisiBarang { get; set; }
         public virtual IEnumerable<TPBBarang_Tarif> barangTarif { get; set; }
         public virtual IEnumerable<TPBBarang_Dokumen> barangDokumen { get; set; }
+        public virtual IEnumerable<TPBBarang_BahanBaku> bahanBaku { get; set; }
     }
 }

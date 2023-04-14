@@ -68,6 +68,8 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public string kodeKenaPajak { get; set; }
         //262
         public string kodeTujuanPemasukan { get; set; }
+        //25
+        public string kodeCaraBayar { get; set; }
         //public double diskon { get; set; }
         public virtual IEnumerable<TPBBarang> barang { get; set; }
         public virtual IEnumerable<TPBEntitas> entitas { get; set; }
