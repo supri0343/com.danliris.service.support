@@ -182,7 +182,6 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                 .Include(m => m.dokumen)
                 .Include(m => m.pengangkut)
                 .Include(m => m.pungutan)
-              
                 .Include(m => m.jaminan)
                 .FirstOrDefaultAsync();
 

@@ -105,6 +105,14 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                     foreach (var barang in model.barang)
                     {
                         MoonlayEntityExtension.FlagForCreate(barang, identityService.Username, USER_AGENT);
+                        foreach (var bahanBaku in barang.bahanBaku)
+                        {
+                            MoonlayEntityExtension.FlagForCreate(bahanBaku, identityService.Username, USER_AGENT);
+                            foreach (var bahanBakuTarif in bahanBaku.bahanBakuTarif)
+                            {
+                                MoonlayEntityExtension.FlagForCreate(bahanBakuTarif, identityService.Username, USER_AGENT);
+                            }
+                        }
                     }
                     foreach (var entitas in model.entitas)
                     {
@@ -134,14 +142,6 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                     {
                         MoonlayEntityExtension.FlagForCreate(pungutan, identityService.Username, USER_AGENT);
                     }
-                    foreach (var bahanBaku in model.bahanBaku)
-                    {
-                        MoonlayEntityExtension.FlagForCreate(bahanBaku, identityService.Username, USER_AGENT);
-                    }
-                    foreach (var bahanBakuTarif in model.bahanBakuTarif)
-                    {
-                        MoonlayEntityExtension.FlagForCreate(bahanBakuTarif, identityService.Username, USER_AGENT);
-                    }
                     foreach (var jaminan in model.jaminan)
                     {
                         MoonlayEntityExtension.FlagForCreate(jaminan, identityService.Username, USER_AGENT);
@@ -164,14 +164,16 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
         {
             var model = await dbSet.Where(m => m.Id == id)
                 .Include(m => m.barang)
+                .ThenInclude(x => x.bahanBaku)
+                .Include(m => m.barang)
+                .ThenInclude(x => x.bahanBaku)
+                .ThenInclude(s => s.bahanBakuTarif)
                 .Include(m => m.entitas)
                 .Include(m => m.kemasan)
                 .Include(m => m.kontainer)
                 .Include(m => m.dokumen)
                 .Include(m => m.pengangkut)
                 .Include(m => m.pungutan)
-                .Include(m => m.bahanBaku)
-                .Include(m => m.bahanBakuTarif)
                 .Include(m => m.jaminan)
                 .FirstOrDefaultAsync();
 
@@ -191,7 +193,14 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                     foreach (var barang in data.barang)
                     {
                         MoonlayEntityExtension.FlagForDelete(barang, identityService.Username, USER_AGENT);
-
+                        foreach (var bahanBaku in barang.bahanBaku)
+                        {
+                            MoonlayEntityExtension.FlagForDelete(bahanBaku, identityService.Username, USER_AGENT);
+                            foreach (var bahanBakuTarif in bahanBaku.bahanBakuTarif)
+                            {
+                                MoonlayEntityExtension.FlagForDelete(bahanBakuTarif, identityService.Username, USER_AGENT);
+                            }
+                        }
                     }
 
                     foreach (var entitas in data.entitas)
@@ -227,15 +236,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                         MoonlayEntityExtension.FlagForDelete(jaminan, identityService.Username, USER_AGENT);
                     }
 
-                    foreach (var bahanBaku in data.bahanBaku)
-                    {
-                        MoonlayEntityExtension.FlagForDelete(bahanBaku, identityService.Username, USER_AGENT);
-                    }
-
-                    foreach (var bahanBakuTarif in data.bahanBakuTarif)
-                    {
-                        MoonlayEntityExtension.FlagForDelete(bahanBakuTarif, identityService.Username, USER_AGENT);
-                    }
+               
 
 
 
@@ -252,10 +253,20 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                     {
                         MoonlayEntityExtension.FlagForCreate(barang, identityService.Username, USER_AGENT);
                         MoonlayEntityExtension.FlagForUpdate(barang, identityService.Username, USER_AGENT);
+                        foreach (var bahanBaku in barang.bahanBaku)
+                        {
+                            MoonlayEntityExtension.FlagForCreate(bahanBaku, identityService.Username, USER_AGENT);
+                            MoonlayEntityExtension.FlagForUpdate(bahanBaku, identityService.Username, USER_AGENT);
+                            foreach (var bahanBakuTarif in bahanBaku.bahanBakuTarif)
+                            {
+                                MoonlayEntityExtension.FlagForCreate(bahanBakuTarif, identityService.Username, USER_AGENT);
+                                MoonlayEntityExtension.FlagForUpdate(bahanBakuTarif, identityService.Username, USER_AGENT);
+                            }
 
+                        }
                     }
 
-                    foreach (var entitas in viewModel.entitas)
+                        foreach (var entitas in viewModel.entitas)
                     {
                         MoonlayEntityExtension.FlagForCreate(entitas, identityService.Username, USER_AGENT);
                         MoonlayEntityExtension.FlagForUpdate(entitas, identityService.Username, USER_AGENT);
@@ -295,18 +306,6 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                         MoonlayEntityExtension.FlagForCreate(jaminan, identityService.Username, USER_AGENT);
                         MoonlayEntityExtension.FlagForUpdate(jaminan, identityService.Username, USER_AGENT);
                     }
-                    foreach (var bahanBaku in viewModel.bahanBaku)
-                    {
-                        MoonlayEntityExtension.FlagForCreate(bahanBaku, identityService.Username, USER_AGENT);
-                        MoonlayEntityExtension.FlagForUpdate(bahanBaku, identityService.Username, USER_AGENT);
-
-                    }
-                    foreach (var bahanBakuTarif in viewModel.bahanBakuTarif)
-                    {
-                        MoonlayEntityExtension.FlagForCreate(bahanBakuTarif, identityService.Username, USER_AGENT);
-                        MoonlayEntityExtension.FlagForUpdate(bahanBakuTarif, identityService.Username, USER_AGENT);
-                    }
-
 
                     #endregion
                     dbSet.Add(viewModel);
@@ -338,6 +337,16 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                     foreach (var barang in data.barang)
                     {
                         MoonlayEntityExtension.FlagForDelete(barang, identityService.Username, USER_AGENT);
+                        foreach (var bahanBaku in barang.bahanBaku)
+                        {
+                            MoonlayEntityExtension.FlagForDelete(bahanBaku, identityService.Username, USER_AGENT);
+                            foreach (var bahanBakuTarif in bahanBaku.bahanBakuTarif)
+                            {
+                                MoonlayEntityExtension.FlagForDelete(bahanBakuTarif, identityService.Username, USER_AGENT);
+
+                            }
+
+                        }
                     }
 
                     foreach (var entitas in data.entitas)
@@ -371,16 +380,6 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                     foreach (var jaminan in data.jaminan)
                     {
                         MoonlayEntityExtension.FlagForDelete(jaminan, identityService.Username, USER_AGENT);
-                    }
-
-                    foreach (var bahanBaku in data.bahanBaku)
-                    {
-                        MoonlayEntityExtension.FlagForDelete(bahanBaku, identityService.Username, USER_AGENT);
-                    }
-
-                    foreach (var bahanBakuTarif in data.bahanBakuTarif)
-                    {
-                        MoonlayEntityExtension.FlagForDelete(bahanBakuTarif, identityService.Username, USER_AGENT);
                     }
 
 
