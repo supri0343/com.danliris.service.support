@@ -142,14 +142,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                     {
                         MoonlayEntityExtension.FlagForCreate(pungutan, identityService.Username, USER_AGENT);
                     }
-                    foreach (var bahanBaku in model.bahanBaku)
-                    {
-                        MoonlayEntityExtension.FlagForCreate(bahanBaku, identityService.Username, USER_AGENT);
-                    }
-                    foreach (var bahanBakuTarif in model.bahanBakuTarif)
-                    {
-                        MoonlayEntityExtension.FlagForCreate(bahanBakuTarif, identityService.Username, USER_AGENT);
-                    }
+                
                     foreach (var jaminan in model.jaminan)
                     {
                         MoonlayEntityExtension.FlagForCreate(jaminan, identityService.Username, USER_AGENT);
