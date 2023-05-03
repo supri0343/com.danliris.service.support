@@ -162,8 +162,7 @@ namespace com.danliris.support.webapi.Controllers.v1
 		[HttpGet("machiness")]
 		public IActionResult GetMachiness(string tipe, string ctg, string serial)
 		{
-			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
-			string accept = Request.Headers["Accept"];
+
 
 			try
 			{
@@ -186,8 +185,7 @@ namespace com.danliris.support.webapi.Controllers.v1
 		[HttpGet("machinesByBrand")]
 		public IActionResult GetMachinesByBrand(int page = 1, int size = 25, string keyword = null, string filter = "{}")
 		{
-			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
-			string accept = Request.Headers["Accept"];
+	
 
 			try
 			{
@@ -311,10 +309,6 @@ namespace com.danliris.support.webapi.Controllers.v1
 		[HttpPost("machinesmutation/out")]
 		public async Task<IActionResult> PostMachineMutationOut([FromBody] MachinesMutation model)
 		{
-			//int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
-			//string accept = Request.Headers["Accept"];
-
-
 			try
 			{
 				identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
@@ -350,9 +344,6 @@ namespace com.danliris.support.webapi.Controllers.v1
 		[HttpGet("mutation")]
 		public IActionResult GetMachineMutation(string tipe, string ctg, string serial)
 		{
-			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
-			string accept = Request.Headers["Accept"];
-
 			try
 			{
 				var data = machineService.GetMachineMutation(tipe, ctg, serial);
@@ -373,9 +364,6 @@ namespace com.danliris.support.webapi.Controllers.v1
 		[HttpGet("mutation/{id}")]
 		public IActionResult GetMutationById(Guid id)
 		{
-			int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
-			string accept = Request.Headers["Accept"];
-
 			try
 			{
 				var data = machineService.GetMutationById(id);
@@ -422,6 +410,59 @@ namespace com.danliris.support.webapi.Controllers.v1
 					new ResultFormatter(ApiVersion, General.BAD_REQUEST_STATUS_CODE, General.BAD_REQUEST_MESSAGE)
 					.Fail(e);
 				return BadRequest(Result);
+			}
+			catch (Exception e)
+			{
+				Dictionary<string, object> Result =
+					new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+					.Fail();
+				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+			}
+		}
+		[HttpGet("mutation/download")]
+		public IActionResult GetXlsMachineMutation(string tipe, string ctg, string serial)
+		{
+			byte[] xlsInBytes;
+			try
+			{
+				var xls = machineService.GetXlsMachineMutation(tipe, ctg, serial);
+				string filename = "Laporan Mutasi Mesin";
+				if (tipe != "") filename += " " + tipe;
+				if (ctg != "") filename += "_" + ctg;
+				if (serial != "") filename += "_" + serial;
+				filename += ".xlsx";
+
+
+				xlsInBytes = xls.ToArray();
+				var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+				return file;
+			}
+			catch (Exception e)
+			{
+				Dictionary<string, object> Result =
+					new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+					.Fail();
+				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+			}
+		}
+
+		[HttpGet("download")]
+		public IActionResult GetXlsMachine(string tipe, string ctg, string serial)
+		{
+			byte[] xlsInBytes;
+			try
+			{
+				var xls = machineService.GetXlsMachine(tipe, ctg, serial);
+				string filename = "Laporan Mesin";
+				if (tipe != "") filename += " " + tipe;
+				if (ctg != "") filename += "_" + ctg;
+				if (serial != "") filename += "_" + serial;
+				filename += ".xlsx";
+
+
+				xlsInBytes = xls.ToArray();
+				var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+				return file;
 			}
 			catch (Exception e)
 			{

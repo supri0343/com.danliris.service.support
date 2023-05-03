@@ -10,6 +10,9 @@ using System.Text;
 using com.danliris.support.lib.Models.Machine;
 using Newtonsoft.Json;
 using Com.DanLiris.Service.Purchasing.Lib.Helpers;
+using System.IO;
+using System.Data;
+using OfficeOpenXml;
 
 namespace com.danliris.support.lib.Services
 {
@@ -356,6 +359,7 @@ namespace com.danliris.support.lib.Services
             return Query.ToList();
         }
 
+
         public MutationMachine GetMutationById(Guid id)
         {
             var model = (from a in context.Machine
@@ -402,6 +406,87 @@ namespace com.danliris.support.lib.Services
                 }
             }
             return Updated;
+        }
+
+        public MemoryStream GetXlsMachineMutation(string tipe, string ctg, string serial)
+        {
+            var Query = GetMachineMutation(tipe, ctg, serial);
+
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Brand", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kategori", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tipe", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Serial", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(decimal) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tipe Transaksi", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Transaksi", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Transaksi", DataType = typeof(String) });
+            
+
+            if(Query.Count() == 0)
+            {
+                result.Rows.Add("", "", "", "", "", 0, "", "", "", "");
+            }
+            else
+            {
+                int index = 1;
+                foreach(var a in Query)
+                {
+                    var transDate = a.TransactionDate.Value.AddHours(7).ToString("dd-MMM-yyyy");
+                    result.Rows.Add(index++, a.MachineBrand, a.MachineCategory, a.MachineType, a.IDNumber, a.MachineQuantity, a.UnitQuantity, a.TransactionType, a.TransactionAmount, transDate);
+                }
+            }
+
+            ExcelPackage package = new ExcelPackage();
+            var sheet = package.Workbook.Worksheets.Add("Report");
+            sheet.Cells["A1"].LoadFromDataTable(result, true, OfficeOpenXml.Table.TableStyles.Light16);
+
+            MemoryStream stream = new MemoryStream();
+            package.SaveAs(stream);
+            return stream;
+        }
+
+        public MemoryStream GetXlsMachine(string tipe, string ctg, string serial)
+        {
+            var Query = GetMachines(tipe, ctg, serial);
+
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Klasifikasi", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Brand", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kategori", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tipe", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Serial", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(decimal) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tahun Beli", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Supplier", DataType = typeof(String) });
+         
+
+
+            if (Query.Count() == 0)
+            {
+                result.Rows.Add("", "", "", "", "","", 0, "", "", "");
+            }
+            else
+            {
+                int index = 1;
+                foreach (var a in Query)
+                {
+                   
+                    result.Rows.Add(index++,a.Classification, a.MachineBrand, a.MachineCategory, a.MachineType, a.IDNumber, a.MachineQuantity, a.UnitQuantity,a.PurchaseYear,a.SupplierType);
+                }
+            }
+
+            ExcelPackage package = new ExcelPackage();
+            var sheet = package.Workbook.Worksheets.Add("Report");
+            sheet.Cells["A1"].LoadFromDataTable(result, true, OfficeOpenXml.Table.TableStyles.Light16);
+
+            MemoryStream stream = new MemoryStream();
+            package.SaveAs(stream);
+            return stream;
         }
 
     }
