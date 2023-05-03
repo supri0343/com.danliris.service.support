@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.danliris.support.webapi", "com.danliris.support.webapi\com.danliris.support.webapi.csproj", "{ED3FDD1F-EE76-45E8-AB7B-D9B6851D8D5D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "com.danliris.support.lib", "com.danliris.support.lib\com.danliris.support.lib.csproj", "{8ADA5275-3713-4A0B-A4D3-FB6FF0296185}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.danliris.support.test", "com.danliris.support.test\com.danliris.support.test.csproj", "{7D5B1E5C-C7E3-4BF6-8FB5-E06DA63E06DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8ADA5275-3713-4A0B-A4D3-FB6FF0296185}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ADA5275-3713-4A0B-A4D3-FB6FF0296185}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ADA5275-3713-4A0B-A4D3-FB6FF0296185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D5B1E5C-C7E3-4BF6-8FB5-E06DA63E06DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D5B1E5C-C7E3-4BF6-8FB5-E06DA63E06DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D5B1E5C-C7E3-4BF6-8FB5-E06DA63E06DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D5B1E5C-C7E3-4BF6-8FB5-E06DA63E06DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
