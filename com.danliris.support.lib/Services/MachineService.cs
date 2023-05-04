@@ -163,6 +163,7 @@ namespace com.danliris.support.lib.Services
                          a.MachineType == (string.IsNullOrWhiteSpace(tipe) ? a.MachineType : tipe)
                          && a.MachineCategory == (string.IsNullOrWhiteSpace(ctg) ? a.MachineCategory : ctg)
                          && a.IDNumber == (string.IsNullOrWhiteSpace(serial) ? a.IDNumber : serial)
+                         && a.MachineQuantity > 0
                          select a);
 
             //Query = Query.Distinct().Take(25);
@@ -314,6 +315,7 @@ namespace com.danliris.support.lib.Services
 
                         var oldMachine = context.Machine.FirstOrDefault(x => x.MachineID == machinesMutation.MachineID);
                         oldMachine.BCOutNumber = machinesMutation.BCOutNumber;
+                        oldMachine.MachineQuantity -= (int)machinesMutation.TransactionAmount;
 
                         context.MachineMutation.Add(mutation);
                         Created = await context.SaveChangesAsync();
