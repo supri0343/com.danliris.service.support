@@ -75,6 +75,7 @@ namespace com.danliris.support.webapi
             services
                 .AddTransient<IBeacukaiTempService, BeacukaiTempService>();
             services.AddTransient<IMachineService, MachineService>();
+            services.AddTransient<LogHistoriesService>();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
 
