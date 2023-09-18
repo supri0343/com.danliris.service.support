@@ -4,6 +4,7 @@ using com.danliris.support.lib.ViewModel;
 using Com.Moonlay.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
+using UploadPB.Models;
 
 namespace com.danliris.support.lib
 {
@@ -19,6 +20,8 @@ namespace com.danliris.support.lib
         public virtual DbSet<MachineBrand> MachineBrand { get; set; }
         public virtual DbSet<MachineCategory> MachineCategory { get; set; }
         public virtual DbSet<MachineMutation> MachineMutation { get; set; }
+        public virtual DbSet<BEACUKAI_ADDED> BEACUKAI_ADDED { get; set; }
+        public virtual DbSet<BEACUKAI_ADDED_DETAIL> BEACUKAI_ADDED_DETAIL { get; set; }
 
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {

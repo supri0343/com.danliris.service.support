@@ -27,7 +27,8 @@ namespace com.danliris.support.webapi.Controllers.v1
         private ExpenditureGoodsService expenditureGoodsService { get; }
         private TraceableInService traceableInService { get; }
         private TraceableOutService traceableOutService { get; }
-        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService, HOrderService hOrderService, ExpenditureGoodsService expenditureGoodsService, TraceableInService traceableInService, TraceableOutService traceableOutService)
+        private LogHistoriesService logHistoriesService { get; }
+        public CustomsReportController(ScrapService scrapService, WIPService wipService, FactBeacukaiService factBeacukaiService, FactItemMutationService factItemMutationService,FinishedGoodService finishedGoodService, MachineMutationService machineMutationService, HOrderService hOrderService, ExpenditureGoodsService expenditureGoodsService, TraceableInService traceableInService, TraceableOutService traceableOutService, LogHistoriesService logHistoriesService)
         {
 			this.scrapService = scrapService;
             this.factBeacukaiService = factBeacukaiService;
@@ -39,6 +40,7 @@ namespace com.danliris.support.webapi.Controllers.v1
             this.expenditureGoodsService = expenditureGoodsService;
             this.traceableInService = traceableInService;
             this.traceableOutService = traceableOutService;
+            this.logHistoriesService = logHistoriesService;
         }
 
         [HttpGet("in")]
@@ -1038,5 +1040,52 @@ namespace com.danliris.support.webapi.Controllers.v1
         //        return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
         //    }
         //}
+
+        [HttpGet("log-histories")]
+        public IActionResult GetLogHistories(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        {
+            try
+            {
+
+                var data = logHistoriesService.GetReport( dateFrom, dateTo, page, size, Order);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 }
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("log-histories/download")]
+        public IActionResult GetExcelLogHistories(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        {
+            try
+            {
+                byte[] xlsInBytes;
+                var xls = logHistoriesService.GenerateExcelReport(dateFrom, dateTo);
+
+                string filename = String.Format("Laporan Aktivitas (Log) User - {0} - {1}.xlsx", dateFrom.Value.ToString("ddMMyyyy"), dateTo.Value.ToString("ddMMyyyy"));
+
+                xlsInBytes = xls.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
     }
 }
