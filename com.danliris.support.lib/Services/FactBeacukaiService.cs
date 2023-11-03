@@ -58,7 +58,7 @@ namespace com.danliris.support.lib.Services
                                                && a.Tipe == "in"
                                                && array.Contains(a.BCType)
                                                && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
-                                               && a.SupplierName != "DAN LIRIS"
+                                               //&& a.SupplierName != "DAN LIRIS"
                                            select new FactBeacukaiViewModel
                                            {
                                                BCNo = a.BCNo,
@@ -80,7 +80,7 @@ namespace com.danliris.support.lib.Services
                               && a.Tipe == "in"
                               && array.Contains(a.BCType)
                               && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
-                              && a.SupplierName != "DAN LIRIS"
+                              //&& a.SupplierName != "DAN LIRIS"
                           select new FactBeacukaiViewModel
                           {
                               BCNo = a.BCNo,
