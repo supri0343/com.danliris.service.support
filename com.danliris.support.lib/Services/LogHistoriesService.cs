@@ -25,7 +25,7 @@ namespace com.danliris.support.lib.Services
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
 
-            var QueryTPB = context.BeacukaiTemp.Where(x => x.Hari >= dateFrom && x.Hari <= dateTo).Select(s => new LogHistoriesViewModel
+            var QueryTPB = context.BeacukaiTemp.Where(x => x.Hari.AddHours(7).Date >= dateFrom.Value.Date && x.Hari.AddHours(7).Date <= dateTo.Value.Date).Select(s => new LogHistoriesViewModel
             {
                 Division = s.JenisBC == "BC 25" ? "SHIPPING" : "PEMBELIAN",
                 Name = s.CreatedBy,
@@ -45,7 +45,7 @@ namespace com.danliris.support.lib.Services
                 Activity = key.Activity
             });
 
-            var QueryPEB = context.BEACUKAI_ADDED.Where(x => x.CreateDate >= dateFrom && x.CreateDate <= dateTo).Select(s => new LogHistoriesViewModel
+            var QueryPEB = context.BEACUKAI_ADDED.Where(x => x.CreateDate.Value.AddHours(7).Date >= dateFrom.Value.Date && x.CreateDate.Value.AddHours(7).Date <= dateTo.Value.Date).Select(s => new LogHistoriesViewModel
             {
                 Division =  "SHIPPING" ,
                 Name = s.CreateUser,
