@@ -40,9 +40,9 @@ namespace com.danliris.support.lib
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-				entity.Property(e => e.Tipe)
-				   .HasMaxLength(100)
-				   .IsUnicode(false);
+				//entity.Property(e => e.Tipe)
+				//   .HasMaxLength(100)
+				//   .IsUnicode(false);
 
 				entity.Property(e => e.BCId)
                     .HasColumnName("BCId")
@@ -83,9 +83,9 @@ namespace com.danliris.support.lib
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.KodeDokumenPabean)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                //entity.Property(e => e.KodeDokumenPabean)
+                //    .HasMaxLength(50)
+                //    .IsUnicode(false);
 
                 entity.Property(e => e.KodeKemasan)
                     .HasMaxLength(50)
