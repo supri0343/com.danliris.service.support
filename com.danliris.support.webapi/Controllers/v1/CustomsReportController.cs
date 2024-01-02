@@ -44,7 +44,7 @@ namespace com.danliris.support.webapi.Controllers.v1
         }
 
         [HttpGet("in")]
-        public IActionResult GetIN(string type, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        public IActionResult GetIN(string type, DateTime? dateFrom, DateTime? dateTo, string no, int page, int size, string Order = "{}")
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
@@ -52,7 +52,7 @@ namespace com.danliris.support.webapi.Controllers.v1
             try
             {
 
-                var data = factBeacukaiService.GetReportIN(type, dateFrom, dateTo, page, size, Order, offset);
+                var data = factBeacukaiService.GetReportIN(type, dateFrom, dateTo,no, page, size, Order, offset);
 
                 return Ok(new
                 {
@@ -71,7 +71,7 @@ namespace com.danliris.support.webapi.Controllers.v1
         }
 
         [HttpGet("in/download")]
-        public IActionResult GetXlsIN(string type, DateTime? dateFrom, DateTime? dateTo)
+        public IActionResult GetXlsIN(string type, DateTime? dateFrom, DateTime? dateTo, string no)
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
@@ -81,7 +81,7 @@ namespace com.danliris.support.webapi.Controllers.v1
                 DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
                 DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
 
-                var xls = factBeacukaiService.GenerateExcelIN(type, dateFrom, dateTo, offset);
+                var xls = factBeacukaiService.GenerateExcelIN(type, dateFrom, dateTo, offset,no);
 
                 string filename = String.Format("Laporan Pemasukan Barang per Dokumen Pabean - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 
@@ -100,7 +100,7 @@ namespace com.danliris.support.webapi.Controllers.v1
         }
 
         [HttpGet("out")]
-        public IActionResult GetOUT(string type, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order = "{}")
+        public IActionResult GetOUT(string type, DateTime? dateFrom, DateTime? dateTo, string no, int page, int size, string Order = "{}")
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
@@ -108,7 +108,7 @@ namespace com.danliris.support.webapi.Controllers.v1
             try
             {
 
-                var data = factBeacukaiService.GetReportOUT(type, dateFrom, dateTo, page, size, Order, offset);
+                var data = factBeacukaiService.GetReportOUT(type, dateFrom, dateTo,no, page, size, Order, offset);
 
                 return Ok(new
                 {
@@ -127,7 +127,7 @@ namespace com.danliris.support.webapi.Controllers.v1
         }
 
         [HttpGet("out/download")]
-        public IActionResult GetXlsOUT(string type, DateTime? dateFrom, DateTime? dateTo)
+        public IActionResult GetXlsOUT(string type, DateTime? dateFrom, DateTime? dateTo,string no)
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
@@ -137,7 +137,7 @@ namespace com.danliris.support.webapi.Controllers.v1
                 DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
                 DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
 
-                var xls = factBeacukaiService.GenerateExcelOUT(type, dateFrom, dateTo, offset);
+                var xls = factBeacukaiService.GenerateExcelOUT(type, dateFrom, dateTo, offset,no);
 
                 string filename = String.Format("Laporan Pengeluaran Barang per Dokumen Pabean - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 
