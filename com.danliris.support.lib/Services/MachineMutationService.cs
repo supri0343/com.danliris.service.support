@@ -2,6 +2,8 @@
 using com.danliris.support.lib.ViewModel;
 using Com.Moonlay.NetCore.Lib;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -46,8 +48,23 @@ namespace com.danliris.support.lib.Services
 						SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
 						DataSet dSet = new DataSet();
 						dataAdapter.Fill(dSet);
+						double Pemasukan = 0;
+						double Pengeluaran = 0;
+						double Penyesuaian = 0;
+						double SaldoAwal = 0;
+						double SaldoBuku = 0;
+						double Selisih = 0;
+						double StockOpname = 0;
 						foreach (DataRow data in dSet.Tables[0].Rows)
 						{
+							Pemasukan += (double)data["Pemasukan"];
+							Pengeluaran += (double)data["Pengeluaran"];
+							SaldoAwal += (double)data["SaldoAwal"];
+							SaldoBuku += (double)data["SaldoBuku"];
+							Penyesuaian += (double)data["Penyesuaian"];
+							StockOpname += (double)data["StockOpname"];
+							Selisih += (double)data["Selisih"];
+
 							FinishedGoodViewModel view = new FinishedGoodViewModel
 							{
 								KodeBarang = data["KodeBarang"].ToString(),
@@ -63,6 +80,21 @@ namespace com.danliris.support.lib.Services
 							};
 							machine.Add(view);
 						}
+						machine.OrderBy(x => x.KodeBarang);
+
+						machine.Add(new FinishedGoodViewModel
+						{
+							KodeBarang = "TOTAL",
+							NamaBarang = "",
+							Pemasukan = String.Format("{0:n}", Pemasukan),
+							Pengeluaran = String.Format("{0:n}", Pengeluaran),
+							SaldoAwal = String.Format("{0:n}", SaldoAwal),
+							SaldoBuku = String.Format("{0:n}", SaldoBuku),
+							UnitQtyName = "",
+							Penyesuaian = String.Format("{0:n}", Penyesuaian),
+							StockOpname = String.Format("{0:n}", StockOpname),
+							Selisih = String.Format("{0:n}", Selisih)
+						});
 					}
 					conn.Close();
 				}
@@ -79,18 +111,18 @@ namespace com.danliris.support.lib.Services
         {
             var Query = GetMachineMutationReport(dateFrom, dateTo, offset);
 
-            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
-            if (OrderDictionary.Count.Equals(0))
-            {
-                Query = Query.OrderBy(b => b.KodeBarang);
-            }
-            else
-            {
-                string Key = OrderDictionary.Keys.First();
-                string OrderType = OrderDictionary[Key];
+            //Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
+            //if (OrderDictionary.Count.Equals(0))
+            //{
+            //    Query = Query.OrderBy(b => b.KodeBarang);
+            //}
+            //else
+            //{
+            //    string Key = OrderDictionary.Keys.First();
+            //    string OrderType = OrderDictionary[Key];
 
-                //Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
-            }
+            //    //Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
+            //}
 
 
             Pageable<FinishedGoodViewModel> pageable = new Pageable<FinishedGoodViewModel>(Query, page - 1, size);
@@ -123,7 +155,24 @@ namespace com.danliris.support.lib.Services
                 {
                     result.Rows.Add((item.KodeBarang), item.NamaBarang, item.UnitQtyName, item.SaldoAwal, item.Pemasukan, item.Pengeluaran, item.Penyesuaian, item.SaldoBuku, item.StockOpname, item.Selisih);
                 }
-            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
-        }
+			//return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
+			ExcelPackage package = new ExcelPackage();
+			var sheet = package.Workbook.Worksheets.Add("Data");
+
+			sheet.Cells["A1"].LoadFromDataTable(result, true, OfficeOpenXml.Table.TableStyles.Light16);
+
+			var a = Query.Count();
+			sheet.Cells[$"A{a + 1}"].Value = "T O T A L  . . . . . . . . . . . . . . .";
+			sheet.Cells[$"A{a + 1}:C{a + 1}"].Merge = true;
+			sheet.Cells[$"A{a + 1}:C{a + 1}"].Style.Font.Bold = true;
+			sheet.Cells[$"A{a + 1}:C{a + 1}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+			sheet.Cells[$"A{a + 1}:C{a + 1}"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+			sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
+
+			MemoryStream stream = new MemoryStream();
+			package.SaveAs(stream);
+			return stream;
+		}
     }
 }
