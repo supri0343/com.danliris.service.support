@@ -50,6 +50,9 @@ namespace com.danliris.support.lib.Services
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
 
+            string[] exceptSupplier = {"DAN LIRIS","DAN LIRIS ( DIVISI TEXTILE )","DAN LIRIS (DIVISI TEXTILE)","DAN LIRIS DIVISI TEXTILE","DAN LIRIS,GMT","PT DAN LIRIS","PT DAN LIRIS ( TEXTILE )","PT DAN LIRIS (TEXTILE)","PT DAN LIRIS DIVISI TEXTILE","PT DAN LIRIS TEXTILE ","PT DANLIRIS","PT DANLIRIS (DIV. TEXTILE)","PT. DAN LIRIS","PT. DAN LIRIS DIVISI TEXTILE","PT. DANLIRIS TEXTILE"
+
+            };
             //if (type == "BC 27")
             //{
             var Query = type == "BC 27" ? (from a in context.ViewFactBeacukai
@@ -59,6 +62,7 @@ namespace com.danliris.support.lib.Services
                                                && array.Contains(a.BCType)
                                                && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
                                                //&& a.SupplierName != "DAN LIRIS"
+                                               && !exceptSupplier.Contains(a.SupplierName)
                                                && a.BCNo == (string.IsNullOrWhiteSpace(no) ? a.BCNo : no)
                                            select new FactBeacukaiViewModel
                                            {
@@ -299,13 +303,16 @@ namespace com.danliris.support.lib.Services
 			{ type = "BC 27"; }
 			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+
+            string[] exceptSupplier = {"DAN LIRIS","DAN LIRIS ( DIVISI TEXTILE )","DAN LIRIS (DIVISI TEXTILE)","DAN LIRIS DIVISI TEXTILE","DAN LIRIS,GMT","PT DAN LIRIS","PT DAN LIRIS ( TEXTILE )","PT DAN LIRIS (TEXTILE)","PT DAN LIRIS DIVISI TEXTILE","PT DAN LIRIS TEXTILE ","PT DANLIRIS","PT DANLIRIS (DIV. TEXTILE)","PT. DAN LIRIS","PT. DAN LIRIS DIVISI TEXTILE","PT. DANLIRIS TEXTILE"};
             var Query = type == "BC 27" ? (from a in context.ViewFactBeacukai
                                            where a.BCDate.AddHours(offset).Date >= DateFrom.Date
                                                && a.BCDate.AddHours(offset).Date <= DateTo.Date
                                                && array.Contains(a.BCType)
                                                //&& a.Tipe == "in"
                                                && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
-                                               && a.SupplierName == "DAN LIRIS"
+                                               //&& a.SupplierName == "DAN LIRIS"
+                                               && exceptSupplier.Contains(a.SupplierName)
                                                && a.BCNo == (string.IsNullOrWhiteSpace(no) ? a.BCNo : no)
                                            select new FactBeacukaiViewModel
                                            {
