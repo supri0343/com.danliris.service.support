@@ -377,7 +377,7 @@ namespace com.danliris.support.lib.Services
             var index = 0;
             foreach (FactBeacukaiViewModel a in q)
             {
-                FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
+                FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo && o.BCDate ==  a.BCDate);
                 if (dup != null)
                 {
                     if (dup.count == 0)
@@ -402,7 +402,7 @@ namespace com.danliris.support.lib.Services
         public MemoryStream GenerateExcelOUT(string type, DateTime? dateFrom, DateTime? dateTo, int offset, string no)
         {
             var Query = GetReportOUTQuery(type, dateFrom, dateTo, offset,no);
-            Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCNo);
+            Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCDate).ThenBy(b => b.BCNo);
             DataTable result = new DataTable();
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Jenis Dokumen", DataType = typeof(String) });
@@ -426,7 +426,7 @@ namespace com.danliris.support.lib.Services
                 var index = 0;
                 foreach (FactBeacukaiViewModel a in q)
                 {
-                    FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
+                    FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo && o.BCDate == a.BCDate);
                     if (dup != null)
                     {
                         if (dup.count == 0)
@@ -464,13 +464,13 @@ namespace com.danliris.support.lib.Services
                 foreach (var a in Query)
                 {
                     //FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
-                    if (counts.TryGetValue(a.BCType + a.BCNo, out value))
+                    if (counts.TryGetValue(a.BCType + a.BCNo + a.BCDate, out value))
                     {
-                        counts[a.BCType + a.BCNo]++;
+                        counts[a.BCType + a.BCNo + a.BCDate]++;
                     }
                     else
                     {
-                        counts[a.BCType + a.BCNo] = 1;
+                        counts[a.BCType + a.BCNo + a.BCDate] = 1;
                     }
 
                     //FactBeacukaiViewModel dup1 = Array.Find(docNo, o => o.BCType == a.BCType);
