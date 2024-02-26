@@ -19,6 +19,12 @@ using Swashbuckle.AspNetCore.Swagger;
 using com.danliris.support.lib.Interfaces;
 using Com.DanLiris.Service.support.lib.Services;
 using Com.DanLiris.Service.support.lib.Interfaces;
+using com.danliris.support.lib.Services.Ceisa;
+using AutoMapper;
+using com.danliris.support.lib.Interfaces.Ceisa;
+using com.danliris.support.lib.Services.Ceisa;
+using com.danliris.support.lib.Services.Ceisa.TPB;
+using com.danliris.support.lib.Interfaces.Ceisa.TPB;
 
 namespace com.danliris.support.webapi
 {
@@ -75,6 +81,15 @@ namespace com.danliris.support.webapi
             services
                 .AddTransient<IBeacukaiTempService, BeacukaiTempService>();
             services.AddTransient<IMachineService, MachineService>();
+            services.AddTransient<IPEBService, PEBService>();
+            services.AddTransient<ICeisaService, CeisaService>();
+            services.AddTransient<IBC40, BC40Service>();
+            services.AddTransient<IBC261, BC261Service>();
+            services.AddTransient<IBC23, BC23Service>();
+            services.AddTransient<IBC25, BC25Service>();
+            services.AddTransient<IBC262, BC262Service>();
+            services.AddTransient<ITPBService, TPBService>();
+            services.AddAutoMapper();
             services.AddTransient<LogHistoriesService>();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));

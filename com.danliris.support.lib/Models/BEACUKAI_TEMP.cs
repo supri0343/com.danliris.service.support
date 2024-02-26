@@ -8,8 +8,8 @@ namespace com.danliris.support.lib.Models
     {
       public long ID { get; set; }
       public string BCId { get; set; }
-		//public string Tipe { get; set; }
-	  public string BCNo { get; set; }  
+	  //public string Tipe { get; set; }
+      public string BCNo { get; set; }
       public string Barang { get; set; }
       public decimal Bruto { get; set; }
       public decimal? CIF { get; set; }

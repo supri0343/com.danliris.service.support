@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
-namespace UploadPB.Models
+namespace com.danliris.support.lib.Models
 {
     public class BEACUKAI_ADDED
     {
@@ -17,8 +17,8 @@ namespace UploadPB.Models
         public DateTime ExpenditureDate { get; set; }
         public string BuyerCode { get; set; }
         public string BuyerName { get; set; }
-        public double Netto { get; set; }
-        public double Bruto { get; set; }
+        public decimal Netto { get; set; }
+        public decimal Bruto { get; set; }
         public string Pack { get; set; }
         public string CreateUser { get; set; }
         public DateTime? CreateDate { get; set; }

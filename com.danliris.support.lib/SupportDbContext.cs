@@ -1,10 +1,11 @@
 ﻿using com.danliris.support.lib.Models;
+using com.danliris.support.lib.Models.Ceisa.PEB;
+using com.danliris.support.lib.Models.Ceisa.TPB;
 using com.danliris.support.lib.Models.Machine;
 using com.danliris.support.lib.ViewModel;
 using Com.Moonlay.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
-using UploadPB.Models;
 
 namespace com.danliris.support.lib
 {
@@ -20,9 +21,20 @@ namespace com.danliris.support.lib
         public virtual DbSet<MachineBrand> MachineBrand { get; set; }
         public virtual DbSet<MachineCategory> MachineCategory { get; set; }
         public virtual DbSet<MachineMutation> MachineMutation { get; set; }
+        //PEB
+        public virtual DbSet<PEBHeader> PEBHeader { get; set; }
+        public virtual DbSet<PEBBarang> PEBBarang { get; set; }
+        public virtual DbSet<PEBDokumen> PEBDokumen { get; set; }
+        public virtual DbSet<PEBEntitas> PEBEntitas { get; set; }
+        public virtual DbSet<PEBKemasan> PEBKemasan { get; set; }
         public virtual DbSet<BEACUKAI_ADDED> BEACUKAI_ADDED { get; set; }
         public virtual DbSet<BEACUKAI_ADDED_DETAIL> BEACUKAI_ADDED_DETAIL { get; set; }
-
+        //TPB
+        public virtual DbSet<TPBHeader> TPBHeader { get; set; }
+        public virtual DbSet<TPBDokumen>  TPBDokumen { get; set; }
+        public virtual DbSet<TPBBarang> TPBBarang { get; set; }
+        public virtual DbSet<TPBEntitas> TPBEntitas { get; set; }
+        public virtual DbSet<BeacukaiDocumentsModel> BeacukaiDocuments { get; set; }
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {
         }
@@ -32,107 +44,107 @@ namespace com.danliris.support.lib
             {
                 entity.ToTable("BEACUKAI_TEMP");
 
-                entity.Property(e => e.ID)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+    //            entity.Property(e => e.ID)
+    //                .HasColumnName("ID")
+    //                .ValueGeneratedNever();
 
-                entity.Property(e => e.Barang)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.Barang)
+    //                .HasMaxLength(100)
+    //                .IsUnicode(false);
 
 				//entity.Property(e => e.Tipe)
 				//   .HasMaxLength(100)
 				//   .IsUnicode(false);
 
-				entity.Property(e => e.BCId)
-                    .HasColumnName("BCId")
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+				//entity.Property(e => e.BCId)
+    //                .HasColumnName("BCId")
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.BCNo)
-                    .HasColumnName("BCNo")
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.BCNo)
+    //                .HasColumnName("BCNo")
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.Bruto).HasColumnType("decimal(12, 2)");
+    //            entity.Property(e => e.Bruto).HasColumnType("decimal(12, 2)");
 
-                entity.Property(e => e.CIF)
-                    .HasColumnName("CIF")
-                    .HasColumnType("decimal(20, 2)");
+    //            entity.Property(e => e.CIF)
+    //                .HasColumnName("CIF")
+    //                .HasColumnType("decimal(20, 2)");
 
-                entity.Property(e => e.CIF_Rupiah)
-                    .HasColumnName("CIF_Rupiah")
-                    .HasColumnType("decimal(20, 2)");
+    //            entity.Property(e => e.CIF_Rupiah)
+    //                .HasColumnName("CIF_Rupiah")
+    //                .HasColumnType("decimal(20, 2)");
 
-                entity.Property(e => e.Hari).HasColumnType("datetime");
+    //            entity.Property(e => e.Hari).HasColumnType("datetime");
 
-                entity.Property(e => e.IDHeader).HasColumnName("IDHeader");
+    //            entity.Property(e => e.IDHeader).HasColumnName("IDHeader");
 
-                entity.Property(e => e.JenisBC)
-                    .HasColumnName("JenisBC")
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.JenisBC)
+    //                .HasColumnName("JenisBC")
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.JenisDokumen)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.JenisDokumen)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.JumlahSatBarang).HasColumnType("decimal(12, 2)");
+    //            entity.Property(e => e.JumlahSatBarang).HasColumnType("decimal(12, 2)");
 
-                entity.Property(e => e.KodeBarang)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.KodeBarang)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                //entity.Property(e => e.KodeDokumenPabean)
-                //    .HasMaxLength(50)
-                //    .IsUnicode(false);
+    //            entity.Property(e => e.KodeDokumenPabean)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.KodeKemasan)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.KodeKemasan)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.KodeSupplier)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.KodeSupplier)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.NamaKemasan)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.NamaKemasan)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.NamaSupplier)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.NamaSupplier)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.Netto).HasColumnType("decimal(12, 2)");
+    //            entity.Property(e => e.Netto).HasColumnType("decimal(12, 2)");
 
-                entity.Property(e => e.NoAju)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.NoAju)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.NomorDokumen)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.NomorDokumen)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.Sat)
-                    .HasMaxLength(5)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.Sat)
+    //                .HasMaxLength(5)
+    //                .IsUnicode(false);
 
-                entity.Property(e => e.TanggalDokumen).HasColumnType("datetime");
+    //            entity.Property(e => e.TanggalDokumen).HasColumnType("datetime");
 
-                entity.Property(e => e.TglBCNo)
-                    .HasColumnName("TglBCNo")
-                    .HasColumnType("datetime");
+    //            entity.Property(e => e.TglBCNo)
+    //                .HasColumnName("TglBCNo")
+    //                .HasColumnType("datetime");
 
-                entity.Property(e => e.TglDaftarAju).HasColumnType("datetime");
+    //            entity.Property(e => e.TglDaftarAju).HasColumnType("datetime");
 
-                entity.Property(e => e.TglDatang).HasColumnType("datetime");
+    //            entity.Property(e => e.TglDatang).HasColumnType("datetime");
 
-                entity.Property(e => e.Valuta)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-                entity.Property(e => e.Vendor)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+    //            entity.Property(e => e.Valuta)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
+    //            entity.Property(e => e.Vendor)
+    //                .HasMaxLength(50)
+    //                .IsUnicode(false);
             });
 
             modelBuilder.Entity<FactBeacukai>(entity =>

@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20230323073921_add-table-for-tpb-BC40.cs" />
+    <Compile Remove="Migrations\20230323073921_add-table-for-tpb-BC40.Designer.cs" />
+    <Compile Remove="Migrations\20230331021709_modify-table-tpb-for-261.cs" />
+    <Compile Remove="Migrations\20230331021709_modify-table-tpb-for-261.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="Com.Moonlay.EntityFrameworkCore" Version="1.0.0-alpha-10122017-003" />
     <PackageReference Include="Com.Moonlay.NetCore.Lib" Version="1.0.0-alpha-20171102-001" />
     <PackageReference Include="EPPlus.Core" Version="1.5.4" />
