@@ -35,7 +35,7 @@ namespace com.danliris.support.lib.Services
             return this.context.FactBeacukai.Take(size).ToList();
         }
 
-        public IQueryable<FactBeacukaiViewModel> GetReportINQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
+        public IQueryable<FactBeacukaiViewModel> GetReportINQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset, string no)
         {
 
             var array = new string[] { "BC 262", "BC 23", "BC 40", "BC 27" };
@@ -50,6 +50,9 @@ namespace com.danliris.support.lib.Services
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
 
+            string[] exceptSupplier = {"DAN LIRIS","DAN LIRIS ( DIVISI TEXTILE )","DAN LIRIS (DIVISI TEXTILE)","DAN LIRIS DIVISI TEXTILE","DAN LIRIS,GMT","PT DAN LIRIS","PT DAN LIRIS ( TEXTILE )","PT DAN LIRIS (TEXTILE)","PT DAN LIRIS DIVISI TEXTILE","PT DAN LIRIS TEXTILE ","PT DANLIRIS","PT DANLIRIS (DIV. TEXTILE)","PT. DAN LIRIS","PT. DAN LIRIS DIVISI TEXTILE","PT. DANLIRIS TEXTILE"
+
+            };
             //if (type == "BC 27")
             //{
             var Query = type == "BC 27" ? (from a in context.ViewFactBeacukai
@@ -58,7 +61,9 @@ namespace com.danliris.support.lib.Services
                                                && a.Tipe == "in"
                                                && array.Contains(a.BCType)
                                                && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
-                                               && a.SupplierName != "DAN LIRIS"
+                                               //&& a.SupplierName != "DAN LIRIS"
+                                               && !exceptSupplier.Contains(a.SupplierName)
+                                               && a.BCNo == (string.IsNullOrWhiteSpace(no) ? a.BCNo : no)
                                            select new FactBeacukaiViewModel
                                            {
                                                BCNo = a.BCNo,
@@ -80,7 +85,8 @@ namespace com.danliris.support.lib.Services
                               && a.Tipe == "in"
                               && array.Contains(a.BCType)
                               && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
-                              && a.SupplierName != "DAN LIRIS"
+                              //&& a.SupplierName != "DAN LIRIS"
+                              && a.BCNo == (string.IsNullOrWhiteSpace(no) ? a.BCNo : no)
                           select new FactBeacukaiViewModel
                           {
                               BCNo = a.BCNo,
@@ -128,9 +134,9 @@ namespace com.danliris.support.lib.Services
             return Query;
         }
 
-        public Tuple<List<FactBeacukaiViewModel>, int> GetReportIN(string type, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
+        public Tuple<List<FactBeacukaiViewModel>, int> GetReportIN(string type, DateTime? dateFrom, DateTime? dateTo,string no, int page, int size, string Order, int offset)
         {
-            var Query = GetReportINQuery(type, dateFrom, dateTo, offset);
+            var Query = GetReportINQuery(type, dateFrom, dateTo, offset,no);
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             if (OrderDictionary.Count.Equals(0))
@@ -170,9 +176,9 @@ namespace com.danliris.support.lib.Services
             return Tuple.Create(Data, TotalData);
         }
         
-        public MemoryStream GenerateExcelIN(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
+        public MemoryStream GenerateExcelIN(string type, DateTime? dateFrom, DateTime? dateTo, int offset,string no)
         {
-            var Query = GetReportINQuery(type, dateFrom, dateTo, offset);
+            var Query = GetReportINQuery(type, dateFrom, dateTo, offset,no);
             Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCNo);
             DataTable result = new DataTable();
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -282,7 +288,7 @@ namespace com.danliris.support.lib.Services
             //return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
 
-        public IQueryable<FactBeacukaiViewModel> GetReportOUTQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
+        public IQueryable<FactBeacukaiViewModel> GetReportOUTQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset,string no)
         {
             var array = new string[] { "BC 261", "BC 3.0",  "BC 41", "BC 27", "BC 25" };
 			if (type == "BC 2.6.1")
@@ -297,13 +303,17 @@ namespace com.danliris.support.lib.Services
 			{ type = "BC 27"; }
 			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+
+            string[] exceptSupplier = {"DAN LIRIS","DAN LIRIS ( DIVISI TEXTILE )","DAN LIRIS (DIVISI TEXTILE)","DAN LIRIS DIVISI TEXTILE","DAN LIRIS,GMT","PT DAN LIRIS","PT DAN LIRIS ( TEXTILE )","PT DAN LIRIS (TEXTILE)","PT DAN LIRIS DIVISI TEXTILE","PT DAN LIRIS TEXTILE ","PT DANLIRIS","PT DANLIRIS (DIV. TEXTILE)","PT. DAN LIRIS","PT. DAN LIRIS DIVISI TEXTILE","PT. DANLIRIS TEXTILE"};
             var Query = type == "BC 27" ? (from a in context.ViewFactBeacukai
                                            where a.BCDate.AddHours(offset).Date >= DateFrom.Date
                                                && a.BCDate.AddHours(offset).Date <= DateTo.Date
                                                && array.Contains(a.BCType)
                                                //&& a.Tipe == "in"
                                                && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
-                                               && a.SupplierName == "DAN LIRIS"
+                                               //&& a.SupplierName == "DAN LIRIS"
+                                               && exceptSupplier.Contains(a.SupplierName)
+                                               && a.BCNo == (string.IsNullOrWhiteSpace(no) ? a.BCNo : no)
                                            select new FactBeacukaiViewModel
                                            {
                                                BCNo = a.BCNo,
@@ -325,7 +335,7 @@ namespace com.danliris.support.lib.Services
                               && array.Contains(a.BCType)
                               && a.Tipe == "out"
                               && a.BCType == (string.IsNullOrWhiteSpace(type) ? a.BCType : type)
-
+                              && a.BCNo == (string.IsNullOrWhiteSpace(no) ? a.BCNo : no)
                           select new FactBeacukaiViewModel
                           {
                               BCNo = a.BCNo,
@@ -346,9 +356,9 @@ namespace com.danliris.support.lib.Services
             return Query;
         }
 
-        public Tuple<List<FactBeacukaiViewModel>, int> GetReportOUT(string type, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
+        public Tuple<List<FactBeacukaiViewModel>, int> GetReportOUT(string type, DateTime? dateFrom, DateTime? dateTo,string no, int page, int size, string Order, int offset)
         {
-            var Query = GetReportOUTQuery(type, dateFrom, dateTo, offset);
+            var Query = GetReportOUTQuery(type, dateFrom, dateTo, offset,no);
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             if (OrderDictionary.Count.Equals(0))
@@ -367,7 +377,7 @@ namespace com.danliris.support.lib.Services
             var index = 0;
             foreach (FactBeacukaiViewModel a in q)
             {
-                FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
+                FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo && o.BCDate ==  a.BCDate);
                 if (dup != null)
                 {
                     if (dup.count == 0)
@@ -389,10 +399,10 @@ namespace com.danliris.support.lib.Services
             return Tuple.Create(Data, TotalData);
         }
 
-        public MemoryStream GenerateExcelOUT(string type, DateTime? dateFrom, DateTime? dateTo, int offset)
+        public MemoryStream GenerateExcelOUT(string type, DateTime? dateFrom, DateTime? dateTo, int offset, string no)
         {
-            var Query = GetReportOUTQuery(type, dateFrom, dateTo, offset);
-            Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCNo);
+            var Query = GetReportOUTQuery(type, dateFrom, dateTo, offset,no);
+            Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCDate).ThenBy(b => b.BCNo);
             DataTable result = new DataTable();
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Jenis Dokumen", DataType = typeof(String) });
@@ -416,7 +426,7 @@ namespace com.danliris.support.lib.Services
                 var index = 0;
                 foreach (FactBeacukaiViewModel a in q)
                 {
-                    FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
+                    FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo && o.BCDate == a.BCDate);
                     if (dup != null)
                     {
                         if (dup.count == 0)
@@ -454,13 +464,13 @@ namespace com.danliris.support.lib.Services
                 foreach (var a in Query)
                 {
                     //FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
-                    if (counts.TryGetValue(a.BCType + a.BCNo, out value))
+                    if (counts.TryGetValue(a.BCType + a.BCNo + a.BCDate, out value))
                     {
-                        counts[a.BCType + a.BCNo]++;
+                        counts[a.BCType + a.BCNo + a.BCDate]++;
                     }
                     else
                     {
-                        counts[a.BCType + a.BCNo] = 1;
+                        counts[a.BCType + a.BCNo + a.BCDate] = 1;
                     }
 
                     //FactBeacukaiViewModel dup1 = Array.Find(docNo, o => o.BCType == a.BCType);

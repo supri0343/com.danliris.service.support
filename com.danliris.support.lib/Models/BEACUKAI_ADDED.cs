@@ -17,14 +17,14 @@ namespace com.danliris.support.lib.Models
         public DateTime ExpenditureDate { get; set; }
         public string BuyerCode { get; set; }
         public string BuyerName { get; set; }
-        public decimal Netto { get; set; }
-        public decimal Bruto { get; set; }
+        public double Netto { get; set; }
+        public double Bruto { get; set; }
         public string Pack { get; set; }
         public string CreateUser { get; set; }
-        public DateTime CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; }
         public string UpdateUser { get; set; }
-        public DateTime UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
         public string Vendor { get; set; }
-        public virtual ICollection<BEACUKAI_ADDED_DETAIL> Items { get; set; }
+        public List<BEACUKAI_ADDED_DETAIL> Items { get; set; }
     }
 }

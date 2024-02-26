@@ -3,6 +3,7 @@ using com.danliris.support.lib.Models.Machine;
 using com.danliris.support.lib.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,5 +24,7 @@ namespace com.danliris.support.lib.Interfaces
         List<MutationMachine> GetMachineMutation(string tipe, string ctg, string serial);
         MutationMachine GetMutationById(Guid id);
         Task<int> UpdateMutation(Guid id, MachineMutation mutation, string username);
+        MemoryStream GetXlsMachineMutation(string tipe, string ctg, string serial);
+        MemoryStream GetXlsMachine(string tipe, string ctg, string serial);
     }
 }

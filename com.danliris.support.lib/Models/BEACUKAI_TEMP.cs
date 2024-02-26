@@ -19,15 +19,15 @@ namespace com.danliris.support.lib.Models
       public string KodeBarang { get; set; }
       public string KodeKemasan { get; set; }
       public string NamaKemasan { get; set; }
-      public decimal Netto { get; set; }
+      public decimal? Netto { get; set; }
       public string NoAju { get; set; }
       public string NamaSupplier { get; set; }
-      public DateTime TglDaftarAju { get; set; }
+      public DateTime? TglDaftarAju { get; set; }
       public DateTime TglBCNo { get; set; }
       public string Valuta { get; set; }
       public DateTime Hari { get; set; }
       public string JenisBC { get; set; }
-      public int IDHeader { get; set; }
+      public long? IDHeader { get; set; }
       public string JenisDokumen { get; set; }
       public string NomorDokumen { get; set; }
       public DateTime? TanggalDokumen { get; set; }

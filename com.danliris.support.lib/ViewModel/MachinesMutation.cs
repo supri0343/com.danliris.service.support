@@ -54,10 +54,7 @@ namespace com.danliris.support.lib.ViewModel
                 {
                     yield return new ValidationResult("Quantity tidak boleh kosong atau 0", new List<string> { "MachineQuantity" });
                 }
-                if (UnitQuantity == null)
-                {
-                    yield return new ValidationResult("Satuan tidak boleh kosong", new List<string> { "UnitQuantity" });
-                }
+               
                 if (SupplierType == null || SupplierType == "-")
                 {
                     yield return new ValidationResult("Supplier tidak boleh kosong", new List<string> { "SupplierType" });
@@ -74,18 +71,8 @@ namespace com.danliris.support.lib.ViewModel
                 {
                     yield return new ValidationResult("Klasifikasi Mesin tidak boleh kosong", new List<string> { "Classification" });
                 }
-                if (TransactionDate.Equals(DateTime.MinValue) || TransactionDate == null)
-                {
-                    yield return new ValidationResult("Tgl. Transaksi harus diisi", new List<string> { "TransactionDate" });
-                }
-                if (TransactionAmount == 0 || TransactionAmount == null)
-                {
-                    yield return new ValidationResult("Jumlah Transaksi harus diisi", new List<string> { "TransactionAmount" });
-                }
-                if (UnitQuantity == null)
-                {
-                    yield return new ValidationResult("Satuan tidak boleh kosong", new List<string> { "UnitQuantity" });
-                }
+              
+             
             }
 
             if (TransactionDate.Equals(DateTimeOffset.MinValue) || TransactionDate == null)
