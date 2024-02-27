@@ -6,6 +6,7 @@ using com.danliris.support.lib.ViewModel.Ceisa;
 using Newtonsoft.Json;
 using com.danliris.support.lib.Interfaces.Ceisa;
 using System;
+using com.danliris.support.lib.Helpers;
 
 namespace com.danliris.support.lib.Services.Ceisa
 {
@@ -22,7 +23,8 @@ namespace com.danliris.support.lib.Services.Ceisa
             {
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/kurs/{kode}").Result;
+
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}kurs/{kode}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var content = response.Content.ReadAsStringAsync().Result;
@@ -44,7 +46,7 @@ namespace com.danliris.support.lib.Services.Ceisa
             {
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/hs-lartas?kodeHs={kode}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}hs-lartas?kodeHs={kode}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var content = response.Content.ReadAsStringAsync().Result;
@@ -67,7 +69,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                 var dateNow = DateTime.Now.ToString("yyyy-MM-dd");
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/tarif-hs?kodeHs={kode}&tanggal={dateNow}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}tarif-hs?kodeHs={kode}&tanggal={dateNow}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var content = response.Content.ReadAsStringAsync().Result;
@@ -90,7 +92,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                 var tglManifes = tglHostBl.ToString("dd-MM-yyyy");
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/manifes-bc11?kodeKantor={kodeKantor}&noHostBl={noHostBl}&tglHostBl={tglManifes}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}manifes-bc11?kodeKantor={kodeKantor}&noHostBl={noHostBl}&tglHostBl={tglManifes}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     //var content = response.Content.ReadAsStringAsync().Result;
@@ -125,7 +127,7 @@ namespace com.danliris.support.lib.Services.Ceisa
             {
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"https://nlehub.kemenkeu.go.id/openapi/status/{kode}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}status/{kode}").Result;
                 //var response = client.GetAsync($"https://nlehub-dev.kemenkeu.go.id/openapi/status/{kode}").Result;
                 if (response.IsSuccessStatusCode)
                 {
