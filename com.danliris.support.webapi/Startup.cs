@@ -49,6 +49,7 @@ namespace com.danliris.support.webapi
 			string LocalDbConnectionString = Configuration.GetConnectionString("LocalDbProductionConnection") ?? Configuration["LocalDbProductionConnection"];
 			APIEndpoint.ConnectionString = Configuration.GetConnectionString("DefaultConnection") ?? Configuration["DefaultConnection"];
             APIEndpoint.LocalConnectionString = Configuration.GetConnectionString("LocalDbProductionConnection") ?? Configuration["LocalDbProductionConnection"];
+            APIEndpoint.HostToHost = Configuration.GetValue<string>("HostToHostEndpoint") ?? Configuration["HostToHostEndpoint"];
 
             services
 				.AddDbContext<SupportDbContext>(options => options.UseSqlServer(connectionString))
