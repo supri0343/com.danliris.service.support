@@ -472,5 +472,26 @@ namespace com.danliris.support.webapi.Controllers.v1
 				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
 			}
 		}
+
+		[HttpGet("mutation-by-bcNo")]
+		public async Task<IActionResult> GetMachineMutationByBCNo(string bcNo,string machineId)
+		{
+			try
+			{
+				var data = machineService.GetMachineMutationByBCNo(bcNo, machineId).Result;
+				return Ok(new
+				{
+					apiVersion = ApiVersion,
+					data = data
+				});
+			}
+			catch (Exception e)
+			{
+				Dictionary<string, object> Result =
+					new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+					.Fail();
+				return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+			}
+		}
 	}
 }

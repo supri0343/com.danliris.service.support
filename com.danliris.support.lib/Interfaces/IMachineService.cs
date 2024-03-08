@@ -26,5 +26,7 @@ namespace com.danliris.support.lib.Interfaces
         Task<int> UpdateMutation(Guid id, MachineMutation mutation, string username);
         MemoryStream GetXlsMachineMutation(string tipe, string ctg, string serial);
         MemoryStream GetXlsMachine(string tipe, string ctg, string serial);
+        Task<List<MachineMutationByBCNo>> GetMachineMutationByBCNo(string bcNo, string machineId);
+
     }
 }

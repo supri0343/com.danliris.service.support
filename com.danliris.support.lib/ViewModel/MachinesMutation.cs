@@ -1,4 +1,5 @@
-﻿using System;
+﻿using com.danliris.support.lib.ViewModel.NewIntegrationVM;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -31,8 +32,10 @@ namespace com.danliris.support.lib.ViewModel
         public string TransactionType { get; set; }
         public double? TransactionAmount { get; set; }
         public string Description { get; set; }
+        public SupplierViewModel Buyer { get; set; }
+        public string Type { get; set; }
 
-
+        public int? QtyOut { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (TransactionType == "IN")
@@ -50,7 +53,7 @@ namespace com.danliris.support.lib.ViewModel
                 {
                     yield return new ValidationResult("Tipe tidak boleh kosong", new List<string> { "MachineType" });
                 }
-                if (MachineQuantity == null || MachineQuantity == 0)
+                if ((MachineQuantity == null || MachineQuantity == 0) && Type != "PEMINJAMAN")
                 {
                     yield return new ValidationResult("Quantity tidak boleh kosong atau 0", new List<string> { "MachineQuantity" });
                 }
@@ -71,8 +74,22 @@ namespace com.danliris.support.lib.ViewModel
                 {
                     yield return new ValidationResult("Klasifikasi Mesin tidak boleh kosong", new List<string> { "Classification" });
                 }
-              
+                if(Type == "PEMINJAMAN")
+                {
+                    if(TransactionAmount > QtyOut)
+                    {
+                        yield return new ValidationResult("Jumlah Transaksi tidak boleh melebihi jumlah yang dipinjamkan", new List<string> { "TransactionAmount" });
+                    }
+                }
              
+            }
+
+            if(TransactionType == "OUT")
+            {
+                if(string.IsNullOrEmpty(BCOutNumber) && Type != "PEMUSNAHAN")
+                {
+                    yield return new ValidationResult("BCNo tidak boleh kosong", new List<string> { "BCOutNumber" });
+                }
             }
 
             if (TransactionDate.Equals(DateTimeOffset.MinValue) || TransactionDate == null)
@@ -86,6 +103,11 @@ namespace com.danliris.support.lib.ViewModel
             if (UnitQuantity == null)
             {
                 yield return new ValidationResult("Satuan tidak boleh kosong", new List<string> { "UnitQuantity" });
+            }
+
+            if (string.IsNullOrWhiteSpace(Type))
+            {
+                yield return new ValidationResult("Tipe tidak boleh kosong", new List<string> { "Type" });
             }
 
         }

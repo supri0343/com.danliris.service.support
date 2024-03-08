@@ -33,6 +33,16 @@ namespace com.danliris.support.lib.Models.Machine
 
         [StringLength(50)]
         public string ModifiedBy { get; set; }
+        [MaxLength(255)]
+        public string Type { get; set; }
+        [MaxLength(255)]
+        public long BuyerId { get; set; }
+        [MaxLength(255)]
+        public string BuyerCode { get; set; }
+        [MaxLength(1000)]
+        public string BuyerName { get; set; }
+        [StringLength(100)]
+        public string BCOutNumber { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
