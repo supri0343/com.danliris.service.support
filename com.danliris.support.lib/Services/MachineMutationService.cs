@@ -138,23 +138,31 @@ namespace com.danliris.support.lib.Services
             var Query = GetMachineMutationReport(dateFrom, dateTo, offset);
             Query = Query.OrderBy(b => b.KodeBarang);
             DataTable result = new DataTable();
-            result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Sat", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(Double) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(Double) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(Double) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(Double) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Buku", DataType = typeof(Double) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(Double) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(Double) });
-            if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
-            else
-                foreach (var item in Query)
-                {
-                    result.Rows.Add((item.KodeBarang), item.NamaBarang, item.UnitQtyName, item.SaldoAwal, item.Pemasukan, item.Pengeluaran, item.Penyesuaian, item.SaldoBuku, item.StockOpname, item.Selisih);
-                }
+			result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(string) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(string) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(string) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Satuan Barang", DataType = typeof(string) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Barang", DataType = typeof(double) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(double) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Pemasukan Barang", DataType = typeof(double) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Pengeluaran Barang", DataType = typeof(double) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian (Adjustment)", DataType = typeof(double) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Saldo Akhir", DataType = typeof(double) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Hasil Pencacahan", DataType = typeof(double) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Selisih", DataType = typeof(double) });
+			result.Columns.Add(new DataColumn() { ColumnName = "Keterangan", DataType = typeof(string) });
+			if (Query.ToArray().Count() == 0)
+				result.Rows.Add("", "", "", "", "", 0, 0, 0, 0, 0, 0, 0,0, ""); // to allow column name to be generated properly for empty data as template
+			else
+			{
+
+				int idx = 1;
+				foreach (var item in Query)
+				{
+					result.Rows.Add(idx.ToString(),(item.KodeBarang), item.NamaBarang, item.UnitQtyName,0, item.SaldoAwal, item.Pemasukan, item.Pengeluaran, item.Penyesuaian, item.SaldoBuku, item.StockOpname, item.Selisih,"-");
+					idx++;
+				}
+			}
 			//return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
 			ExcelPackage package = new ExcelPackage();
 			var sheet = package.Workbook.Worksheets.Add("Data");
