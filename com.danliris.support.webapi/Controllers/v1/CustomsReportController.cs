@@ -299,7 +299,7 @@ namespace com.danliris.support.webapi.Controllers.v1
 
                 var xls = machineMutationService.GenerateExcel(dateFrom, dateTo, offset);
 
-                string filename = String.Format("Laporan Pertanggungjawaban Mutasi Mesin dan Peralatan - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+                string filename = String.Format("Laporan Mutasi Barang Modal dan Barang Lain - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 
                 xlsInBytes = xls.ToArray();
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
