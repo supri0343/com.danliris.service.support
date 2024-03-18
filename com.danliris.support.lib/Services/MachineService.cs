@@ -13,6 +13,7 @@ using Com.DanLiris.Service.Purchasing.Lib.Helpers;
 using System.IO;
 using System.Data;
 using OfficeOpenXml;
+using com.danliris.support.lib.ViewModel.NewIntegrationVM;
 
 namespace com.danliris.support.lib.Services
 {
@@ -250,31 +251,42 @@ namespace com.danliris.support.lib.Services
 
                         var cek_database = (from v in context.Machine where v.MachineType == machinesMutation.MachineType select v).Count();
 
-                        Machine machine = new Machine
+                        if(machinesMutation.Type == "PEMINJAMAN")
                         {
-                            MachineID = machineID,
-                            MachineIndex = cek_database + 1,
-                            MachineCategory = machinesMutation.MachineCategory,
-                            MachineBrand = machinesMutation.MachineBrand,
-                            MachineType = machinesMutation.MachineType,
-                            MachineQuantity = machinesMutation.MachineQuantity,
-                            UnitQuantity = machinesMutation.UnitQuantity,
-                            SupplierType = machinesMutation.SupplierType,
-                            PurchaseYear = machinesMutation.PurchaseYear,
-                            IDNumber = machinesMutation.IDNumber,
-                            Classification = machinesMutation.Classification,
-                            BCNumber = machinesMutation.BCNumber,
-                            MachineBeginningBalance = 1,
-                            MachineValue = 0,
-                            ActivateDate = DateTime.Now,
-                            CloseDate = null,
-                            CreatedBy = username,
-                            CreatedDate = DateTime.Now,
-                            ModifiedBy = username,
-                            ModifiedDate = DateTime.Now,
-                            State = "Active"
+                            var oldMachine = context.Machine.FirstOrDefault(x => x.MachineID == machinesMutation.MachineID);
+                            oldMachine.MachineQuantity += (int)machinesMutation.TransactionAmount;
+                            machineID = oldMachine.MachineID;
+                        }
+                        else
+                        {
+                            Machine machine = new Machine
+                            {
+                                MachineID = machineID,
+                                MachineIndex = cek_database + 1,
+                                MachineCategory = machinesMutation.MachineCategory,
+                                MachineBrand = machinesMutation.MachineBrand,
+                                MachineType = machinesMutation.MachineType,
+                                MachineQuantity = machinesMutation.MachineQuantity,
+                                UnitQuantity = machinesMutation.UnitQuantity,
+                                SupplierType = machinesMutation.SupplierType,
+                                PurchaseYear = machinesMutation.PurchaseYear,
+                                IDNumber = machinesMutation.IDNumber,
+                                Classification = machinesMutation.Classification,
+                                BCNumber = machinesMutation.BCNumber,
+                                MachineBeginningBalance = machinesMutation.MachineQuantity,
+                                MachineValue = 0,
+                                ActivateDate = DateTime.Now,
+                                CloseDate = null,
+                                CreatedBy = username,
+                                CreatedDate = DateTime.Now,
+                                ModifiedBy = username,
+                                ModifiedDate = DateTime.Now,
+                                State = "Active"
+                            };
 
-                        };
+                            context.Machine.Add(machine);
+                        }
+                        
 
                         MachineMutation mutation = new MachineMutation
                         {
@@ -288,9 +300,13 @@ namespace com.danliris.support.lib.Services
                             ModifiedBy = username,
                             ModifiedDate = DateTime.Now,
                             Description = null,
+                            Type = machinesMutation.Type,
+                            BuyerId = machinesMutation.Buyer.Id,
+                            BuyerCode = machinesMutation.Buyer.Code,
+                            BuyerName = machinesMutation.Buyer.Name,
                         };
 
-                        context.Machine.Add(machine);
+                       
                         context.MachineMutation.Add(mutation);
                         Created = await context.SaveChangesAsync();
                         transaction.Commit();
@@ -311,6 +327,12 @@ namespace com.danliris.support.lib.Services
                             ModifiedBy = username,
                             ModifiedDate = DateTime.Now,
                             Description = null,
+                            Type = machinesMutation.Type,
+                            BuyerId = machinesMutation.Buyer.Id,
+                            BuyerCode = machinesMutation.Buyer.Code,
+                            BuyerName = machinesMutation.Buyer.Name,
+                            BCOutNumber = machinesMutation.BCOutNumber,
+
                         };
 
                         var oldMachine = context.Machine.FirstOrDefault(x => x.MachineID == machinesMutation.MachineID);
@@ -489,6 +511,37 @@ namespace com.danliris.support.lib.Services
             MemoryStream stream = new MemoryStream();
             package.SaveAs(stream);
             return stream;
+        }
+
+        public async Task<List<MachineMutationByBCNo>>GetMachineMutationByBCNo(string bcNo, string machineId)
+        {
+            var model = (from a in context.Machine
+                         join b in context.MachineMutation on a.MachineID equals b.MachineID
+                         where 
+                         //b.BCOutNumber.Contains((string.IsNullOrWhiteSpace(bcNo) ? b.BCOutNumber :  bcNo)) 
+                         //&& 
+                         b.Type=="PEMINJAMAN" &&
+                         b.MachineID == (string.IsNullOrWhiteSpace(machineId) ? b.MachineID : machineId)
+                         select new MachineMutationByBCNo
+                         {
+                             MachineBrand = a.MachineBrand,
+                             MachineCategory = a.MachineCategory,
+                             MachineQuantity = a.MachineQuantity,
+                             MachineType = a.MachineType,
+                             Classification = a.Classification,
+                             UnitQuantity = a.UnitQuantity,
+                             PurchaseYear = a.PurchaseYear,
+                             BCNumber = a.BCNumber,
+                             QtyOut = b.TransactionAmount,
+                             IDNumber = a.IDNumber,
+                             BCOutNumber = b.BCOutNumber,
+                             Buyer = new SupplierViewModel { Id = b.BuyerId, Code = b.BuyerCode ,Name = b.BuyerName},
+                             SupplierType = a.SupplierType,
+                             MachineID = b.MachineID,
+                             TransactionType = b.TransactionType
+                         }).ToList();
+
+            return model;
         }
 
     }

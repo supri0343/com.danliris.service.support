@@ -65,6 +65,9 @@ namespace com.danliris.support.lib.Models.Machine
         [StringLength(50)]
         public string ModifiedBy { get; set; }
 
+        /* Supplier */
+       
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (MachineBrand == null || string.IsNullOrWhiteSpace(MachineBrand))
