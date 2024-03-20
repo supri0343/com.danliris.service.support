@@ -182,18 +182,24 @@ namespace com.danliris.support.lib.Services
             Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCNo);
             DataTable result = new DataTable();
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Jenis Dokumen", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Dokumen Pabean", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Data Dok Pabean", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Bukti Penerimaan Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Pemasok/Pengirim", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Jenis Dokumen", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Dokumen Pabean", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Bukti Penerimaan Barang / Good Receive Note", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pemasok / Pengirim Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(Double) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Sat", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Barang", DataType = typeof(Double) });
+
+            //result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
+
+            result.Rows.Add("", "Jenis", "No. Daftar", "Tgl. Daftar", "No", "Tanggal", "", "", "","", 0);
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
             else
@@ -217,7 +223,7 @@ namespace com.danliris.support.lib.Services
                 Query = q.AsQueryable();
                 foreach (var item in Query)
                 {
-                    result.Rows.Add(item.count, item.BCType, item.BCNo, item.BCDate, item.BonNo, item.BonDate, item.SupplierName, item.ItemCode, item.ItemName, item.Quantity, item.UnitQtyName, item.Nominal, item.CurrencyCode);
+                    result.Rows.Add(item.count, item.BCType, item.BCNo, item.BCDate, item.BonNo, item.BonDate, item.SupplierName, item.ItemCode, item.ItemName, item.UnitQtyName, item.Quantity/*,  item.Nominal, item.CurrencyCode*/);
                     
                 }
             }
@@ -229,10 +235,20 @@ namespace com.danliris.support.lib.Services
             {
                 var sheet = package.Workbook.Worksheets.Add(item.Value);
                 sheet.Cells["A1"].LoadFromDataTable(item.Key, true, (styling == true) ? OfficeOpenXml.Table.TableStyles.Light16 : OfficeOpenXml.Table.TableStyles.None);
-                sheet.Cells["C1:D1"].Merge = true;
-                sheet.Cells["C1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                sheet.Cells["B1:D1"].Merge = true;
+                sheet.Cells["B1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                 sheet.Cells["E1:F1"].Merge = true;
-                sheet.Cells["C1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                sheet.Cells["E1:F1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                char[] colToMerge = { 'A','G','H','I','J','K' };
+
+                foreach(var col in colToMerge)
+                {
+                    sheet.Cells[$"{col}1:{col}2"].Merge = true;
+                    sheet.Cells[$"{col}1:{col}2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    sheet.Cells[$"{col}1:{col}2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                }
+                
 
                 Dictionary<string, int> counts = new Dictionary<string, int>();
                 Dictionary<string, int> countsType = new Dictionary<string, int>();
@@ -261,7 +277,7 @@ namespace com.danliris.support.lib.Services
                     }
                 }
 
-                int index = 2;
+                int index = 3;
                 foreach(KeyValuePair<string,int> b in counts)
                 {
                     sheet.Cells["A"+index+":A"+(index+b.Value-1)].Merge = true;
@@ -273,7 +289,7 @@ namespace com.danliris.support.lib.Services
                     index += b.Value;
                 }
 
-                index = 2;
+                index = 3;
                 foreach (KeyValuePair<string, int> c in countsType)
                 {
                     sheet.Cells["B" + index + ":B" + (index + c.Value - 1)].Merge = true;
@@ -405,18 +421,24 @@ namespace com.danliris.support.lib.Services
             Query = Query.OrderBy(b => b.BCType).ThenBy(b => b.BCDate).ThenBy(b => b.BCNo);
             DataTable result = new DataTable();
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Jenis Dokumen", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Dokumen Pabean", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Data Dok Pabean", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Bukti Pengiriman Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Pemasok/Pengirim", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Jenis Dokumen", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Dokumen Pabean", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Bukti Pengeluaran Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Penerima Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(Double) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Sat", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Barang", DataType = typeof(Double) });
+
+            //result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
+
+            result.Rows.Add("", "Jenis", "No. Daftar", "Tgl. Daftar", "No", "Tanggal", "", "", "", "", 0);
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
             else
@@ -440,7 +462,7 @@ namespace com.danliris.support.lib.Services
                 Query = q.AsQueryable();
                 foreach (var item in Query)
                 {
-                    result.Rows.Add(item.count, item.BCType, item.BCNo, item.BCDate, item.BonNo, item.BonDate, item.SupplierName, item.ItemCode, item.ItemName, item.Quantity, item.UnitQtyName, item.Nominal, item.CurrencyCode);
+                    result.Rows.Add(item.count, item.BCType, item.BCNo, item.BCDate, item.BonNo, item.BonDate, item.SupplierName, item.ItemCode, item.ItemName, item.UnitQtyName, item.Quantity/*, item.Nominal, item.CurrencyCode*/);
 
                 }
             }
@@ -452,10 +474,19 @@ namespace com.danliris.support.lib.Services
             {
                 var sheet = package.Workbook.Worksheets.Add(item.Value);
                 sheet.Cells["A1"].LoadFromDataTable(item.Key, true, (styling == true) ? OfficeOpenXml.Table.TableStyles.Light16 : OfficeOpenXml.Table.TableStyles.None);
-                sheet.Cells["C1:D1"].Merge = true;
-                sheet.Cells["C1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                sheet.Cells["B1:D1"].Merge = true;
+                sheet.Cells["B1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                 sheet.Cells["E1:F1"].Merge = true;
-                sheet.Cells["C1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                sheet.Cells["E1:F1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                char[] colToMerge = { 'A', 'G', 'H', 'I', 'J', 'K' };
+
+                foreach (var col in colToMerge)
+                {
+                    sheet.Cells[$"{col}1:{col}2"].Merge = true;
+                    sheet.Cells[$"{col}1:{col}2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    sheet.Cells[$"{col}1:{col}2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                }
 
                 Dictionary<string, int> counts = new Dictionary<string, int>();
                 Dictionary<string, int> countsType = new Dictionary<string, int>();
@@ -484,7 +515,7 @@ namespace com.danliris.support.lib.Services
                     }
                 }
 
-                int index = 2;
+                int index = 3;
                 foreach (KeyValuePair<string, int> b in counts)
                 {
                     sheet.Cells["A" + index + ":A" + (index + b.Value - 1)].Merge = true;
@@ -496,7 +527,7 @@ namespace com.danliris.support.lib.Services
                     index += b.Value;
                 }
 
-                index = 2;
+                index = 3;
                 foreach (KeyValuePair<string, int> c in countsType)
                 {
                     sheet.Cells["B" + index + ":B" + (index + c.Value - 1)].Merge = true;
