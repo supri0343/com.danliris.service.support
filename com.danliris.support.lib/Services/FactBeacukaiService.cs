@@ -196,12 +196,12 @@ namespace com.danliris.support.lib.Services
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Barang", DataType = typeof(Double) });
 
-            //result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
-            //result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
 
-            result.Rows.Add("", "Jenis", "No. Daftar", "Tgl. Daftar", "No", "Tanggal", "", "", "","", 0);
+            result.Rows.Add("", "Jenis", "No. Daftar", "Tgl. Daftar", "No", "Tanggal", "", "", "","", 0,"","");
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "","",""); // to allow column name to be generated properly for empty data as template
             else
             {
                 var docNo = Query.ToArray();
@@ -223,7 +223,7 @@ namespace com.danliris.support.lib.Services
                 Query = q.AsQueryable();
                 foreach (var item in Query)
                 {
-                    result.Rows.Add(item.count, item.BCType, item.BCNo, item.BCDate, item.BonNo, item.BonDate, item.SupplierName, item.ItemCode, item.ItemName, item.UnitQtyName, item.Quantity/*,  item.Nominal, item.CurrencyCode*/);
+                    result.Rows.Add(item.count, item.BCType, item.BCNo, item.BCDate, item.BonNo, item.BonDate, item.SupplierName, item.ItemCode, item.ItemName, item.UnitQtyName, item.Quantity, item.Nominal, item.CurrencyCode);
                     
                 }
             }
@@ -240,7 +240,7 @@ namespace com.danliris.support.lib.Services
                 sheet.Cells["E1:F1"].Merge = true;
                 sheet.Cells["E1:F1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
-                char[] colToMerge = { 'A','G','H','I','J','K' };
+                char[] colToMerge = { 'A','G','H','I','J','K','L','M' };
 
                 foreach(var col in colToMerge)
                 {
@@ -435,12 +435,12 @@ namespace com.danliris.support.lib.Services
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Barang", DataType = typeof(Double) });
 
-            //result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
-            //result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(String) });
 
-            result.Rows.Add("", "Jenis", "No. Daftar", "Tgl. Daftar", "No", "Tanggal", "", "", "", "", 0);
+            result.Rows.Add("", "Jenis", "No. Daftar", "Tgl. Daftar", "No", "Tanggal", "", "", "", "", 0,"","");
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "","",""); // to allow column name to be generated properly for empty data as template
             else
             {
                 var docNo = Query.ToArray();
@@ -462,7 +462,7 @@ namespace com.danliris.support.lib.Services
                 Query = q.AsQueryable();
                 foreach (var item in Query)
                 {
-                    result.Rows.Add(item.count, item.BCType, item.BCNo, item.BCDate, item.BonNo, item.BonDate, item.SupplierName, item.ItemCode, item.ItemName, item.UnitQtyName, item.Quantity/*, item.Nominal, item.CurrencyCode*/);
+                    result.Rows.Add(item.count, item.BCType, item.BCNo, item.BCDate, item.BonNo, item.BonDate, item.SupplierName, item.ItemCode, item.ItemName, item.UnitQtyName, item.Quantity, item.Nominal, item.CurrencyCode);
 
                 }
             }
@@ -479,7 +479,7 @@ namespace com.danliris.support.lib.Services
                 sheet.Cells["E1:F1"].Merge = true;
                 sheet.Cells["E1:F1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
-                char[] colToMerge = { 'A', 'G', 'H', 'I', 'J', 'K' };
+                char[] colToMerge = { 'A', 'G', 'H', 'I', 'J', 'K','L','M' };
 
                 foreach (var col in colToMerge)
                 {
