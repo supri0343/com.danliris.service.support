@@ -18,7 +18,7 @@ namespace com.danliris.support.lib.Models
         public string ItemName { get; set; }
         public string UnitQtyCode { get; set; }
         public double Quantity { get; set; }
-        public double Price { get; set; }
+        public decimal Price { get; set; }
         public string CurrencyCode { get; set; }
         public string CAR { get; set; }
         public string UomUnit { get; set; }
