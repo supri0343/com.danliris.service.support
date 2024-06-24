@@ -17,7 +17,7 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public string nomorIdentitas { get; set; }
         public string nomorIjinEntitas { get; set; }
         public int seriEntitas { get; set; }
-        public DateTime tanggalIjinEntitas { get; set; }
+        public DateTime? tanggalIjinEntitas { get; set; }
         public string kodeJenisApi { get; set; }
         public string kodeStatus { get; set; }
         public string kodeNegara { get; set; }

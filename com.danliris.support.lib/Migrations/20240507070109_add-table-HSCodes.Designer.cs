@@ -11,9 +11,10 @@ using System;
 namespace com.danliris.support.lib.Migrations
 {
     [DbContext(typeof(SupportDbContext))]
-    partial class SupportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240507070109_add-table-HSCodes")]
+    partial class addtableHSCodes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,8 +51,6 @@ namespace com.danliris.support.lib.Migrations
                     b.Property<double>("Netto");
 
                     b.Property<string>("Pack");
-
-                    b.Property<DateTime>("TruckingDate");
 
                     b.Property<DateTime?>("UpdateDate");
 
@@ -1314,19 +1313,13 @@ namespace com.danliris.support.lib.Migrations
 
                     b.Property<DateTime>("_LastModifiedUtc");
 
-                    b.Property<double>("jumlahKemasan");
-
                     b.Property<double>("jumlahSatuan");
-
-                    b.Property<string>("kodeAsalBahanBaku");
 
                     b.Property<string>("kodeFasilitasTarif");
 
                     b.Property<string>("kodeJenisPungutan");
 
                     b.Property<string>("kodeJenisTarif");
-
-                    b.Property<string>("kodeSatuanBarang");
 
                     b.Property<double>("nilaiBayar");
 
@@ -1542,7 +1535,7 @@ namespace com.danliris.support.lib.Migrations
 
                     b.Property<int>("seriEntitas");
 
-                    b.Property<DateTime?>("tanggalIjinEntitas");
+                    b.Property<DateTime>("tanggalIjinEntitas");
 
                     b.HasKey("Id");
 
@@ -1657,8 +1650,6 @@ namespace com.danliris.support.lib.Migrations
                     b.Property<double>("nilaiBarang");
 
                     b.Property<double>("nilaiJasa");
-
-                    b.Property<double>("nilaiPabean");
 
                     b.Property<string>("nomorAju");
 

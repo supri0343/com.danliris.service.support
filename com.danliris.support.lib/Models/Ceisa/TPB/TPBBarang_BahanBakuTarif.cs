@@ -18,8 +18,12 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public double tarif { get; set; }
         public double tarifFasilitas { get; set; }
         public string kodeJenisPungutan { get; set; }
+    
         public double nilaiFasilitas { get; set; }
         public double nilaiBayar { get; set; }
         public double nilaiSudahDilunasi { get; set; }
+        public double jumlahKemasan { get; set; }
+        public string kodeSatuanBarang { get; set; }
+        public string kodeAsalBahanBaku { get; set; }
     }
 }

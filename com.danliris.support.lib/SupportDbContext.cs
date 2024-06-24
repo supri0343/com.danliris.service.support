@@ -1,4 +1,5 @@
 ﻿using com.danliris.support.lib.Models;
+using com.danliris.support.lib.Models.Ceisa.Master.HS;
 using com.danliris.support.lib.Models.Ceisa.PEB;
 using com.danliris.support.lib.Models.Ceisa.TPB;
 using com.danliris.support.lib.Models.Machine;
@@ -35,6 +36,8 @@ namespace com.danliris.support.lib
         public virtual DbSet<TPBBarang> TPBBarang { get; set; }
         public virtual DbSet<TPBEntitas> TPBEntitas { get; set; }
         public virtual DbSet<BeacukaiDocumentsModel> BeacukaiDocuments { get; set; }
+
+        public virtual DbSet<HSModel> HSCodes { get; set; }
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {
         }

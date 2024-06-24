@@ -15,6 +15,7 @@ using com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel;
 using Newtonsoft.Json;
 using com.danliris.support.lib.Interfaces.Ceisa;
 using com.danliris.support.lib.Interfaces.Ceisa.TPB;
+using System.IO;
 
 namespace com.danliris.support.webapi.Controllers.v1.Ceisa
 {
@@ -198,6 +199,72 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
                     statusCode = General.OK_STATUS_CODE
                 }
                 );
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+
+        [HttpGet("tpb/download")]
+        public async Task<IActionResult> GetXls(string noAju)
+        {
+
+            try
+            {
+                identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                identityService.TimezoneOffset = int.Parse(Request.Headers["x-timezone-offset"].First());
+                identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
+
+                byte[] xlsInBytes;
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+
+                MemoryStream xls = await TPBService.GetExcel(noAju);
+
+
+                string filename = noAju + ".xlsx";
+
+                xlsInBytes = xls.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+
+        [HttpGet("peb/download")]
+        public async Task<IActionResult> GetXlsPEB(string noAju)
+        {
+
+            try
+            {
+                identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                identityService.TimezoneOffset = int.Parse(Request.Headers["x-timezone-offset"].First());
+                identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
+
+                byte[] xlsInBytes;
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+
+                MemoryStream xls = await pEBService.GetExcel(noAju);
+
+
+                string filename = noAju + ".xlsx";
+
+                xlsInBytes = xls.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+
             }
             catch (Exception e)
             {

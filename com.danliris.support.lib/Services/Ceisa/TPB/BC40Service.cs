@@ -48,18 +48,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                 postedBy = string.IsNullOrWhiteSpace(m.postedBy) ? "-" : m.postedBy,
                 CreatedDate = m._CreatedUtc.ToString("dd-MMM-yyyy")
             }).OrderByDescending(x => x.nomorAju);
-
-
-            //Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
-            //Query = QueryHelper<PEBViewModel>.ConfigureFilter(Query, FilterDictionary);
-
-            //Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
-            //Query = QueryHelper<PEBViewModel>.ConfigureOrder(Query, OrderDictionary);
-
-            //Pageable<PEBViewModel> pageable = new Pageable<PEBViewModel>(Query, Page - 1, Size);
-            //List<PEBViewModel> Data = pageable.Data.ToList();
-            //int TotalData = pageable.TotalCount;
-
+                
             List<object> ListData = new List<object>();
             ListData.AddRange(Query.Select(s => new
             {
@@ -364,7 +353,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                 try
                 {
                     int Created = 0;
-                    var existAju = dbSetBeacukaiTemp.Select(x => x.NoAju).Distinct();
+                    var existAju = context.BeacukaiTemp.Select(x => x.NoAju).Distinct().ToList();
                   
                     if (existAju.Contains(viewModel.nomorAju)) 
                     {
@@ -372,7 +361,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                         TPBHeader data = await ReadById(id);
                         data.tanggalDaftar = DateTime.Parse(viewModel.tanggalDaftar);
                         data.nomorDaftar = viewModel.nomorDaftar;
-                        context.SaveChanges();
+                        await context.SaveChangesAsync();
                         transaction.Commit();
                         throw new Exception($"Data dengan No Aju - {viewModel.nomorAju} - tidak disimpan karena sudah ada di database.");
                     } else
@@ -381,7 +370,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
 
                         data.tanggalDaftar = DateTime.Parse(viewModel.tanggalDaftar);
                         data.nomorDaftar = viewModel.nomorDaftar;
-                        context.SaveChanges();
+                        await context.SaveChangesAsync();
                         var ID = await GenerateBPNo.GenerateNo();
 
                         var QueryBarang = from a in context.TPBHeader
@@ -402,14 +391,14 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                                               KodeBarang = b.kodeBarang,
                                               KodeKemasan = null,
                                               NamaKemasan = null,
-                                              Netto = (decimal)a.netto,
+                                              Netto = Convert.ToDecimal(a.netto),
                                               NoAju = a.nomorAju,
                                               //NamaSupplier = d.kodeEntitas == "9" ? d.namaEntitas : "",
                                               TglDaftarAju = a.tanggalAju,
                                               TglBCNo = DateTime.Parse(viewModel.tanggalDaftar),
                                               Valuta = "IDR",
                                               JenisBC = "BC " + a.kodeDokumen,
-                                              IDHeader = (int)a.Id,
+                                              IDHeader = a.Id,
                                               JenisDokumen = null,
                                               NomorDokumen = null,
                                               TanggalDokumen = null,
@@ -447,7 +436,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                                                TglBCNo = DateTime.Parse(viewModel.tanggalDaftar),
                                                Valuta = "IDR",
                                                JenisBC = "BC " + a.kodeDokumen,
-                                               IDHeader = (int)a.Id,
+                                               IDHeader = a.Id,
                                                JenisDokumen = e.Name,
                                                NomorDokumen = c.nomorDokumen,
                                                TanggalDokumen = c.tanggalDokumen,
@@ -460,22 +449,47 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                                                Hari = DateTime.Today
                                            };
 
-                        var Supplier = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "9").First();
-                        var Vendor = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "7").First();
-
                         var DataToPost = QueryBarang.Concat(QueryDokumen);
 
-                        var lastNo = context.BeacukaiTemp.Select(x => x.ID).OrderByDescending(x => x).Take(1).First();
+                        TPBEntitas Supplier = new TPBEntitas();
+                        TPBEntitas Vendor = new TPBEntitas();
+
+                        switch (data.kodeDokumen)
+                        {
+                            case "23":
+                                Supplier = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "5").First();
+                                Vendor = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "3").First();
+                                break;
+                            case "40":
+                                Supplier = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "9").First();
+                                Vendor = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "7").First();
+                                break;
+                            case "261":
+                                Supplier = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "3").First();
+                                Vendor = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "8").First();
+                                break;
+                            case "262":
+                                Supplier = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "9").First();
+                                //Vendor = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "8").First();
+                                break;
+                            case "25":
+                                Supplier = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "3").First();
+                                Vendor = context.TPBEntitas.Where(x => x.IdHeader == id && x.kodeEntitas == "8").First();
+                                break;
+
+                        }
+                        
+                        var lastNo = context.BeacukaiTemp.Select(x => x.ID).OrderByDescending(x => x).Take(1).ToList().First();
                         var index = 1;
                         foreach (var a in DataToPost)
                         {
-                            a.ID = lastNo + index;
+                            a.ID = Convert.ToInt64(lastNo + index);
                             a.NamaSupplier = Supplier.namaEntitas;
                             a.KodeSupplier = Supplier.nomorIdentitas;
                             a.Vendor = Vendor.namaEntitas;
 
-
-                            dbSetBeacukaiTemp.Add(a);
+                            context.BeacukaiTemp.Add(a);
+                            //await context.SaveChangesAsync();
                             index++;
                         }
 
