@@ -92,7 +92,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                 var tglManifes = tglHostBl.ToString("dd-MM-yyyy");
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"{APIEndpoint.HostToHost}manifes-bc11?kodeKantor={kodeKantor}&noHostBl={noHostBl}&tglHostBl={tglManifes}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}manifes-bc11?kodeKantor={kodeKantor}&noHostBl={noHostBl}&tglHostBl={tglManifes}&nama={""}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     //var content = response.Content.ReadAsStringAsync().Result;
@@ -103,7 +103,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                 }
                 else
                 {
-                    return null;
+                    throw new Exception("err");
                 }
             }
         }

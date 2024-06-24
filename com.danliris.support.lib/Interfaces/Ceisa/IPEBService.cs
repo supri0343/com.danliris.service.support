@@ -5,6 +5,7 @@ using com.danliris.support.lib.Models.Ceisa.PEB;
 using System.Threading.Tasks;
 using com.danliris.support.lib.Helpers;
 using com.danliris.support.lib.ViewModel.Ceisa;
+using System.IO;
 
 namespace com.danliris.support.lib.Interfaces
 {
@@ -18,6 +19,7 @@ namespace com.danliris.support.lib.Interfaces
         Task<PEBViewModelList> ReadByIdToPushAsync(long id, string auth);
         Task<int> PostToSupportPEB(int id, PEBViewModelList viewModel);
         Task<int> Delete(int id);
+        Task<MemoryStream> GetExcel(string noAju);
 
 
     }

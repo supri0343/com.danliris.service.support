@@ -11,9 +11,10 @@ using System;
 namespace com.danliris.support.lib.Migrations
 {
     [DbContext(typeof(SupportDbContext))]
-    partial class SupportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240531031941_add-Coloum-Barang-BahanBakuTarif")]
+    partial class addColoumBarangBahanBakuTarif
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,8 +51,6 @@ namespace com.danliris.support.lib.Migrations
                     b.Property<double>("Netto");
 
                     b.Property<string>("Pack");
-
-                    b.Property<DateTime>("TruckingDate");
 
                     b.Property<DateTime?>("UpdateDate");
 
