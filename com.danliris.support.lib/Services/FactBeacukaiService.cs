@@ -286,6 +286,13 @@ namespace com.danliris.support.lib.Services
                     sheet.Cells["C" + index + ":C" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
                     sheet.Cells["D" + index + ":D" + (index + b.Value - 1)].Merge = true;
                     sheet.Cells["D" + index + ":D" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+
+                    if(type == "BC 2.3")
+                    {
+                        sheet.Cells["L" + index + ":L" + (index + b.Value - 1)].Merge = true;
+                        sheet.Cells["L" + index + ":L" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+
+                    }
                     index += b.Value;
                 }
 

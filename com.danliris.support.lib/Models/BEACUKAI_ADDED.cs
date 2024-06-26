@@ -15,6 +15,7 @@ namespace UploadPB.Models
         public DateTime BCDate { get; set; }
         public string ExpenditureNo { get; set; }
         public DateTime ExpenditureDate { get; set; }
+        public DateTime TruckingDate { get; set; }
         public string BuyerCode { get; set; }
         public string BuyerName { get; set; }
         public double Netto { get; set; }
