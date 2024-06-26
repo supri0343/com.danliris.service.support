@@ -66,6 +66,7 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public string kodeIncoterm { get; set; }
         public string kodeAsuransi { get; set; }
         public string kodeKenaPajak { get; set; }
+        public double nilaiPabean { get; set; }
         //262
         public string kodeTujuanPemasukan { get; set; }
         //25
@@ -76,17 +77,17 @@ namespace com.danliris.support.lib.Models.Ceisa.TPB
         public double tarifPpnPajak { get; set; }
         public double ppnbmPajak { get; set; }
         public double tarifPpnbmPajak { get; set; }
-        public virtual IEnumerable<TPBBarang> barang { get; set; }
-        public virtual IEnumerable<TPBEntitas> entitas { get; set; }
-        public virtual IEnumerable<TPBDokumen> dokumen { get; set; }
-        public virtual IEnumerable<TPBPengangkut> pengangkut { get; set; }
-        public virtual IEnumerable<TPBKontainer> kontainer { get; set; }
-        public virtual IEnumerable<TPBKemasan> kemasan { get; set; }
-        public virtual IEnumerable<TPBPungutan> pungutan { get; set; }
+        public virtual ICollection<TPBBarang> barang { get; set; }
+        public virtual ICollection<TPBEntitas> entitas { get; set; }
+        public virtual ICollection<TPBDokumen> dokumen { get; set; }
+        public virtual ICollection<TPBPengangkut> pengangkut { get; set; }
+        public virtual ICollection<TPBKontainer> kontainer { get; set; }
+        public virtual ICollection<TPBKemasan> kemasan { get; set; }
+        public virtual ICollection<TPBPungutan> pungutan { get; set; }
         //261
-        public virtual IEnumerable<TPBBahanBaku> bahanBaku { get; set; }
-        public virtual IEnumerable<TPBBahanBakuTarif> bahanBakuTarif { get; set; }
-        public virtual IEnumerable<TPBJaminan> jaminan { get; set; }
+        public virtual ICollection<TPBBahanBaku> bahanBaku { get; set; }
+        public virtual ICollection<TPBBahanBakuTarif> bahanBakuTarif { get; set; }
+        public virtual ICollection<TPBJaminan> jaminan { get; set; }
 
 
     }

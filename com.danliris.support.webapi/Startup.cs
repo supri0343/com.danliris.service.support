@@ -90,6 +90,7 @@ namespace com.danliris.support.webapi
             services.AddTransient<IBC25, BC25Service>();
             services.AddTransient<IBC262, BC262Service>();
             services.AddTransient<ITPBService, TPBService>();
+            services.AddTransient<IHSService, HSService>();
             services.AddAutoMapper();
             services.AddTransient<LogHistoriesService>();
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];

@@ -19,6 +19,7 @@ using Com.Moonlay.NetCore.Lib;
 using AutoMapper;
 using Newtonsoft.Json;
 using com.danliris.support.lib.Interfaces.Ceisa;
+using System.IO;
 
 namespace com.danliris.support.lib.Services.Ceisa
 {
@@ -564,9 +565,10 @@ namespace com.danliris.support.lib.Services.Ceisa
             var Respon = await CeisaService.GetRespon(Query.nomorAju, auth);
 
             //var Respon =  CeisaService.GetRespon(aju, auth).Result;
-            var ResponDaftar = Respon.Where(x => x.nomorDaftar != null).FirstOrDefault();
-            if (ResponDaftar != null)
+          
+            if (Respon != null)
             {
+                var ResponDaftar = Respon.Where(x => x.nomorDaftar != null).FirstOrDefault();
                 Query.nomorDaftar = ResponDaftar.nomorDaftar;
                 Query.tanggalDaftar = ResponDaftar.tanggalDaftar.ToString();
             }
@@ -574,8 +576,9 @@ namespace com.danliris.support.lib.Services.Ceisa
             return Query;
         }
 
-
-
-
+        public Task<MemoryStream> GetExcel(string noAju)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

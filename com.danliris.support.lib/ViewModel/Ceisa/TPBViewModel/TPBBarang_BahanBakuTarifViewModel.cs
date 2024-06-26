@@ -16,5 +16,8 @@ namespace com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel
         public double nilaiFasilitas { get; set; }
         public double nilaiBayar { get; set; }
         public double nilaiSudahDilunasi { get; set; }
+        public double jumlahKemasan { get; set; }
+        public string kodeAsalBahanBaku { get; set; }
+        public string kodeSatuanBarang { get; set; }
     }
 }
