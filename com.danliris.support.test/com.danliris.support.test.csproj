@@ -26,4 +26,8 @@
     <ProjectReference Include="..\com.danliris.support.webapi\com.danliris.support.webapi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controller\" />
+  </ItemGroup>
+
 </Project>
