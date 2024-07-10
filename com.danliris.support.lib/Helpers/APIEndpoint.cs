@@ -14,4 +14,10 @@ namespace com.danliris.support.lib.Helpers
         public static string Production { get; set; }
         public static string HostToHost { get; set; }
     }
+
+    public static class CredentialCeisa
+    {
+        public static string Username { get; set; }
+        public static string Password { get; set; }
+    }
 }
