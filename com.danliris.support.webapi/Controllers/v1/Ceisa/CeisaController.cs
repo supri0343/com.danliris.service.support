@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using com.danliris.support.lib.Interfaces.Ceisa;
 using com.danliris.support.lib.Interfaces.Ceisa.TPB;
 using System.IO;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 
 namespace com.danliris.support.webapi.Controllers.v1.Ceisa
 {
@@ -42,6 +43,33 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
             this.pEBService = pEBService;
             this.TPBService = tPBService;
         }
+
+        [HttpGet("login")]
+        public async Task<IActionResult> LoginCeisa()
+        {
+            try
+            {
+                var data = await ceisaService.Login();
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data.item,
+                    data.message,
+                    data.status,
+                    statusCode = General.OK_STATUS_CODE
+                }
+                );
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
         [HttpGet("getRate")]
         public async Task<IActionResult> getRate(string kode)
         {
