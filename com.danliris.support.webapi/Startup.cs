@@ -51,6 +51,10 @@ namespace com.danliris.support.webapi
             APIEndpoint.LocalConnectionString = Configuration.GetConnectionString("LocalDbProductionConnection") ?? Configuration["LocalDbProductionConnection"];
             APIEndpoint.HostToHost = Configuration.GetValue<string>("HostToHostEndpoint") ?? Configuration["HostToHostEndpoint"];
 
+            //Get Credential Ceisa
+            CredentialCeisa.Username = Configuration.GetValue<string>("UsernameCeisa") ?? Configuration["UsernameCeisa"];
+            CredentialCeisa.Password = Configuration.GetValue<string>("PasswordCeisa") ?? Configuration["PasswordCeisa"];
+
             services
 				.AddDbContext<SupportDbContext>(options => options.UseSqlServer(connectionString))
 				.AddApiVersioning(options =>
