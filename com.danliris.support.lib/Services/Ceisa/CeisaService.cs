@@ -29,6 +29,10 @@ namespace com.danliris.support.lib.Services.Ceisa
                 {
                     var contentResp = response.Content.ReadAsStringAsync().Result;
                     ResultLoginCeisa viewModel = JsonConvert.DeserializeObject<ResultLoginCeisa>(contentResp);
+
+                    TokenCeisa.refresh_token = viewModel.item.refresh_token;
+                    TokenCeisa.token_ceisa = viewModel.item.access_token;
+
                     //Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(contentResp);
 
                     //List<ResultLoginCeisa> viewModel = JsonConvert.DeserializeObject<List<ResultLoginCeisa>>(result.GetValueOrDefault("item").ToString()); ;
@@ -41,20 +45,24 @@ namespace com.danliris.support.lib.Services.Ceisa
             }
         }
 
-        public async Task<List<RateValutaViewModel>> RefreshToken(string kode, string token)
+        public async Task<ResultLoginCeisa> RefreshToken()
         {
 
             using (var client = new HttpClient())
             {
-                var authCeisa = new AuthenticationHeaderValue("Bearer", token);
+                var authCeisa = new AuthenticationHeaderValue("Bearer", TokenCeisa.refresh_token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
 
-                var response = client.GetAsync($"{APIEndpoint.HostToHost}openapi/kurs/{kode}").Result;
+                var content = new StringContent(JsonConvert.SerializeObject(new{ }), Encoding.UTF8, "application/json");
+                var response = client.PostAsync($"{APIEndpoint.HostToHost}nle-oauth/v1/user/update-token", content).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = response.Content.ReadAsStringAsync().Result;
-                    Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
-                    List<RateValutaViewModel> viewModel = JsonConvert.DeserializeObject<List<RateValutaViewModel>>(result.GetValueOrDefault("data").ToString()); ;
+                    var contentResp = response.Content.ReadAsStringAsync().Result;
+                    ResultLoginCeisa viewModel = JsonConvert.DeserializeObject<ResultLoginCeisa>(contentResp);
+
+                    TokenCeisa.refresh_token = viewModel.item.refresh_token;
+                    TokenCeisa.token_ceisa = viewModel.item.access_token;
+
                     return viewModel;
                 }
                 else

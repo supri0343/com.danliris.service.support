@@ -15,6 +15,7 @@ namespace com.danliris.support.lib.Interfaces.Ceisa
         Task<List<LartasViewModel>> GetTarifHS(string kode, string token);
 
         Task<ResultLoginCeisa> Login();
+        Task<ResultLoginCeisa> RefreshToken();
 
     }
 }
