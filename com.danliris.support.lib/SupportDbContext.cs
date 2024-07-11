@@ -12,32 +12,40 @@ namespace com.danliris.support.lib
 {
     public class SupportDbContext : DbContext
     {
-        public virtual DbSet<BEACUKAI_TEMP> BeacukaiTemp { get; set; }
-        public virtual DbSet<FactBeacukai> FactBeacukai { get; set; }
-		public virtual DbSet<ScrapViewModel> ViewScrap{ get; set; }
-        public virtual DbSet<ViewFactBeacukai> ViewFactBeacukai { get; set; }
-		public virtual DbSet<WIPViewModel> ViewWIP { get; set; }
-        public virtual DbSet<HOrder> HOrder { get; set; }
-        public virtual DbSet<Machine> Machine { get; set; }
-        public virtual DbSet<MachineBrand> MachineBrand { get; set; }
-        public virtual DbSet<MachineCategory> MachineCategory { get; set; }
-        public virtual DbSet<MachineMutation> MachineMutation { get; set; }
+        public  DbSet<BEACUKAI_TEMP> BeacukaiTemp { get; set; }
+        public DbSet<FactBeacukai> FactBeacukai { get; set; }
+		public DbSet<ScrapViewModel> ViewScrap{ get; set; }
+        public DbSet<ViewFactBeacukai> ViewFactBeacukai { get; set; }
+		public DbSet<WIPViewModel> ViewWIP { get; set; }
+        public   DbSet<HOrder> HOrder { get; set; }
+        public DbSet<Machine> Machine { get; set; }
+        public DbSet<MachineBrand> MachineBrand { get; set; }
+        public DbSet<MachineCategory> MachineCategory { get; set; }
+        public DbSet<MachineMutation> MachineMutation { get; set; }
         //PEB
-        public virtual DbSet<PEBHeader> PEBHeader { get; set; }
-        public virtual DbSet<PEBBarang> PEBBarang { get; set; }
-        public virtual DbSet<PEBDokumen> PEBDokumen { get; set; }
-        public virtual DbSet<PEBEntitas> PEBEntitas { get; set; }
-        public virtual DbSet<PEBKemasan> PEBKemasan { get; set; }
-        public virtual DbSet<BEACUKAI_ADDED> BEACUKAI_ADDED { get; set; }
-        public virtual DbSet<BEACUKAI_ADDED_DETAIL> BEACUKAI_ADDED_DETAIL { get; set; }
+        public DbSet<PEBHeader> PEBHeader { get; set; }
+        public DbSet<PEBBarang> PEBBarang { get; set; }
+        public DbSet<PEBDokumen> PEBDokumen { get; set; }
+        public DbSet<PEBEntitas> PEBEntitas { get; set; }
+        public DbSet<PEBKemasan> PEBKemasan { get; set; }
+        public DbSet<BEACUKAI_ADDED> BEACUKAI_ADDED { get; set; }
+        public DbSet<BEACUKAI_ADDED_DETAIL> BEACUKAI_ADDED_DETAIL { get; set; }
         //TPB
-        public virtual DbSet<TPBHeader> TPBHeader { get; set; }
-        public virtual DbSet<TPBDokumen>  TPBDokumen { get; set; }
-        public virtual DbSet<TPBBarang> TPBBarang { get; set; }
-        public virtual DbSet<TPBEntitas> TPBEntitas { get; set; }
-        public virtual DbSet<BeacukaiDocumentsModel> BeacukaiDocuments { get; set; }
+        public DbSet<TPBHeader> TPBHeader { get; set; }
+        public DbSet<TPBDokumen>  TPBDokumen { get; set; }
+        public DbSet<TPBBarang> TPBBarang { get; set; }
+        public DbSet<TPBEntitas> TPBEntitas { get; set; }
+        public DbSet<BeacukaiDocumentsModel> BeacukaiDocuments { get; set; }
 
-        public virtual DbSet<HSModel> HSCodes { get; set; }
+        public DbSet<TPBBarang_Tarif> TPBBarang_Tarif { get; set; }
+        public DbSet<TPBBarang_Dokumen> TPBBarang_Dokumen { get; set; }
+        public DbSet<TPBBarang_BahanBaku> TPBBarang_BahanBaku { get; set; }
+        public DbSet<TPBBarang_BahanBakuTarif> TPBBarang_BahanBakuTarif { get; set; }
+
+
+
+
+        public DbSet<HSModel> HSCodes { get; set; }
         public SupportDbContext(DbContextOptions<SupportDbContext> options) : base(options)
         {
         }
