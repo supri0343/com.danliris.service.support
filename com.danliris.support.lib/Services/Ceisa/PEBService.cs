@@ -20,6 +20,7 @@ using AutoMapper;
 using Newtonsoft.Json;
 using com.danliris.support.lib.Interfaces.Ceisa;
 using System.IO;
+using Com.DanLiris.Service.Purchasing.Lib.Helpers;
 
 namespace com.danliris.support.lib.Services.Ceisa
 {
@@ -45,20 +46,28 @@ namespace com.danliris.support.lib.Services.Ceisa
 
         public ReadResponse<object> Read(int Page = 1, int Size = 25, string Order = "{}", string Keyword = null, string Filter = "{}")
         {
-            IQueryable<PEBViewModelList> Query = dbSet.Where(s => s.kodeDokumen == "30" && s._IsDeleted == false).Select(m => new PEBViewModelList
+            IQueryable<PEBViewModelList> Query = dbSet.Where(s => s.kodeDokumen == "30"
+            && s._IsDeleted == false)
+                .Select(m => new PEBViewModelList
             {
                 Id = m.Id,
                 nomorAju = m.nomorAju,
                 tanggalAju = m.tanggalAju.ToString("dd-MMM-yyyy"),
                 nomorDaftar = string.IsNullOrWhiteSpace(m.nomorDaftar) ? "-" : m.nomorDaftar,
                 tanggalDaftar = m.tanggalDaftar == null ? "-" : m.tanggalDaftar.Value.ToString("dd-MMM-yyyy"),
-                namaPenerima = m.entitas.Where(x => x.kodeEntitas == "8").Select(i => i.namaEntitas).FirstOrDefault(),
+                namaPenerima = m.entitas.Where(x => x.kodeEntitas == "8")
+                .Select(i => i.namaEntitas)
+                .FirstOrDefault(),
                 isPosted = m.isPosted,
                 postedBy = string.IsNullOrWhiteSpace(m.postedBy) ? "-" : m.postedBy,
                 CreatedDate = m._CreatedUtc.ToString("dd-MMM-yyyy")
             }).OrderByDescending(x => x.nomorAju) ;
-            
-            
+
+            List<string> SearchAtt = new List<string>() { "namaPenerima", "nomorAju", "nomorDaftar" };
+
+            Query = QueryHelper<PEBViewModelList>.ConfigureSearch(Query, SearchAtt,Keyword);
+
+
             //Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
             //Query = QueryHelper<PEBViewModel>.ConfigureFilter(Query, FilterDictionary);
 
