@@ -4,6 +4,7 @@ using com.danliris.support.lib.Models;
 using com.danliris.support.lib.Models.Ceisa.TPB;
 using com.danliris.support.lib.ViewModel.Ceisa;
 using com.danliris.support.lib.ViewModel.Ceisa.TPBViewModel;
+using Com.DanLiris.Service.Purchasing.Lib.Helpers;
 using Com.DanLiris.Service.support.lib.Services;
 using Com.Moonlay.Models;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +50,11 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                 CreatedDate = m._CreatedUtc.ToString("dd-MMM-yyyy")
             }).OrderByDescending(x => x.nomorAju);
 
-         
+            //add filter search keyword
+            List<string> SearchAtt = new List<string>() { "namaPenerima", "nomorAju", "nomorDaftar" };
+
+            Query = QueryHelper<TPBViewModelList>.ConfigureSearch(Query, SearchAtt, Keyword);
+            //--------
             //Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
             //Query = QueryHelper<PEBViewModel>.ConfigureFilter(Query, FilterDictionary);
 
