@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using com.danliris.support.lib.Interfaces.Ceisa;
 using System;
 using com.danliris.support.lib.Helpers;
+using static System.Net.WebRequestMethods;
+using System.Text;
 
 namespace com.danliris.support.lib.Services.Ceisa
 {
@@ -16,6 +18,60 @@ namespace com.danliris.support.lib.Services.Ceisa
         {
     
         }
+
+        public async Task<ResultLoginCeisa> Login()
+        {
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(JsonConvert.SerializeObject(new { username = CredentialCeisa.Username, password = CredentialCeisa.Password }), Encoding.UTF8, "application/json");
+                var response = client.PostAsync($"{APIEndpoint.HostToHost}nle-oauth/v1/user/login", content).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var contentResp = response.Content.ReadAsStringAsync().Result;
+                    ResultLoginCeisa viewModel = JsonConvert.DeserializeObject<ResultLoginCeisa>(contentResp);
+
+                    TokenCeisa.refresh_token = viewModel.item.refresh_token;
+                    TokenCeisa.token_ceisa = viewModel.item.access_token;
+
+                    //Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(contentResp);
+
+                    //List<ResultLoginCeisa> viewModel = JsonConvert.DeserializeObject<List<ResultLoginCeisa>>(result.GetValueOrDefault("item").ToString()); ;
+                    return viewModel;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<ResultLoginCeisa> RefreshToken()
+        {
+
+            using (var client = new HttpClient())
+            {
+                var authCeisa = new AuthenticationHeaderValue("Bearer", TokenCeisa.refresh_token);
+                client.DefaultRequestHeaders.Authorization = authCeisa;
+
+                var content = new StringContent(JsonConvert.SerializeObject(new{ }), Encoding.UTF8, "application/json");
+                var response = client.PostAsync($"{APIEndpoint.HostToHost}nle-oauth/v1/user/update-token", content).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var contentResp = response.Content.ReadAsStringAsync().Result;
+                    ResultLoginCeisa viewModel = JsonConvert.DeserializeObject<ResultLoginCeisa>(contentResp);
+
+                    TokenCeisa.refresh_token = viewModel.item.refresh_token;
+                    TokenCeisa.token_ceisa = viewModel.item.access_token;
+
+                    return viewModel;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         public async Task<List<RateValutaViewModel>> GetValutaRate(string kode, string token)
         {
 
@@ -24,7 +80,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
 
-                var response = client.GetAsync($"{APIEndpoint.HostToHost}kurs/{kode}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}openapi/kurs/{kode}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var content = response.Content.ReadAsStringAsync().Result;
@@ -46,7 +102,7 @@ namespace com.danliris.support.lib.Services.Ceisa
             {
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"{APIEndpoint.HostToHost}hs-lartas?kodeHs={kode}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}openapi/hs-lartas?kodeHs={kode}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var content = response.Content.ReadAsStringAsync().Result;
@@ -69,7 +125,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                 var dateNow = DateTime.Now.ToString("yyyy-MM-dd");
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"{APIEndpoint.HostToHost}tarif-hs?kodeHs={kode}&tanggal={dateNow}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}openapi/tarif-hs?kodeHs={kode}&tanggal={dateNow}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var content = response.Content.ReadAsStringAsync().Result;
@@ -92,7 +148,7 @@ namespace com.danliris.support.lib.Services.Ceisa
                 var tglManifes = tglHostBl.ToString("dd-MM-yyyy");
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"{APIEndpoint.HostToHost}manifes-bc11?kodeKantor={kodeKantor}&noHostBl={noHostBl}&tglHostBl={tglManifes}&nama={""}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}openapi/manifes-bc11?kodeKantor={kodeKantor}&noHostBl={noHostBl}&tglHostBl={tglManifes}&nama={""}").Result;
                 if (response.IsSuccessStatusCode)
                 {
                     //var content = response.Content.ReadAsStringAsync().Result;
@@ -127,7 +183,7 @@ namespace com.danliris.support.lib.Services.Ceisa
             {
                 var authCeisa = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Authorization = authCeisa;
-                var response = client.GetAsync($"{APIEndpoint.HostToHost}status/{kode}").Result;
+                var response = client.GetAsync($"{APIEndpoint.HostToHost}openapi/status/{kode}").Result;
                 //var response = client.GetAsync($"https://nlehub-dev.kemenkeu.go.id/openapi/status/{kode}").Result;
                 if (response.IsSuccessStatusCode)
                 {

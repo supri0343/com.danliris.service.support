@@ -3,16 +3,11 @@ using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Com.Moonlay.NetCore.Lib.Service;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Com.DanLiris.Service.support.lib.Services;
 using com.danliris.support.lib.Interfaces;
-using com.danliris.support.lib.Models.Ceisa.PEB;
 using com.danliris.support.webapi.Helpers;
-using com.danliris.support.lib.ViewModel.Ceisa.PEBViewModel;
-using Newtonsoft.Json;
 using com.danliris.support.lib.Interfaces.Ceisa;
 using com.danliris.support.lib.Interfaces.Ceisa.TPB;
 using System.IO;
@@ -42,6 +37,59 @@ namespace com.danliris.support.webapi.Controllers.v1.Ceisa
             this.pEBService = pEBService;
             this.TPBService = tPBService;
         }
+
+        [HttpGet("login")]
+        public async Task<IActionResult> LoginCeisa()
+        {
+            try
+            {
+                var data = await ceisaService.Login();
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data.item,
+                    data.message,
+                    data.status,
+                    statusCode = General.OK_STATUS_CODE
+                }
+                );
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            try
+            {
+                var data = await ceisaService.RefreshToken();
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data.item,
+                    data.message,
+                    data.status,
+                    statusCode = General.OK_STATUS_CODE
+                }
+                );
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
         [HttpGet("getRate")]
         public async Task<IActionResult> getRate(string kode)
         {
