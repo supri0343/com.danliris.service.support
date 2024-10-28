@@ -44,7 +44,7 @@ namespace com.danliris.support.lib.Services.Ceisa.TPB
                 tanggalAju = m.tanggalAju.ToString("dd-MMM-yyyy"),
                 nomorDaftar = string.IsNullOrWhiteSpace(m.nomorDaftar) ? "-" : m.nomorDaftar,
                 tanggalDaftar = m.tanggalDaftar == null ? "-" : m.tanggalDaftar.Value.ToString("dd-MMM-yyyy"),
-                namaPenerima = m.entitas.Where(x => x.kodeEntitas == "8").Select(i => i.namaEntitas).FirstOrDefault(),
+                namaPenerima = m.entitas.Where(x => x.kodeEntitas == "7").Select(i => i.namaEntitas).FirstOrDefault(),
                 isPosted = m.isPosted,
                 postedBy = string.IsNullOrWhiteSpace(m.postedBy) ? "-" : m.postedBy,
                 CreatedDate = m._CreatedUtc.ToString("dd-MMM-yyyy")
