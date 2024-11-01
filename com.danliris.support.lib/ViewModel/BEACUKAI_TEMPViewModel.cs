@@ -36,6 +36,7 @@ namespace com.danliris.support.lib.ViewModel
         public DateTime TglDatang { get; set; }
         public string Vendor { get; set; }
         public string CreatedBy { get; set; }
+        public int JumlahKemasan { get; set; }
     }
 
     public class BEACUKAI_ToDeleteViewModel 

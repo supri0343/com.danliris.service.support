@@ -36,7 +36,9 @@ namespace com.danliris.support.lib.Services
                     TglDatang = p.TglDatang,
                     Hari = p.Hari,
                     Netto = Convert.ToDouble(p.Netto),
-                    Bruto = Convert.ToDouble(p.Bruto)
+                    Bruto = Convert.ToDouble(p.Bruto),
+                    KodeKemasan = p.KodeKemasan,
+                    JumlahKemasan = p.JumlahKemasan != null ? p.JumlahKemasan : 0,
                 });
 
             if (!string.IsNullOrWhiteSpace(keyword))
@@ -56,8 +58,11 @@ namespace com.danliris.support.lib.Services
                 JenisBC = key.JenisBC, //BCType = p.BCType,
                 TglDatang = group.FirstOrDefault().TglDatang,
                 Hari = group.FirstOrDefault().Hari,
-                Netto = Convert.ToDouble(group.Sum(x=>x.Netto)),
-                Bruto = Convert.ToDouble(group.FirstOrDefault().Bruto)
+                Netto = Convert.ToDouble(group.FirstOrDefault().Netto),
+                Bruto = Convert.ToDouble(group.FirstOrDefault().Bruto),
+                JumlahKemasan = group.FirstOrDefault().JumlahKemasan,
+                KodeKemasan = group.FirstOrDefault().KodeKemasan
+
             });
 
             Query3 = Query3
