@@ -313,7 +313,7 @@ namespace com.danliris.support.lib.Services
 
         public IQueryable<FactBeacukaiViewModel> GetReportOUTQuery(string type, DateTime? dateFrom, DateTime? dateTo, int offset,string no)
         {
-            var array = new string[] { "BC 261", "BC 3.0",  "BC 41", "BC 27", "BC 25" };
+            var array = new string[] { "BC 261", "BC 3.0",  "BC 41", "BC 27", "BC 25" , "BC 3.3" };
 			if (type == "BC 2.6.1")
 			{ type = "BC 261"; }
 			else if (type == "BC 3.0")
@@ -324,7 +324,9 @@ namespace com.danliris.support.lib.Services
 			{ type = "BC 25"; }
 			else if (type == "BC 2.7")
 			{ type = "BC 27"; }
-			DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            else if (type == "BC 3.3")
+            { type = "BC 3.3"; }
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
 
             string[] exceptSupplier = {"DAN LIRIS","DAN LIRIS ( DIVISI TEXTILE )","DAN LIRIS (DIVISI TEXTILE)","DAN LIRIS DIVISI TEXTILE","DAN LIRIS,GMT","PT DAN LIRIS","PT DAN LIRIS ( TEXTILE )","PT DAN LIRIS (TEXTILE)","PT DAN LIRIS DIVISI TEXTILE","PT DAN LIRIS TEXTILE ","PT DANLIRIS","PT DANLIRIS (DIV. TEXTILE)","PT. DAN LIRIS","PT. DAN LIRIS DIVISI TEXTILE","PT. DANLIRIS TEXTILE"};
@@ -656,7 +658,7 @@ namespace com.danliris.support.lib.Services
                                 BCNo = dataRow["BCNo"].ToString(),
                                 BonDate = Convert.ToDateTime(dataRow["ExpenditureDate"].ToString()),
                                 BCDate = Convert.ToDateTime(dataRow["BCDate"].ToString()),
-                                Quantity = (double)dataRow["Quantity"],
+                                Quantity = dataRow["Quantity"].ToString(),
                                 BonNo = dataRow["ExpenditureNo"].ToString(),
                                 ItemCode = dataRow["ItemCode"].ToString()
                             };
@@ -710,7 +712,7 @@ namespace com.danliris.support.lib.Services
                             {
                                 BCNo = dataRow["BCNo"].ToString(),
                                 BCDate = Convert.ToDateTime(dataRow["BCDate"].ToString()),
-                                Quantity = (double)dataRow["Quantity"],
+                                Quantity = dataRow["Quantity"].ToString(),
                                 BonNo = dataRow["ExpenditureNo"].ToString(),
                                 ItemCode = dataRow["ItemCode"].ToString(),
                                 BCType = dataRow["BCType"].ToString()
@@ -767,7 +769,7 @@ namespace com.danliris.support.lib.Services
                             BCNo = dataRow["BCNo"].ToString(),
                             BCDate = Convert.ToDateTime(dataRow["BCDate"].ToString()),
                             BonDate = Convert.ToDateTime(dataRow["ExpenditureDate"].ToString()),
-                            Quantity = (double)dataRow["Quantity"],
+                            Quantity = dataRow["Quantity"].ToString(),
                             BonNo = dataRow["ExpenditureNo"].ToString(),
                             ItemCode = dataRow["ItemCode"].ToString(),
                             BCType = dataRow["BCType"].ToString()
