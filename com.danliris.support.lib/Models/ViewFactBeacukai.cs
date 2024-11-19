@@ -2,14 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace com.danliris.support.lib.Models
 {
-    public class ViewFactBeacukai : StandardEntity
+    public class ViewFactBeacukai /*: StandardEntity*/
     {
-        public string DetailshippingOrderId { get; set; }
-        public string BCId { get; set; }
+        public Guid Id { get; set; }
+        //public string DetailshippingOrderId { get; set; }
+        //public string BCId { get; set; }
         public string BCNo { get; set; }
 		public string Tipe { get; set; }
 		public string BCType { get; set; }
@@ -21,7 +23,7 @@ namespace com.danliris.support.lib.Models
         public string ItemCode { get; set; }
         public string ItemName { get; set; }
         public string UnitQtyName { get; set; }
-        public double Quantity { get; set; }
+        public string Quantity { get; set; }
         public decimal Nominal { get; set; }
         public string CurrencyCode { get; set; }
         public DateTime TglDatang { get; set; }
