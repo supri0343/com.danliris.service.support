@@ -77,7 +77,7 @@ namespace com.danliris.support.lib.Services
             if(jenis == "TPB")
             {
                 var Query = type == "Nomor Aju" ?
-                    await context.BeacukaiTemp.Where(x => x.NoAju.Contains(nomor) && (x.TglBCNo.Month >= DateTime.Now.Month - 2 && x.TglBCNo.Year >= DateTime.Now.Year - 1))
+                    await context.BeacukaiTemp.Where(x => x.NoAju.Contains(nomor) && (x.TglBCNo.Month >= DateTime.Now.Month - 6 && x.TglBCNo.Year >= DateTime.Now.Year - 1))
                     .Select(a => new BEACUKAI_ToDeleteViewModel 
                     {
                         NoAju = a.NoAju,
@@ -87,7 +87,7 @@ namespace com.danliris.support.lib.Services
                         CreatedBy = a.CreatedBy
                     })
                     .ToListAsync() :
-                    await context.BeacukaiTemp.Where(x => x.BCNo.Contains(nomor) && (x.TglBCNo.Month >= DateTime.Now.Month - 2 && x.TglBCNo.Year >= DateTime.Now.Year - 1))
+                    await context.BeacukaiTemp.Where(x => x.BCNo.Contains(nomor) && (x.TglBCNo.Month >= DateTime.Now.Month - 6 && x.TglBCNo.Year >= DateTime.Now.Year - 1))
                      .Select(a => new BEACUKAI_ToDeleteViewModel
                      {
                          NoAju = a.NoAju,
@@ -114,7 +114,7 @@ namespace com.danliris.support.lib.Services
             else if(jenis == "PEB")
             {
                 var Query = type == "Nomor Aju" ?
-                   await context.BEACUKAI_ADDED.Where(x => x.CAR.Contains(nomor) && (x.BCDate.Month >= DateTime.Now.Month - 2 && x.BCDate.Year >= DateTime.Now.Year - 1))
+                   await context.BEACUKAI_ADDED.Where(x => x.CAR.Contains(nomor) && (x.BCDate.Month >= DateTime.Now.Month - 6 && x.BCDate.Year >= DateTime.Now.Year - 1))
                    .Select(a => new BEACUKAI_ToDeleteViewModel
                    {
                        NoAju = a.CAR,
@@ -124,7 +124,7 @@ namespace com.danliris.support.lib.Services
                        CreatedBy = a.CreateUser
                    })
                    .ToListAsync() :
-                   await context.BEACUKAI_ADDED.Where(x => x.BCNo.Contains(nomor) && (x.BCDate.Month >= DateTime.Now.Month - 2 && x.BCDate.Year >= DateTime.Now.Year - 1))
+                   await context.BEACUKAI_ADDED.Where(x => x.BCNo.Contains(nomor) && (x.BCDate.Month >= DateTime.Now.Month - 6 && x.BCDate.Year >= DateTime.Now.Year - 1))
                     .Select(a => new BEACUKAI_ToDeleteViewModel
                     {
                         NoAju = a.CAR,
