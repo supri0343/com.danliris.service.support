@@ -214,7 +214,7 @@ namespace com.danliris.support.lib.Services
                 var index = 0;
                 foreach (FactBeacukaiViewModel a in q)
                 {
-                    FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
+                    FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo && o.BonNo == a.BonNo);
                     if (dup != null)
                     {
                         if (dup.count == 0)
@@ -263,12 +263,13 @@ namespace com.danliris.support.lib.Services
                 {
                     //FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
                     if (counts.TryGetValue(a.BCType + a.BCNo, out value))
+                    if (counts.TryGetValue(a.BCType + a.BCNo + a.BonNo, out value))
                     {
-                        counts[a.BCType + a.BCNo]++;
+                        counts[a.BCType + a.BCNo + a.BonNo]++;
                     }
                     else
                     {
-                        counts[a.BCType + a.BCNo]=1;
+                        counts[a.BCType + a.BCNo + a.BonNo] =1;
                     }
 
                     //FactBeacukaiViewModel dup1 = Array.Find(docNo, o => o.BCType == a.BCType);
